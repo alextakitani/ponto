@@ -1,0 +1,13 @@
+<div id="sign_in_form" class="card">
+  <h1>Entrar no Ponto</h1>
+  <p class="muted">Enviamos um código de 6 dígitos para o seu e-mail.</p>
+
+  <%= form_with url: sign_in_path, method: :post do |f| %>
+    <%= f.email_field :email,
+          required: true,
+          autofocus: true,
+          autocomplete: "email",
+          placeholder: "voce@exemplo.com" %>
+    <%= f.submit "Enviar código" %>
+  <% end %>
+</div>
