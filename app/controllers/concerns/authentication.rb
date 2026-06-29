@@ -6,6 +6,7 @@ module Authentication
   extend ActiveSupport::Concern
 
   included do
+    before_action :set_current_request_details
     before_action :require_authentication
     helper_method :authenticated?, :current_user
 
@@ -31,6 +32,12 @@ module Authentication
     Current.user
   end
 
+  def set_current_request_details
+    Current.request_id = request.uuid
+    Current.user_agent = request.user_agent
+    Current.ip_address = request.remote_ip
+  end
+
   def require_authentication
     resume_session || authenticate_by_bearer_token || request_authentication
   end
@@ -54,8 +61,7 @@ module Authentication
   end
 
   def set_current_session(session_record)
-    Current.session = session_record
-    Current.user = session_record.user
+    Current.session = session_record # resolve Current.user em cascata
     cookies.signed.permanent[:session_token] = {
       value: session_record.signed_id,
       httponly: true,
@@ -66,8 +72,7 @@ module Authentication
   def terminate_session
     Current.session&.destroy
     cookies.delete(:session_token)
-    Current.session = nil
-    Current.user = nil
+    Current.session = nil # zera Current.user em cascata
   end
 
   # --- Bearer (extensão de Chrome) -------------------------------------------
