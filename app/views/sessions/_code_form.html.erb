@@ -1,12 +1,15 @@
 <div id="sign_in_form" class="card">
   <h1>Digite o código</h1>
   <p class="muted">
-    Enviamos um código de 6 dígitos para <strong><%= email %></strong>.
+    Enviamos um código de 6 dígitos para <strong><%= email_pending_authentication %></strong>.
     Ele expira em 15 minutos.
   </p>
 
+  <% if Rails.env.development? && flash[:sign_in_code].present? %>
+    <p class="muted">Dev: código <strong><%= flash[:sign_in_code] %></strong></p>
+  <% end %>
+
   <%= form_with url: sign_in_session_path, method: :post do |f| %>
-    <%= f.hidden_field :email, value: email %>
     <%= f.text_field :code,
           required: true,
           autofocus: true,
