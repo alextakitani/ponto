@@ -4,8 +4,9 @@ class CreateAccessTokens < ActiveRecord::Migration[8.1]
       t.references :user, null: false, foreign_key: true
       t.string :token, null: false
       t.string :label
-      # Métodos HTTP que este token pode usar (ex.: "GET,POST"). Decisões §3.
-      t.string :http_methods, null: false, default: "GET"
+      # Escopo do token (decisões §3 "escopado por método HTTP"):
+      #   read  -> só GET/HEAD   |   write -> qualquer método
+      t.string :permission, null: false, default: "read"
       t.datetime :last_used_at
 
       t.timestamps

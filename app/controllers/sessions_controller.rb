@@ -1,28 +1,28 @@
 # Login passwordless de duas etapas na mesma aba (decisões §3):
-#   new      -> form de e-mail
-#   create   -> emite código de 6 dígitos, manda por e-mail, troca o form (Turbo Stream)
-#   verify   -> consome código e abre sessão
-#   destroy  -> logout
+#   new            -> form de e-mail
+#   create         -> emite código, guarda e-mail no cookie assinado, troca o form
+#   verify         -> form de código (exige cookie de e-mail pendente)
+#   create_session -> consome código + confere e-mail (secure_compare) + abre sessão
+#   destroy        -> logout
 class SessionsController < ApplicationController
   allow_unauthenticated_access only: %i[new create verify create_session]
+  before_action :ensure_email_pending, only: %i[verify create_session]
 
-  # Rate limit no envio de código é a defesa principal do esquema. Decisões §3.
-  rate_limit to: 5, within: 1.minute, only: :create,
-             with: -> { redirect_to sign_in_path, alert: "Muitas tentativas. Aguarde um minuto." }
+  # Rate limit no envio é a defesa principal do esquema (decisões §3).
+  rate_limit to: 5, within: 1.minute, only: :create, with: :rate_limit_exceeded
 
   def new
   end
 
   def create
-    @user = User.find_or_create_by(email: User.normalize_value_for(:email, params[:email]))
+    user = User.find_or_create_by(email: User.normalize_value_for(:email, params[:email]))
 
-    if @user.persisted?
-      code = @user.issue_sign_in_code
-      SignInMailer.with(user: @user, code: code).code.deliver_later
+    if user.persisted?
+      begin_sign_in_code_authentication(user.send_sign_in_code)
 
       respond_to do |format|
-        format.turbo_stream # substitui o form de e-mail pelo de código
-        format.html { redirect_to verify_sign_in_path(email: @user.email) }
+        format.turbo_stream # troca o form de e-mail pelo de código
+        format.html { redirect_to verify_sign_in_path }
       end
     else
       flash.now[:alert] = "E-mail inválido."
@@ -30,23 +30,17 @@ class SessionsController < ApplicationController
     end
   end
 
-  # GET para fallback non-Turbo (recebeu no celular, abriu no desktop).
   def verify
-    @email = params[:email]
-    render :verify
   end
 
   def create_session
-    user = User.find_by(email: User.normalize_value_for(:email, params[:email]))
-    record = user&.sign_in_codes&.active&.order(created_at: :desc)&.find do |c|
-      c.code_digest == User.digest_code(params[:code].to_s.strip)
-    end
+    user = User.find_by(email: email_pending_authentication)
 
-    if record&.consume!
-      start_new_session_for(record.user)
+    if user && (code = SignInCode.consume(user, params[:code])) && emails_match?(user)
+      clear_pending_authentication_token
+      start_new_session_for(user)
       redirect_to after_authentication_url, notice: "Bem-vindo!"
     else
-      @email = params[:email]
       flash.now[:alert] = "Código inválido ou expirado."
       render :verify, status: :unprocessable_entity
     end
@@ -55,5 +49,29 @@ class SessionsController < ApplicationController
   def destroy
     terminate_session
     redirect_to sign_in_path, notice: "Você saiu."
+  end
+
+  private
+
+  def ensure_email_pending
+    return if email_pending_authentication.present?
+
+    redirect_to sign_in_path, alert: "Informe seu e-mail para entrar."
+  end
+
+  # Disponível pro before_action e pras views (mostra o e-mail pendente).
+  helper_method :email_pending_authentication
+  def email_pending_authentication
+    @email_pending_authentication ||= super
+  end
+
+  def emails_match?(user)
+    ActiveSupport::SecurityUtils.secure_compare(
+      email_pending_authentication.to_s, user.email.to_s
+    )
+  end
+
+  def rate_limit_exceeded
+    redirect_to sign_in_path, alert: "Muitas tentativas. Aguarde um minuto."
   end
 end

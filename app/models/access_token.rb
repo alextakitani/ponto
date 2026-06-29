@@ -3,15 +3,13 @@ class AccessToken < ApplicationRecord
 
   has_secure_token :token
 
-  validates :http_methods, presence: true
+  # Escopo do token (decisões §3). read = só leitura; write = leitura + escrita.
+  attribute :permission, :string, default: "read"
+  enum :permission, %w[read write].index_by(&:itself)
 
-  # "GET,POST" -> ["GET", "POST"]
-  def allowed_methods
-    http_methods.to_s.upcase.split(",").map(&:strip).reject(&:blank?)
-  end
-
+  # GET/HEAD são sempre permitidos (leitura). Métodos de escrita exigem :write.
   def allows?(http_method)
-    allowed_methods.include?(http_method.to_s.upcase)
+    http_method.to_s.upcase.in?(%w[GET HEAD]) || write?
   end
 
   def touch_usage!
