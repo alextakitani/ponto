@@ -1,0 +1,7 @@
+<div class="card">
+  <h1>Ponto</h1>
+  <p>Você está autenticado como <strong><%= current_user.email %></strong>.</p>
+  <p class="muted">As telas de timer, projetos e relatórios entram nas próximas fases.</p>
+
+  <%= button_to "Sair", sign_out_path, method: :delete %>
+</div>

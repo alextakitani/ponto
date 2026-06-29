@@ -1,0 +1,9 @@
+<p>Olá<%= @user.name.present? ? " #{@user.name}" : "" %>,</p>
+
+<p>Seu código de acesso ao <strong>Ponto</strong> é:</p>
+
+<p style="font-size: 28px; letter-spacing: 6px; font-weight: bold;"><%= @code %></p>
+
+<p>Ele expira em 15 minutos e só pode ser usado uma vez.</p>
+
+<p>Se você não pediu este código, ignore este e-mail.</p>
