@@ -19,9 +19,12 @@ class User < ApplicationRecord
 
   # Emite um código de 6 dígitos, manda por e-mail e devolve o SignInCode
   # (em dev o controller usa o código em claro p/ servir via flash/header).
+  #
+  # O código em claro vai como argumento pro mailer (não via record): deliver_later
+  # serializa o SignInCode e o recarrega no job, perdendo o atributo transiente.
   def send_sign_in_code
     sign_in_codes.create!.tap do |sign_in_code|
-      SignInMailer.with(sign_in_code: sign_in_code).code.deliver_later
+      SignInMailer.with(user: self, code: sign_in_code.code).code.deliver_later
     end
   end
 end

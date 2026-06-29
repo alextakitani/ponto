@@ -1,8 +1,8 @@
 class SignInMailer < ApplicationMailer
+  # Recebe o código em claro como argumento — ver User#send_sign_in_code.
   def code
-    @sign_in_code = params[:sign_in_code]
-    @user = @sign_in_code.user
-    @code = @sign_in_code.code
+    @user = params[:user]
+    @code = params[:code]
     mail to: @user.email, subject: "Seu código de acesso ao Ponto: #{@code}"
   end
 end
