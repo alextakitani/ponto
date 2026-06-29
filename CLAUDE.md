@@ -33,13 +33,35 @@ Referência de implementação: **`basecamp/fizzy`** (Rails+Hotwire), clonado em
 bin/rails server                 # dev (porta 3000)
 bin/rails console
 bin/rails db:migrate
+bin/rails test                   # Minitest — deve passar 100%
 bin/brakeman -q --no-pager       # segurança — deve dar 0 warnings
 bin/rubocop                      # estilo (rubocop-rails-omakase)
 ```
 
-**Não há suíte de testes** — o app foi gerado com `--skip-test`. Verificação hoje é
-por **smoke test manual** (subir o server, exercitar via curl/browser) + brakeman +
-rubocop. Se for adicionar testes, confirme antes a escolha de framework.
+## Testes (Minitest)
+
+**Sempre escreva testes para código novo.** Mas teste **nossa lógica, não o
+framework**. A suíte deve ficar enxuta e útil.
+
+**Testar:**
+- Regras de negócio e de domínio nossas (ex.: `SignInCode.consume` uso único e
+  expiração; `AccessToken#allows?` mapeando permission → método HTTP).
+- Parsing/normalização nossa (ex.: `SignInCode::Code.sanitize`).
+- **Fluxo de controle** dos controllers/concerns que nós escrevemos (ex.: as duas
+  etapas do login, escopo do bearer) — via integration test.
+- Regressões de bugs reais que encontrarmos.
+
+**NÃO testar:**
+- Relacionamentos do Active Record (`has_many`/`belongs_to`), `dependent:` etc.
+- Validações declarativas (`validates ...`) — é configuração de framework.
+- Se um texto/elemento aparece numa tela — não testamos a view nesse nível.
+- Comportamento que é puramente Rails/gem (não é nosso).
+
+**Como:** sem fixtures — cada teste cria só o que precisa (há helper `create_user`
+em `test/test_helper.rb`). Mailer roda via `deliver_later`, então em teste use
+`perform_enqueued_jobs { ... }` e leia `ActionMailer::Base.deliveries` para pegar o
+código. `allow_forgery_protection` é `false` em teste (não dá pra testar CSRF por
+integration; a isenção da extensão vive em `RequestForgeryProtection`).
 
 ⚠️ **Migrations já aplicadas**: editar um arquivo de migration já rodado não tem
 efeito. Em dev, pra rebuildar o schema do zero: `rm storage/*.sqlite3 db/schema.rb &&

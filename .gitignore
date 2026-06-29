@@ -33,3 +33,7 @@
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
+
+# Skills instaladas localmente (não fazem parte do app)
+.claude/skills/
+skills-lock.json
