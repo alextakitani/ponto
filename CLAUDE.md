@@ -1,11 +1,23 @@
 # Ponto
 
-Time-tracker self-hosted **pessoal (single-user)**, no espírito Clockify/Toggl mas
-enxuto, pra rodar no homelab. Rails 8 + Hotwire + SQLite.
+Time-tracker self-hosted **multi-usuário, sem colaboração/times** (cada usuário tem
+sua própria bolha isolada de dados), no espírito Clockify/Toggl mas enxuto, pra rodar
+no homelab e ser publicado **open source**. Rails 8 + Hotwire + SQLite.
+
+> ⚠️ **Esta CLAUDE.md foi reconciliada (30/06/2026) com as decisões de design do
+> grilling.** A fonte de verdade detalhada e o RACIONAL de cada decisão estão em
+> **`docs/grilling-progress.md`** (Q1–Q24+). Onde esta CLAUDE.md e o grilling-progress
+> divergirem, o grilling-progress vence (é mais novo e mais detalhado). Várias
+> premissas originais mudaram: o app NÃO é mais single-user no sentido de "um registro
+> de User" (ver Stack), `project_id` é nulável, a rate tem override por projeto, e há
+> admin/convite/landing.
 
 ## Documentos de referência (leia antes de decidir arquitetura/UI)
 
-- `docs/time-tracker-decisoes.md` — **racional completo** de arquitetura e escopo.
+- `docs/grilling-progress.md` — **decisões de design fechadas (Q1–Q24+) + racional.**
+  Leia PRIMEIRO; é a fonte de verdade mais recente.
+- `docs/time-tracker-decisoes.md` — racional original de arquitetura e escopo (parte
+  superada pelo grilling — cruze com ele).
 - `docs/time-tracker-spec.pdf` — brief funcional/UI (telas do Clockify com o que
   **MANTER / REMOVER** por tela). Pareie os dois.
 - `docs/decisoes-auth-fizzy.md` — o que clonamos do `basecamp/fizzy` (auth/config),
@@ -24,8 +36,12 @@ Referência de implementação: **`basecamp/fizzy`** (Rails+Hotwire), clonado em
   sem offline sync. Rotas `manifest`/`service-worker` já existem; faltam as views.
 - **CSS**: custom properties zero-build (estilo fizzy) ou Tailwind via binário
   standalone (sem Node). Estética alvo: **retrô anos 90**.
-- **Single-user**: não existe equipe, compartilhamento, papéis, multi-conta. Onde o
-  Clockify mostrar User/Team/Shared/Access, **ignorar**.
+- **Multi-usuário SEM times** (Q23): o app permite criação de contas; vários usuários
+  independentes, cada um na própria bolha. **Isolamento total por `user_id`** em todas
+  as tabelas de domínio — ZERO dado compartilhado entre contas. O que NÃO existe:
+  **equipe, colaboração, compartilhamento, papéis colaborativos**. Onde o Clockify
+  mostrar Team/Shared/Access (dimensões de equipe), **ignorar**. (O único papel é
+  `User.admin`, operacional — gerencia contas/convites, NÃO vê dados alheios; ver Auth.)
 
 ## Comandos
 
@@ -91,35 +107,80 @@ via_sign_in_code.rb`), `request_forgery_protection.rb`; models `User`, `Session`
 (sem coluna token — usa `signed_id`), `SignInCode` (+ `sign_in_code/code.rb`),
 `AccessToken`, `Current`.
 
-## Modelo de dados (a construir — §4 do doc)
+### Acesso por CONVITE (a construir — Q24)
 
-Hierarquia **Client → Project → Task → TimeEntry**, com **Tags** por fora:
+Não há signup público auto-servido. Acesso é controlado:
+
+- **Bootstrap do admin**: no PRIMEIRO acesso, sem nenhuma conta no banco, o app cria
+  o **admin geral** (primeiro user = admin). `admin` é um **boolean no `User`** (não
+  roles). Papel OPERACIONAL: gerencia contas/convites/pedidos; **NÃO vê dados de
+  domínio de outros usuários** (isolamento Q23 intacto).
+- **Convite**: o admin cria/convida contas. Magic-code exige **e-mail válido e
+  entregável** (é identidade E canal).
+- **Landing page pública** com "**pedir acesso**" → grava um `AccessRequest`
+  (email, name?, note?, status pending/approved/rejected). Só o admin enxerga a fila;
+  aprovar cria o User e dispara o magic-link. (Controle manual no início pra evitar
+  enxurrada de signups.)
+- `AccessRequest` é **pré-conta** → fica FORA do isolamento por `user_id`.
+
+## Modelo de dados (a construir — §4 do doc, revisado pelo grilling)
+
+Hierarquia **Client → Project → Task → TimeEntry**, com **Tags** por fora.
+⚠️ **Toda tabela de domínio tem `user_id`** (isolamento Q23) — escopar TODA query por
+`Current.user`. Tabelas usam **money-rails** (`monetize`) pra valores (Q11/Q20).
 
 | Tabela | Campos-chave | Notas |
 |---|---|---|
-| `Client` | name, **rate**, currency (default BRL) | rate = taxa faturável/hora, **FIXA por cliente**. Moeda mora aqui. |
-| `Project` | name, color, client_id (opcional) | color alimenta bolinha e gráficos. |
-| `Task` | name, project_id | — |
-| `TimeEntry` | task_id, description, started_at, ended_at | sessão atômica. **Servidor é a fonte da verdade**: start grava `started_at` (`Time.current`), stop grava `ended_at`. |
-| `Tag` | name, active | entidade global de 1ª classe (tela própria). |
-| `Tagging` | tag_id, time_entry_id | join M:N. **Tag vive no TimeEntry, NÃO na Task.** |
+| `Client` | user_id, name, **rate_cents (default)**, currency (default BRL) | rate = taxa faturável/hora PADRÃO do cliente. Moeda mora aqui. `monetize :rate_cents, allow_nil: true, with_model_currency: :currency`. |
+| `Project` | user_id, name, color, client_id (opcional), **rate_cents (override, nulável)** | color → bolinha/gráficos. `rate_cents` preenchida SOBRESCREVE a do cliente; nula HERDA (Q22). client_id opcional (Q2). |
+| `Task` | user_id, name, project_id | sub-bucket do projeto (Q1). |
+| `TimeEntry` | user_id, **project_id (NULÁVEL)**, task_id (opcional), description (opcional), started_at, ended_at, **rate_cents + currency (SNAPSHOT)**, **billable (bool, null:false, default:true)** | sessão atômica. **Servidor = fonte da verdade**: start grava `started_at` (`Time.current`), stop grava `ended_at`. Ver invariantes abaixo. |
+| `Tag` | user_id, name, archived_at | entidade de 1ª classe por usuário (tela própria). |
+| `Tagging` | tag_id, time_entry_id | join M:N. **Tag vive no TimeEntry, NÃO na Task** (Q8). |
 
-- **Faturável** = `horas × client.rate`.
-- **Tudo pendurado num `User` único.**
+**Regras de domínio fechadas no grilling (ver grilling-progress.md):**
+- **`project_id` é NULÁVEL** (Q15): "entry sem projeto" é estado legítimo (start solto
+  estilo Clockify) → rate nil, agrupa em balde "(sem projeto)".
+- **Rate efetiva** = `project.rate_cents || project.client&.rate_cents` (override do
+  projeto, senão a do cliente, senão nil) (Q22).
+- **Snapshot (Q10/Q11)**: `TimeEntry.rate_cents`/`currency` CONGELAM a rate efetiva já
+  resolvida no `before_save` (recarimba quando `project_id` muda). Mudar rate do
+  cliente/projeto NÃO revaloriza histórico.
+- **`task_id`** só válida se `project_id` presente E `task.project_id ==
+  entry.project_id`; mexer/limpar `project_id` limpa `task_id` (Q16) — mesmo before_save.
+- **Faturável (Q18)** = `billable == true E rate presente` ? `horas × rate` : zero.
+  `billable=false` zera o amount mas mantém as HORAS. Default de `billable` segue a
+  rate (true se tem rate). Dinheiro arredonda no centavo (ROUND_HALF_UP).
+- **Timer único POR USUÁRIO (Q3/Q4/Q14)**: invariante "≤1 TimeEntry com `ended_at IS
+  NULL` **por user**", garantida por índice único parcial `UNIQUE(user_id) WHERE
+  ended_at IS NULL` + **stop EXPLÍCITO** (start com um rodando → **409**, sem stop
+  implícito; clientes re-sincronizam via `GET /timer`). Entry de duração zero é
+  descartado (Q15c). Sem coluna `current`/`running` — derivado de `ended_at IS NULL`.
+- **Arquivar = soft delete via `archived_at` (Q7)**, concern `Archivable`, SEM
+  default_scope, scopes explícitos. Hard-delete só p/ entidade sem entries. Vale p/
+  Client, Project, Task, Tag.
 
-## Timezone (§8 do doc)
+## Timezone (§8 do doc, revisado — Q23b)
 
-- Banco em UTC; `config.time_zone = "America/Sao_Paulo"` (já setado).
+- Banco em UTC. **Fuso é POR USUÁRIO**: `User.time_zone` (string, `null: false`,
+  default `"America/Sao_Paulo"`). Todo corte/exibição lê **`Current.user.time_zone`**
+  (não uma constante global).
 - Invisível no uso normal. Reaparece **só no corte do dia do relatório**:
-  agrupar convertendo pro fuso local **antes** de extrair a data —
-  `.in_time_zone("America/Sao_Paulo").to_date`, feito **no Ruby** (SQLite não tem
-  `AT TIME ZONE`).
+  agrupar convertendo pro fuso do user **antes** de extrair a data —
+  `.in_time_zone(Current.user.time_zone).to_date`, feito **no Ruby** (SQLite não tem
+  `AT TIME ZONE`). Entry pertence inteiro ao dia do `started_at`, sem fatiar (Q6).
+- UI de edição do fuso: pendente (campo + default agora; tela de preferências depois).
 
 ## Telas (a construir — ordem do brief; ver PDF pro detalhe de cada uma)
 
 Auth (feito) → **Clients → Projects → Tasks → Timer/TimeEntry → Tags → Relatórios →
 Export**. Timer global no topo (start/stop sempre acessível). Sidebar: Calendar,
 Dashboard, Reports, Projects, Clients, Tags (**sem Team**).
+
+Telas NOVAS abertas pelo grilling (a grillar/detalhar): **landing page pública**
+(pedir acesso — Q24), **área de admin** (lista de users + fila `AccessRequest` +
+aprovar/recusar — Q24), **preferências do usuário** (fuso etc. — Q23b). Possível
+**cobrança** ($1/mês — ver grilling-progress, ainda a decidir).
 
 Relatórios (forma do Clockify, sem dimensões de equipe): barras por dia + total,
 donut por projeto, group by (Project/Description/Client/Tag/Task), views Summary /
@@ -128,9 +189,12 @@ consultas e agrupamentos sobre as tabelas existentes.
 
 ## Fora de escopo (não construir)
 
-Invoicing/faturamento (export CSV é o entregável; fatura-se por fora) ·
-multi-usuário/equipe/compartilhamento/papéis · OAuth/senha/passkey · custom fields ·
-estimativas/forecast/budget de projeto · colunas Access/Progress das telas.
+Invoicing/faturamento dos CLIENTES do usuário (export CSV é o entregável; o usuário
+fatura seus clientes por fora) · **equipe/colaboração/compartilhamento/papéis
+colaborativos** (multi-usuário SIM, mas sem times — Q23) · OAuth/senha/passkey ·
+custom fields · estimativas/forecast/budget de projeto · colunas Access/Progress das
+telas. (NOTA: a cobrança $1/mês do PRÓPRIO Ponto pelos seus usuários é outra coisa —
+está EM DISCUSSÃO, não confundir com invoicing dos clientes do usuário.)
 
 ## Convenções
 
@@ -138,6 +202,10 @@ estimativas/forecast/budget de projeto · colunas Access/Progress das telas.
   controllers (vale aqui: o projeto é Rails + Stimulus).
 - **Vanilla Rails**: controllers finos chamando model rico; sem camada de services
   por padrão (ver STYLE.md "Controller and model interactions").
+- **Dinheiro = money-rails** (`monetize`, Ruby puro sem Node) — Q11/Q20. ⚠️ NUNCA
+  serializar objeto `Money` cru em JSON (vira hash gigante); nas rotas da extensão
+  expor escalares (`rate_cents` int + `currency` string).
+- **Export = .xlsx (caxlsx) + CSV** da mesma matriz de dados (Q20).
 - **REST/CRUD**: ação que não mapeia num verbo padrão vira um novo resource (ex.:
   `start`/`stop` do timer → resource próprio), não custom action.
 - Português nos comentários/textos de UI; código (nomes, API) em inglês.
