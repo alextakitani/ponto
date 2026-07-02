@@ -134,6 +134,53 @@ class ClientTest < ActiveSupport::TestCase
     assert_includes client.errors[:rate], "não é um valor válido"
   end
 
+  # --- Rate × currency: independente de ORDEM de atribuição (regressão) ---------
+  # O caller JSON pode mandar rate ANTES da currency (a ordem do hash de params).
+  # Se resolvêssemos cents no writer `rate=` (como antes), "150" com currency ainda
+  # BRL viraria 15000 cents; ao chegar a currency JPY (sem subunidade), o cents certo
+  # é 150. Agora o amount cru fica guardado e vira cents só no before_validation, com
+  # a currency JÁ definitiva — o resultado independe da ordem.
+  test "rate atribuída ANTES da currency resolve cents na moeda final (JPY)" do
+    client = @user.clients.new(name: "Yen")
+    client.rate = "150"        # rate primeiro
+    client.currency = "JPY"    # currency depois
+
+    assert client.valid?, client.errors.full_messages.to_sentence
+    # JPY não tem subunidade (0 decimais) → 150 é 150 cents, não 15000.
+    assert_equal 150, client.rate_cents
+  end
+
+  test "currency atribuída antes da rate dá o mesmo resultado (JPY)" do
+    client = @user.clients.new(name: "Yen2", currency: "JPY")
+    client.rate = "150"
+
+    assert client.valid?
+    assert_equal 150, client.rate_cents
+  end
+
+  test "trocar a currency depois recalcula os cents da rate crua (BRL→JPY)" do
+    client = @user.clients.new(name: "Muda", currency: "BRL")
+    client.rate = "150"
+    client.valid?
+    assert_equal 15000, client.rate_cents  # BRL: 2 decimais
+
+    client.currency = "JPY"
+    client.valid?
+    assert_equal 150, client.rate_cents    # JPY: 0 decimais
+  end
+
+  # --- Tradução do atributo `rate` (UX da mensagem de erro) --------------------
+  # `full_messages` humaniza o atributo: sem tradução vinha "Rate não é um valor
+  # válido" (inglês cru no meio do PT). Com o locale activerecord.client.rate a
+  # mensagem completa vira "Valor por hora não é um valor válido".
+  test "erro de rate usa o rótulo PT 'Valor por hora' na mensagem completa" do
+    client = @user.clients.new(name: "Rotulo", currency: "BRL")
+    client.rate = "abc"
+    client.valid?
+
+    assert_includes client.errors.full_messages, "Valor por hora não é um valor válido"
+  end
+
   # --- Encryption sanity (Q25c) -----------------------------------------------
 
   test "name não aparece em claro no SQL cru (criptografado at rest)" do

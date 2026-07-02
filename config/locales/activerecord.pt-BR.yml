@@ -1,0 +1,15 @@
+# Rótulos PT dos atributos de modelo (humanização em `full_messages`, labels de
+# form). Arquivo SEPARADO de propósito: o Rails carrega TODOS os YAML de
+# config/locales, e manter as chaves activerecord num arquivo próprio evita conflito
+# add/add no git com o `pt-BR.yml` da landing (mesmo top-level `pt-BR:`, chaves
+# diferentes). Sem isto, `errors.full_messages` humanizava o atributo em inglês cru
+# ("Rate não é um valor válido") no meio de uma UI pt-BR.
+pt-BR:
+  activerecord:
+    attributes:
+      client:
+        rate: "Valor por hora"
+      project:
+        # Project compartilha o parser de rate do Client (concern MonetizableRate) →
+        # a MESMA mensagem "não é um valor válido" precisa do mesmo rótulo PT.
+        rate: "Valor por hora"

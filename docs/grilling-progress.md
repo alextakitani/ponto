@@ -921,6 +921,20 @@ Conversa em **português**.
   o preço é seguro porque a aprovação é MANUAL (o admin controla quem entra e a
   expectativa criada). Construir billing antes de aprovar volume.
 
+- **Q80 — ÍCONES = LUCIDE, vendorizados como SVG inline. FECHADA.** (Alex, 02/07:
+  "use os ícones lucide no app onde fizer sentido".) Mecânica: **vendorizar só os
+  SVGs usados** (~15–20 ícones, licença ISC) como partials/arquivos + helper `icon`
+  pequeno — SVG inline com `currentColor` (segue os tokens claro/escuro de graça),
+  `aria-hidden` por padrão, tamanho por CSS. **SEM gem** (lucide-rails desatualiza
+  vs upstream; espírito Q7/Q17 de não puxar gem pra coisa trivial), **SEM JS** (o
+  pacote lucide.js é pra SPA — nosso uso é estático). Onde faz sentido: sidebar +
+  bottom tabs (ícone+label — mobile especialmente), menus ⋮ (more-vertical), ações
+  (archive/pencil/trash/plus/search), play/square pro timer (Fase 3), admin
+  (aprovar/recusar/suspender), estados vazios. Onde NÃO: landing (identidade
+  própria, review visual do Alex), texto corrido. Critério: ícone SEMPRE acompanha
+  label (Q63: hierarquia por tipografia; ícone é apoio, não substituto) exceto em
+  botões compactos com aria-label.
+
 - **Q78 — LICENÇA = O'Saasy (a mesma do fizzy). FECHADA.** (Alex, 02/07: "quero a
   mesma licença do fizzy. a pessoa não pode fazer um SaaS com o Ponto".)
   - **App Ponto**: licença **O'Saasy** — MIT-like + cláusula 2: proibido oferecer o
