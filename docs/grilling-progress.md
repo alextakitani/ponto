@@ -903,6 +903,24 @@ Conversa em **português**.
   SELF-HOSTAR (seção passo-a-passo honesta: clone → deploy Docker/Kamal → `ADMIN_EMAIL`
   + SMTP → primeiro login vira admin; apontando pro README como guia completo).
 
+- **Q79 — i18n pt-BR/EN na LANDING. FECHADA.** (Alex, 02/07: "precisa de i18n,
+  essa landing precisa ser português/inglês, bandeirinha pra trocar, default pega
+  o browser".) Escopo: a LANDING (não o app inteiro — UI interna segue português
+  por ora; expandir depois se precisar). Mecânica: Rails I18n com
+  `config/locales/{pt-BR,en}.yml`; **default = `Accept-Language` do browser**;
+  **seletor com bandeirinhas** (🇧🇷/🇺🇸) na landing troca via `?locale=` +
+  persistência em sessão. A copy PT canônica é a do copy-pass de 02/07 (revisão do
+  Alex: "o português estava terrível" — corrigido coloquialismo/anglicismo).
+
+- **Q77b — PREÇO PÚBLICO NA LANDING: "Ponto Cloud, US$ 1/mês". ADENDO à Q77.**
+  (Alex: "o pedir acesso tem que ficar claro que é pra minha instância — não quer
+  hospedar? use o ponto cloud apenas $1/mês".) A landing nomeia a instância
+  hospedada de **Ponto Cloud** e anuncia **US$ 1/mês** no CTA (hero + seção final),
+  deixando claro o par de caminhos: self-host (GitHub) vs Cloud (pedir acesso).
+  ⚠️ NOTA HONESTA: a COBRANÇA em si continua ADIADA/não construída (💤) — anunciar
+  o preço é seguro porque a aprovação é MANUAL (o admin controla quem entra e a
+  expectativa criada). Construir billing antes de aprovar volume.
+
 - **Q78 — LICENÇA = O'Saasy (a mesma do fizzy). FECHADA.** (Alex, 02/07: "quero a
   mesma licença do fizzy. a pessoa não pode fazer um SaaS com o Ponto".)
   - **App Ponto**: licença **O'Saasy** — MIT-like + cláusula 2: proibido oferecer o

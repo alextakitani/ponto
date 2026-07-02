@@ -1,5 +1,5 @@
-<% content_for :title, "Ponto — time tracker self-hosted pra quem fatura por hora" %>
-<% content_for :description, "Time tracker self-hosted pra quem cobra por hora: timer de 1 clique, relatórios que somam e export mensal em .xlsx/CSV que você manda como fatura." %>
+<% content_for :title, "Ponto — time tracker self-hosted para quem cobra por hora" %>
+<% content_for :description, "Time tracker self-hosted para quem cobra por hora: timer de um clique, relatórios claros e exportação mensal em .xlsx/CSV pronta para virar fatura." %>
 
 <div class="lp">
   <%# ── Cabeçalho: marca + acessos secundários (GitHub, entrar) ── %>
@@ -22,9 +22,9 @@
           Marque o ponto.<br>O relatório vira fatura.
         </h1>
         <p class="lp-hero__lede">
-          Pra quem cobra por hora: um timer de 1 clique, rate por cliente
-          e um export mensal que você manda como fatura. Roda no seu
-          servidor, seus dados na sua mão.
+          Feito para quem cobra por hora: timer de um clique, valor-hora
+          por cliente e uma exportação mensal pronta para virar fatura.
+          Roda no seu servidor — seus dados ficam com você.
         </p>
 
         <%# Contrato testado preservado: form "pedir acesso" (POST /access_requests)
@@ -33,7 +33,11 @@
           <% if @operator_setup_needed %>
             <%= render "shared/bootstrap_notice", css_class: "lp-notice" %>
           <% else %>
-            <p class="lp-cta__label">Peça acesso — o acesso é por convite.</p>
+            <p class="lp-cta__label">
+              Não quer hospedar? Use o <strong>Ponto Cloud</strong> — esta
+              instância, por apenas <strong>US$ 1/mês</strong>. O acesso é
+              por convite: peça o seu.
+            </p>
             <%= render "access_requests/form" %>
           <% end %>
         </div>
@@ -85,10 +89,11 @@
 
     <%# ═══════════════ TRÊS PROVAS (mockups reais) ═══════════════ %>
     <section class="lp-section" aria-labelledby="prova-h">
-      <h2 id="prova-h" class="lp-section__title">Do timer à fatura, num app só</h2>
+      <h2 id="prova-h" class="lp-section__title">Do timer à fatura, sem sair do app</h2>
       <p class="lp-section__sub muted">
-        Um clique no topo de toda tela. Catálogo Cliente&nbsp;→&nbsp;Projeto&nbsp;→&nbsp;Task,
-        rate por hora por cliente (BRL, EUR…). No fim do mês, o relatório exporta.
+        O timer fica no topo de todas as telas. Organize o trabalho em
+        Cliente&nbsp;→&nbsp;Projeto&nbsp;→&nbsp;Tarefa, defina o valor-hora de cada
+        cliente (em real, euro…) e, no fim do mês, exporte o relatório.
       </p>
 
       <div class="lp-proofs">
@@ -112,11 +117,11 @@
               </div>
             </div>
           </div>
-          <h3 class="lp-proof__title">Relatórios que somam</h3>
+          <h3 class="lp-proof__title">Relatórios que fecham o mês</h3>
           <p class="lp-proof__text muted">
-            Barras por dia, donut por projeto, group-by em 2 níveis.
-            Summary e Detailed. Export mensal <strong>.xlsx e CSV</strong> —
-            o entregável que vira fatura.
+            Horas por dia, distribuição por projeto e agrupamentos em dois
+            níveis — do resumo ao detalhe. Exporte em <strong>.xlsx ou CSV</strong>
+            e anexe direto à fatura.
           </p>
         </article>
 
@@ -140,8 +145,9 @@
             Extensão de Chrome <span class="lp-badge">em breve</span>
           </h3>
           <p class="lp-proof__text muted">
-            Start/stop do popup, sem trocar de aba. Mesma API do app — o
-            servidor continua a fonte da verdade.
+            Inicie e pare o timer direto do popup, sem trocar de aba.
+            É a mesma API do app — o servidor continua sendo a fonte
+            da verdade.
           </p>
         </article>
 
@@ -162,8 +168,8 @@
             CLI <code>ponto</code> <span class="lp-badge">em breve</span>
           </h3>
           <p class="lp-proof__text muted">
-            Comandos no terminal, saída JSON pros seus agentes de IA
-            (Claude e cia.). Mesmo token da extensão.
+            Comandos no terminal e saída JSON para agentes de IA, como o
+            Claude. Usa o mesmo token da extensão.
           </p>
         </article>
       </div>
@@ -174,9 +180,10 @@
       <div class="lp-frozen__copy">
         <h2 id="frozen-h" class="lp-section__title">O número de janeiro não muda em junho</h2>
         <p class="lp-section__sub muted">
-          Cada lançamento congela a rate do dia em que foi feito. Deu aumento
-          pro cliente? Só vale daqui pra frente — o histórico fica intacto,
-          e a fatura passada continua batendo.
+          Cada lançamento guarda o valor-hora do dia em que foi registrado.
+          Reajustou um cliente? O novo valor vale só daqui para a frente —
+          o histórico permanece intacto e as faturas antigas continuam
+          corretas.
         </p>
       </div>
       <div class="lp-frozen__proof" aria-hidden="true">
@@ -197,8 +204,8 @@
     <section class="lp-section" aria-labelledby="host-h">
       <h2 id="host-h" class="lp-section__title">Self-host em 4 passos</h2>
       <p class="lp-section__sub muted">
-        Uma app Rails, SQLite, zero Node. O repo já vem com Dockerfile e
-        config do Kamal. O
+        Uma única aplicação Rails com SQLite, sem Node. O repositório já
+        traz o Dockerfile e a configuração do Kamal — e o
         <%= link_to "README", "https://github.com/alextakitani/ponto#readme" %>
         é o guia completo.
       </p>
@@ -207,9 +214,10 @@
         <li class="lp-step">
           <span class="lp-step__n tabular-nums">1</span>
           <div>
-            <h3 class="lp-step__title">Clone do GitHub</h3>
+            <h3 class="lp-step__title">Clone o repositório</h3>
             <p class="lp-step__text muted">
-              <code>git clone</code> o repositório na sua máquina ou servidor.
+              <code>git clone</code> no seu servidor — ou na sua máquina,
+              para experimentar.
             </p>
           </div>
         </li>
@@ -227,20 +235,21 @@
         <li class="lp-step">
           <span class="lp-step__n tabular-nums">3</span>
           <div>
-            <h3 class="lp-step__title">Configure <code>ADMIN_EMAIL</code> + SMTP</h3>
+            <h3 class="lp-step__title">Configure <code>ADMIN_EMAIL</code> e SMTP</h3>
             <p class="lp-step__text muted">
-              O login é passwordless — um código de 6 dígitos por e-mail.
-              Aponte o SMTP nas credenciais e defina seu e-mail de admin.
+              O login é sem senha: um código de 6 dígitos chega por e-mail.
+              Configure o SMTP nas credenciais e defina o e-mail do
+              administrador.
             </p>
           </div>
         </li>
         <li class="lp-step">
           <span class="lp-step__n tabular-nums">4</span>
           <div>
-            <h3 class="lp-step__title">Primeiro acesso cria o admin</h3>
+            <h3 class="lp-step__title">O primeiro acesso cria o administrador</h3>
             <p class="lp-step__text muted">
-              Com o banco vazio, entrar com o <code>ADMIN_EMAIL</code> cria a
-              conta de admin. Daí você convida quem quiser.
+              Com o banco vazio, o primeiro login com o <code>ADMIN_EMAIL</code>
+              cria a conta de administrador. A partir dela, convide quem quiser.
             </p>
           </div>
         </li>
@@ -249,40 +258,43 @@
 
     <%# ═══════════════ STACK (argumento self-hoster) ═══════════════ %>
     <section class="lp-section lp-stack" aria-labelledby="stack-h">
-      <h2 id="stack-h" class="lp-section__title">Leve de operar num homelab</h2>
+      <h2 id="stack-h" class="lp-section__title">Leve de operar no seu homelab</h2>
       <ul class="lp-facts">
         <li class="lp-fact">
           <span class="lp-fact__k">Backup = 1 arquivo</span>
-          <span class="lp-fact__v muted">SQLite. Copiou o <code>.sqlite3</code>, fez backup.</span>
+          <span class="lp-fact__v muted">SQLite: fazer backup é copiar um único <code>.sqlite3</code>.</span>
         </li>
         <li class="lp-fact">
           <span class="lp-fact__k">Zero Node, zero build</span>
-          <span class="lp-fact__v muted">Rails 8 + Hotwire, importmap. Sem pipeline de JS.</span>
+          <span class="lp-fact__v muted">Rails 8 + Hotwire com importmap. Sem pipeline de JavaScript.</span>
         </li>
         <li class="lp-fact">
           <span class="lp-fact__k">Seus dados são seus</span>
-          <span class="lp-fact__v muted">Criptografados no disco. O admin da instância não vê o seu conteúdo.</span>
+          <span class="lp-fact__v muted">Criptografados em disco — nem o administrador da instância enxerga o seu conteúdo.</span>
         </li>
         <li class="lp-fact">
           <span class="lp-fact__k">Portabilidade sempre</span>
-          <span class="lp-fact__v muted">Export dos seus dados na hora que quiser — nada preso aqui.</span>
+          <span class="lp-fact__v muted">Exporte tudo o que é seu, quando quiser — nada fica preso aqui.</span>
         </li>
         <li class="lp-fact">
           <span class="lp-fact__k">Código aberto (O'Saasy)</span>
-          <span class="lp-fact__v muted">Leia, audite, mande PR. Self-hoste à vontade — só não pode revender como SaaS. <%= link_to "No GitHub", "https://github.com/alextakitani/ponto" %>.</span>
+          <span class="lp-fact__v muted">Leia, audite, contribua. Hospede onde quiser — apenas não revenda como SaaS. <%= link_to "Veja no GitHub", "https://github.com/alextakitani/ponto" %>.</span>
         </li>
         <li class="lp-fact">
-          <span class="lp-fact__k">Multi-usuário, sem times</span>
-          <span class="lp-fact__v muted">Cada conta é uma bolha isolada. Acesso por convite.</span>
+          <span class="lp-fact__k">Multiusuário, sem times</span>
+          <span class="lp-fact__v muted">Cada conta vive isolada das demais; o acesso é por convite.</span>
         </li>
       </ul>
     </section>
 
     <%# ═══════════════ CTA FINAL ═══════════════ %>
     <section class="lp-section lp-final" aria-labelledby="final-h">
-      <h2 id="final-h" class="lp-section__title">Comece pelo pedido de acesso</h2>
+      <h2 id="final-h" class="lp-section__title">Peça acesso ao Ponto Cloud</h2>
       <p class="lp-section__sub muted">
-        Manda seu e-mail. Se for aprovado, você recebe o convite por e-mail.
+        Não quer hospedar? Use esta instância por <strong>US$ 1/mês</strong>.
+        Deixe seu e-mail — pedidos aprovados recebem o convite na caixa
+        de entrada. Prefere hospedar você mesmo? O código está no
+        <%= link_to "GitHub", "https://github.com/alextakitani/ponto" %>.
       </p>
       <div class="lp-final__cta">
         <% if @operator_setup_needed %>
