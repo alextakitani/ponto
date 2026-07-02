@@ -11,32 +11,54 @@
   <td class="admin__actions">
     <%# menu_controller: fecha ao clicar fora / Escape (o <details> nativo não faz). %>
     <details class="admin__menu" data-controller="menu">
-      <summary class="btn btn--quiet">Ações</summary>
+      <summary class="btn btn--quiet">
+        <%= icon("ellipsis-vertical") %>
+        Ações
+      </summary>
       <div class="admin__menu-items">
         <%# Reenviar convite: só pra convidado (nunca entrou). %>
         <% if user.invited? %>
-          <%= button_to "Reenviar convite", admin_user_invitation_path(user), class: "btn btn--quiet" %>
+          <%= button_to admin_user_invitation_path(user), class: "btn btn--quiet" do %>
+            <%= icon("mail") %>
+            Reenviar convite
+          <% end %>
         <% end %>
 
-        <%# Suspender / Reativar. %>
+        <%# Suspender / Reativar (user-minus/user-plus — par mais claro que pause/play
+            pra uma AÇÃO sobre conta). %>
         <% if user.suspended? %>
-          <%= button_to "Reativar", admin_user_suspension_path(user), method: :delete, class: "btn btn--quiet" %>
+          <%= button_to admin_user_suspension_path(user), method: :delete, class: "btn btn--quiet" do %>
+            <%= icon("user-plus") %>
+            Reativar
+          <% end %>
         <% else %>
-          <%= button_to "Suspender", admin_user_suspension_path(user), class: "btn btn--quiet" %>
+          <%= button_to admin_user_suspension_path(user), class: "btn btn--quiet" do %>
+            <%= icon("user-minus") %>
+            Suspender
+          <% end %>
         <% end %>
 
         <%# Promover / Rebaixar. %>
         <% if user.admin? %>
-          <%= button_to "Rebaixar", admin_user_admin_role_path(user), method: :delete, class: "btn btn--quiet" %>
+          <%= button_to admin_user_admin_role_path(user), method: :delete, class: "btn btn--quiet" do %>
+            <%= icon("shield-off") %>
+            Rebaixar
+          <% end %>
         <% else %>
-          <%= button_to "Promover a admin", admin_user_admin_role_path(user), class: "btn btn--quiet" %>
+          <%= button_to admin_user_admin_role_path(user), class: "btn btn--quiet" do %>
+            <%= icon("shield") %>
+            Promover a admin
+          <% end %>
         <% end %>
 
         <%# Deletar: nunca A SI MESMO (a policy também barra). Expande a confirmação
             por digitação do e-mail (Q33), sem JS. %>
         <% if user != current_user %>
           <details class="admin__confirm">
-            <summary class="btn btn--danger">Deletar…</summary>
+            <summary class="btn btn--danger">
+              <%= icon("trash-2") %>
+              Deletar…
+            </summary>
             <div class="admin__confirm-box">
               <p class="muted">
                 Isso apaga a conta e TODOS os dados dela, de forma permanente.

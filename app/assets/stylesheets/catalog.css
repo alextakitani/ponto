@@ -27,12 +27,25 @@
 }
 
 .page-search {
+  position: relative;
   flex: 1;
   max-width: 22rem;
 }
 
 .page-search input {
   margin: 0;
+  /* Abre espaço pro ícone de busca (16px) embutido à esquerda. */
+  padding-left: calc(var(--space-3) + 16px + var(--space-2));
+}
+
+/* Ícone de busca decorativo dentro do campo (o input tem aria-label). */
+.page-search > .icon {
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  translate: 0 -50%;
+  color: var(--color-text-subtle);
+  pointer-events: none;
 }
 
 /* --- Tabela de dados densa (Q63: sem card por linha) ------------------------ */
@@ -135,6 +148,11 @@
 
 .empty-state h2 {
   font-size: var(--text-xl);
+}
+
+/* Ícone grande e discreto do empty state (Q80) — usar com class: "icon--lg". */
+.empty-state > .icon {
+  color: var(--color-text-subtle);
 }
 
 /* --- Formulários de domínio ------------------------------------------------- */

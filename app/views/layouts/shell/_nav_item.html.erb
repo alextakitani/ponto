@@ -1,12 +1,15 @@
 <%# Item da sidebar. `active` = tem tela nesta fatia (vira link real); senão
-    renderiza DESABILITADO com badge "em breve" (sem link morto; aria-disabled). %>
+    renderiza DESABILITADO com badge "em breve" (sem link morto; aria-disabled).
+    `icon_name` = ícone Lucide de apoio, sempre junto do label (Q63/Q80). %>
 <% if active %>
   <%= link_to href, class: "shell-nav__item #{'shell-nav__item--current' if current}",
         aria: { current: ("page" if current) } do %>
+    <%= icon(icon_name) %>
     <%= label %>
   <% end %>
 <% else %>
   <span class="shell-nav__item shell-nav__item--disabled" aria-disabled="true">
+    <%= icon(icon_name) %>
     <%= label %>
     <span class="shell-badge">em breve</span>
   </span>

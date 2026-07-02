@@ -8,26 +8,32 @@
     <%# Sidebar fixa (desktop). Nav de trabalho no topo; rodapé = Preferências/Admin/
         Sair (não são navegação de trabalho — Q65b). Só "Clientes" tem tela nesta
         fatia; os demais renderizam DESABILITADOS com badge "em breve" (sem link
-        morto; aria-disabled). %>
+        morto; aria-disabled). Ícones Lucide sempre com label (Q80). %>
     <aside class="shell-sidebar">
       <div class="shell-sidebar__brand">
         <%= render "shared/logo_mark", size: 22 %>Ponto
       </div>
 
       <nav class="shell-nav" aria-label="Navegação principal">
-        <%= render "layouts/shell/nav_item", label: "Tracker",    active: false, current: false %>
-        <%= render "layouts/shell/nav_item", label: "Relatórios", active: false, current: false %>
-        <%= render "layouts/shell/nav_item", label: "Projetos",   active: true,  current: current_page?(projects_path), href: projects_path %>
-        <%= render "layouts/shell/nav_item", label: "Clientes",   active: true,  current: current_page?(clients_path), href: clients_path %>
-        <%= render "layouts/shell/nav_item", label: "Tags",       active: false, current: false %>
+        <%= render "layouts/shell/nav_item", label: "Tracker",    icon_name: "timer",        active: false, current: false %>
+        <%= render "layouts/shell/nav_item", label: "Relatórios", icon_name: "chart-column", active: false, current: false %>
+        <%= render "layouts/shell/nav_item", label: "Projetos",   icon_name: "folder",       active: true,  current: current_page?(projects_path), href: projects_path %>
+        <%= render "layouts/shell/nav_item", label: "Clientes",   icon_name: "users",        active: true,  current: current_page?(clients_path), href: clients_path %>
+        <%= render "layouts/shell/nav_item", label: "Tags",       icon_name: "tags",         active: false, current: false %>
       </nav>
 
       <div class="shell-sidebar__footer">
-        <%= render "layouts/shell/nav_item", label: "Preferências", active: false, current: false %>
+        <%= render "layouts/shell/nav_item", label: "Preferências", icon_name: "settings", active: false, current: false %>
         <% if current_user.admin? %>
-          <%= link_to "Admin", admin_root_path, class: "shell-nav__item" %>
+          <%= link_to admin_root_path, class: "shell-nav__item" do %>
+            <%= icon("shield") %>
+            Admin
+          <% end %>
         <% end %>
-        <%= button_to "Sair", sign_out_path, method: :delete, class: "shell-nav__item shell-nav__item--button" %>
+        <%= button_to sign_out_path, method: :delete, class: "shell-nav__item shell-nav__item--button" do %>
+          <%= icon("log-out") %>
+          Sair
+        <% end %>
       </div>
     </aside>
 
@@ -49,24 +55,38 @@
         Projetos · Mais. "Mais" abre uma lista (via <details>, zero JS) com Clientes ·
         Tags · Preferências · Admin(se admin) · Sair. Os sem tela = "em breve". %>
     <nav class="shell-tabs" aria-label="Navegação mobile">
-      <%= render "layouts/shell/tab_item", label: "Tracker",    active: false, current: false %>
-      <%= render "layouts/shell/tab_item", label: "Relatórios", active: false, current: false %>
-      <%= render "layouts/shell/tab_item", label: "Projetos",   active: true,  current: current_page?(projects_path), href: projects_path %>
+      <%= render "layouts/shell/tab_item", label: "Tracker",    icon_name: "timer",        active: false, current: false %>
+      <%= render "layouts/shell/tab_item", label: "Relatórios", icon_name: "chart-column", active: false, current: false %>
+      <%= render "layouts/shell/tab_item", label: "Projetos",   icon_name: "folder",       active: true,  current: current_page?(projects_path), href: projects_path %>
 
       <details class="shell-tabs__more">
-        <summary class="shell-tabs__item">Mais</summary>
+        <summary class="shell-tabs__item">
+          <%= icon("menu") %>
+          Mais
+        </summary>
         <div class="shell-tabs__more-menu">
-          <%= link_to "Clientes", clients_path, class: "shell-nav__item" %>
+          <%= link_to clients_path, class: "shell-nav__item" do %>
+            <%= icon("users") %>
+            Clientes
+          <% end %>
           <span class="shell-nav__item shell-nav__item--disabled" aria-disabled="true">
+            <%= icon("tags") %>
             Tags <span class="shell-badge">em breve</span>
           </span>
           <span class="shell-nav__item shell-nav__item--disabled" aria-disabled="true">
+            <%= icon("settings") %>
             Preferências <span class="shell-badge">em breve</span>
           </span>
           <% if current_user.admin? %>
-            <%= link_to "Admin", admin_root_path, class: "shell-nav__item" %>
+            <%= link_to admin_root_path, class: "shell-nav__item" do %>
+              <%= icon("shield") %>
+              Admin
+            <% end %>
           <% end %>
-          <%= button_to "Sair", sign_out_path, method: :delete, class: "shell-nav__item shell-nav__item--button" %>
+          <%= button_to sign_out_path, method: :delete, class: "shell-nav__item shell-nav__item--button" do %>
+            <%= icon("log-out") %>
+            Sair
+          <% end %>
         </div>
       </details>
     </nav>
