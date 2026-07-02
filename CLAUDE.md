@@ -2,7 +2,7 @@
 
 Time-tracker self-hosted **multi-usuário, sem colaboração/times** (cada usuário tem
 sua própria bolha isolada de dados), no espírito Clockify/Toggl mas enxuto, pra rodar
-no homelab e ser publicado **open source**. Rails 8 + Hotwire + SQLite.
+no homelab e ser publicado com **código aberto (licença O'Saasy — proibido revender como SaaS; ver `LICENSE.md`, Q78)**. Rails 8 + Hotwire + SQLite.
 
 > ⚠️ **Esta CLAUDE.md foi reconciliada (02/07/2026) com as decisões de design do
 > grilling — que está COMPLETO (Q1–Q76, todos os ramos fechados).** A fonte de
