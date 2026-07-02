@@ -64,33 +64,74 @@ class ClientTest < ActiveSupport::TestCase
     assert_not client.valid?
   end
 
-  # --- Rate pt-BR independente de locale (regressão de bug real) --------------
-  # O form interno é sempre pt-BR ("150,00"), mas o validator do money-rails segue
-  # o locale do request (Money.locale_backend = :i18n). Sob locale :en, "150,00"
-  # era REJEITADO. Normalizamos o input no writer pra o parsing não depender do locale.
+  # --- Rate: parsing determinístico, INDEPENDENTE de locale (regressão) --------
+  # O form interno é sempre pt-BR ("150,00"), mas o validator do money-rails segue o
+  # locale do request (Money.locale_backend = :i18n). No locale DEFAULT (:pt-BR) o
+  # gem lia "150.00" (nosso decimal canônico) como milhar e REJEITAVA com
+  # :invalid_currency → render do erro estourava I18n::MissingTranslationData → 500.
+  # Agora o writer `rate=` faz parsing próprio (heurística do último separador) e
+  # atribui `rate_cents` direto, sem NUNCA delegar string crua pro money-rails.
 
-  test "rate pt-BR '150,00' vira 15000 cents E é válida mesmo sob locale :en" do
-    I18n.with_locale(:en) do
-      client = @user.clients.new(name: "PtBr", currency: "BRL")
-      client.rate = "150,00"
+  # 1) RED contra o código antigo: sob o locale DEFAULT (sem with_locale) o form
+  # pt-BR tem que ser aceito e virar 15000 cents.
+  test "rate pt-BR '150,00' é válida e vira 15000 cents no locale DEFAULT" do
+    client = @user.clients.new(name: "Default", currency: "BRL")
+    client.rate = "150,00"
 
-      assert client.valid?, client.errors.full_messages.to_sentence
-      assert_equal 15000, client.rate_cents
+    assert client.valid?, client.errors.full_messages.to_sentence
+    assert_equal 15000, client.rate_cents
+  end
+
+  # 2) Tabela canônica: o MESMO input dá o MESMO resultado nos dois locales — o
+  # parsing não pode depender do locale do request.
+  RATE_CASES = {
+    "150,00"    => 15000,   # decimal pt-BR
+    "150.00"    => 15000,   # decimal en (ponto)
+    "1.500,00"  => 150000,  # milhar pt-BR
+    "1,500.00"  => 150000,  # milhar en
+    "1500"      => 150000,  # inteiro puro
+    "1.500"     => 150000,  # ponto como MILHAR (não decimal): 1500
+    "150,5"     => 15050,   # 1 dígito decimal
+    ""          => nil,     # vazio = sem taxa
+    nil         => nil      # nil = sem taxa
+  }.freeze
+
+  test "tabela de rate: mesmo cents em :pt-BR e :en (parsing independente de locale)" do
+    [ :"pt-BR", :en ].each do |locale|
+      I18n.with_locale(locale) do
+        RATE_CASES.each do |input, expected_cents|
+          client = @user.clients.new(name: "Case-#{locale}-#{input.inspect}", currency: "BRL")
+          client.rate = input
+
+          assert client.valid?, "[#{locale}] #{input.inspect}: #{client.errors.full_messages.to_sentence}"
+          if expected_cents.nil?
+            assert_nil client.rate_cents, "[#{locale}] #{input.inspect} devia virar nil"
+          else
+            assert_equal expected_cents, client.rate_cents,
+              "[#{locale}] #{input.inspect} devia virar #{expected_cents} cents"
+          end
+        end
+      end
     end
   end
 
-  test "rate com milhar pt-BR '1.500,50' vira 150050 cents" do
-    client = @user.clients.new(name: "Milhar", currency: "BRL")
-    client.rate = "1.500,50"
+  # 3) Entrada não-parseável: inválida com a mensagem PT, SEM levantar exceção.
+  test "rate não-parseável é inválida com mensagem PT (sem 500)" do
+    [ "abc", "12,34,56" ].each do |bad|
+      client = @user.clients.new(name: "Bad-#{bad}", currency: "BRL")
 
-    assert_equal 150050, client.rate_cents
+      assert_nothing_raised { client.rate = bad }
+      assert_not client.valid?, "#{bad.inspect} deveria ser inválido"
+      assert_includes client.errors[:rate], "não é um valor válido"
+    end
   end
 
-  test "rate estilo ponto-decimal '150.00' continua funcionando" do
-    client = @user.clients.new(name: "Ponto", currency: "BRL")
-    client.rate = "150.00"
+  test "rate negativa é inválida" do
+    client = @user.clients.new(name: "Negativa", currency: "BRL")
+    client.rate = "-150,00"
 
-    assert_equal 15000, client.rate_cents
+    assert_not client.valid?
+    assert_includes client.errors[:rate], "não é um valor válido"
   end
 
   # --- Encryption sanity (Q25c) -----------------------------------------------
