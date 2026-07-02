@@ -1,15 +1,16 @@
-<% content_for :title, "Ponto — time tracker self-hosted para quem cobra por hora" %>
-<% content_for :description, "Time tracker self-hosted para quem cobra por hora: timer de um clique, relatórios claros e exportação mensal em .xlsx/CSV pronta para virar fatura." %>
+<% content_for :title, t("landing.meta.title") %>
+<% content_for :description, t("landing.meta.description") %>
 
 <div class="lp">
-  <%# ── Cabeçalho: marca + acessos secundários (GitHub, entrar) ── %>
+  <%# ── Cabeçalho: marca + acessos secundários (GitHub, entrar) + idioma ── %>
   <header class="lp-head">
     <a class="lp-head__brand" href="#topo">
       <span class="lp-mark" aria-hidden="true"></span>Ponto
     </a>
-    <nav class="lp-head__nav" aria-label="Links">
-      <%= link_to "GitHub", "https://github.com/alextakitani/ponto", class: "lp-head__link" %>
-      <%= link_to "Entrar", sign_in_path, class: "lp-head__link" %>
+    <nav class="lp-head__nav" aria-label="<%= t("landing.nav.links_label") %>">
+      <%= render "shared/locale_switcher" %>
+      <%= link_to t("landing.nav.github"), "https://github.com/alextakitani/ponto", class: "lp-head__link" %>
+      <%= link_to t("landing.nav.sign_in"), sign_in_path, class: "lp-head__link" %>
     </nav>
   </header>
 
@@ -17,14 +18,12 @@
     <%# ═══════════════ HERO ═══════════════ %>
     <section class="lp-hero">
       <div class="lp-hero__pitch">
-        <p class="lp-eyebrow">Time tracker self-hosted</p>
+        <p class="lp-eyebrow"><%= t("landing.hero.eyebrow") %></p>
         <h1 class="lp-hero__title">
-          Marque o ponto.<br>O relatório vira fatura.
+          <%= t("landing.hero.title_html") %>
         </h1>
         <p class="lp-hero__lede">
-          Feito para quem cobra por hora: timer de um clique, valor-hora
-          por cliente e uma exportação mensal pronta para virar fatura.
-          Roda no seu servidor — seus dados ficam com você.
+          <%= t("landing.hero.lede") %>
         </p>
 
         <%# Contrato testado preservado: form "pedir acesso" (POST /access_requests)
@@ -34,9 +33,7 @@
             <%= render "shared/bootstrap_notice", css_class: "lp-notice" %>
           <% else %>
             <p class="lp-cta__label">
-              Não quer hospedar? Use o <strong>Ponto Cloud</strong> — esta
-              instância, por apenas <strong>US$ 1/mês</strong>. O acesso é
-              por convite: peça o seu.
+              <%= t("landing.cloud.pitch_html") %>
             </p>
             <%= render "access_requests/form" %>
           <% end %>
@@ -49,29 +46,29 @@
           <div class="lp-app__bar">
             <span class="lp-app__dot lp-app__dot--live"></span>
             <div class="lp-app__field">
-              <span class="lp-app__proj"><span class="lp-swatch lp-swatch--a"></span>Kubernetes homelab</span>
-              <span class="lp-app__desc">migração do ingress</span>
+              <span class="lp-app__proj"><span class="lp-swatch lp-swatch--a"></span><%= t("landing.mockups.tracker.project_a") %></span>
+              <span class="lp-app__desc"><%= t("landing.mockups.tracker.desc_running") %></span>
             </div>
             <span class="lp-clock tabular-nums">01:47:12</span>
-            <button class="lp-app__stop" type="button" tabindex="-1">Parar</button>
+            <button class="lp-app__stop" type="button" tabindex="-1"><%= t("landing.mockups.tracker.stop") %></button>
           </div>
 
           <ul class="lp-app__list">
             <li class="lp-row">
-              <span class="lp-row__proj"><span class="lp-swatch lp-swatch--a"></span>Kubernetes homelab</span>
-              <span class="lp-row__desc muted">certificado wildcard</span>
+              <span class="lp-row__proj"><span class="lp-swatch lp-swatch--a"></span><%= t("landing.mockups.tracker.project_a") %></span>
+              <span class="lp-row__desc muted"><%= t("landing.mockups.tracker.desc_cert") %></span>
               <span class="lp-row__dur tabular-nums">2:10:00</span>
               <span class="lp-row__amt tabular-nums">R$&nbsp;260,00</span>
             </li>
             <li class="lp-row">
-              <span class="lp-row__proj"><span class="lp-swatch lp-swatch--b"></span>App do cliente</span>
-              <span class="lp-row__desc muted">code review</span>
+              <span class="lp-row__proj"><span class="lp-swatch lp-swatch--b"></span><%= t("landing.mockups.tracker.project_b") %></span>
+              <span class="lp-row__desc muted"><%= t("landing.mockups.tracker.desc_review") %></span>
               <span class="lp-row__dur tabular-nums">0:45:00</span>
               <span class="lp-row__amt tabular-nums">€&nbsp;60,00</span>
             </li>
             <li class="lp-row">
-              <span class="lp-row__proj"><span class="lp-swatch lp-swatch--c"></span>Consultoria</span>
-              <span class="lp-row__desc muted">reunião de escopo</span>
+              <span class="lp-row__proj"><span class="lp-swatch lp-swatch--c"></span><%= t("landing.mockups.tracker.project_c") %></span>
+              <span class="lp-row__desc muted"><%= t("landing.mockups.tracker.desc_scope") %></span>
               <span class="lp-row__dur tabular-nums">1:00:00</span>
               <span class="lp-row__amt tabular-nums">R$&nbsp;180,00</span>
             </li>
@@ -89,11 +86,9 @@
 
     <%# ═══════════════ TRÊS PROVAS (mockups reais) ═══════════════ %>
     <section class="lp-section" aria-labelledby="prova-h">
-      <h2 id="prova-h" class="lp-section__title">Do timer à fatura, sem sair do app</h2>
+      <h2 id="prova-h" class="lp-section__title"><%= t("landing.proofs.heading") %></h2>
       <p class="lp-section__sub muted">
-        O timer fica no topo de todas as telas. Organize o trabalho em
-        Cliente&nbsp;→&nbsp;Projeto&nbsp;→&nbsp;Tarefa, defina o valor-hora de cada
-        cliente (em real, euro…) e, no fim do mês, exporte o relatório.
+        <%= t("landing.proofs.sub_html") %>
       </p>
 
       <div class="lp-proofs">
@@ -117,11 +112,9 @@
               </div>
             </div>
           </div>
-          <h3 class="lp-proof__title">Relatórios que fecham o mês</h3>
+          <h3 class="lp-proof__title"><%= t("landing.proofs.reports.title") %></h3>
           <p class="lp-proof__text muted">
-            Horas por dia, distribuição por projeto e agrupamentos em dois
-            níveis — do resumo ao detalhe. Exporte em <strong>.xlsx ou CSV</strong>
-            e anexe direto à fatura.
+            <%= t("landing.proofs.reports.text_html") %>
           </p>
         </article>
 
@@ -131,23 +124,21 @@
             <div class="lp-popup">
               <div class="lp-popup__head">
                 <span class="lp-mark lp-mark--sm" aria-hidden="true"></span>
-                <span class="lp-popup__title">Ponto</span>
+                <span class="lp-popup__title"><%= t("landing.mockups.extension.title") %></span>
               </div>
               <div class="lp-popup__timer">
                 <span class="lp-swatch lp-swatch--b"></span>
-                <span class="lp-popup__proj">App do cliente</span>
+                <span class="lp-popup__proj"><%= t("landing.mockups.extension.project") %></span>
                 <span class="lp-clock lp-clock--sm tabular-nums">00:24:08</span>
               </div>
-              <button class="lp-popup__btn" type="button" tabindex="-1">Parar timer</button>
+              <button class="lp-popup__btn" type="button" tabindex="-1"><%= t("landing.mockups.extension.stop") %></button>
             </div>
           </div>
           <h3 class="lp-proof__title">
-            Extensão de Chrome <span class="lp-badge">em breve</span>
+            <%= t("landing.proofs.extension.title") %> <span class="lp-badge"><%= t("landing.proofs.extension.badge") %></span>
           </h3>
           <p class="lp-proof__text muted">
-            Inicie e pare o timer direto do popup, sem trocar de aba.
-            É a mesma API do app — o servidor continua sendo a fonte
-            da verdade.
+            <%= t("landing.proofs.extension.text") %>
           </p>
         </article>
 
@@ -158,18 +149,17 @@
               <div class="lp-term__bar">
                 <span class="lp-term__tl"></span><span class="lp-term__tl"></span><span class="lp-term__tl"></span>
               </div>
-              <pre class="lp-term__body"><span class="lp-term__ps">$</span> ponto timer start --project kube
-<span class="lp-term__ok">ok</span> timer correndo · Kubernetes homelab
-<span class="lp-term__ps">$</span> ponto timer show --jq .data.elapsed
-"01:47:12"</pre>
+              <pre class="lp-term__body"><span class="lp-term__ps">$</span> <%= t("landing.mockups.terminal.cmd1") %>
+<span class="lp-term__ok"><%= t("landing.mockups.terminal.status") %></span><%= t("landing.mockups.terminal.result1") %>
+<span class="lp-term__ps">$</span> <%= t("landing.mockups.terminal.cmd2") %>
+<%= t("landing.mockups.terminal.out2") %></pre>
             </div>
           </div>
           <h3 class="lp-proof__title">
-            CLI <code>ponto</code> <span class="lp-badge">em breve</span>
+            <%= t("landing.proofs.cli.title") %> <code>ponto</code> <span class="lp-badge"><%= t("landing.proofs.cli.badge") %></span>
           </h3>
           <p class="lp-proof__text muted">
-            Comandos no terminal e saída JSON para agentes de IA, como o
-            Claude. Usa o mesmo token da extensão.
+            <%= t("landing.proofs.cli.text") %>
           </p>
         </article>
       </div>
@@ -178,78 +168,66 @@
     <%# ═══════════════ RATE CONGELADA ═══════════════ %>
     <section class="lp-section lp-frozen" aria-labelledby="frozen-h">
       <div class="lp-frozen__copy">
-        <h2 id="frozen-h" class="lp-section__title">O número de janeiro não muda em junho</h2>
+        <h2 id="frozen-h" class="lp-section__title"><%= t("landing.frozen.heading") %></h2>
         <p class="lp-section__sub muted">
-          Cada lançamento guarda o valor-hora do dia em que foi registrado.
-          Reajustou um cliente? O novo valor vale só daqui para a frente —
-          o histórico permanece intacto e as faturas antigas continuam
-          corretas.
+          <%= t("landing.frozen.sub") %>
         </p>
       </div>
       <div class="lp-frozen__proof" aria-hidden="true">
         <div class="lp-freeze-row">
           <span class="lp-freeze-row__when tabular-nums">jan</span>
           <span class="lp-freeze-row__rate tabular-nums">R$&nbsp;120,00/h</span>
-          <span class="lp-lock" title="congelado">🔒</span>
+          <span class="lp-lock" title="<%= t("landing.frozen.lock_title") %>">🔒</span>
         </div>
         <div class="lp-freeze-row">
           <span class="lp-freeze-row__when tabular-nums">jun</span>
           <span class="lp-freeze-row__rate tabular-nums">R$&nbsp;150,00/h</span>
-          <span class="lp-freeze-row__now">rate atual</span>
+          <span class="lp-freeze-row__now"><%= t("landing.frozen.now") %></span>
         </div>
       </div>
     </section>
 
     <%# ═══════════════ SELF-HOST (didático e honesto) ═══════════════ %>
     <section class="lp-section" aria-labelledby="host-h">
-      <h2 id="host-h" class="lp-section__title">Self-host em 4 passos</h2>
+      <h2 id="host-h" class="lp-section__title"><%= t("landing.host.heading") %></h2>
       <p class="lp-section__sub muted">
-        Uma única aplicação Rails com SQLite, sem Node. O repositório já
-        traz o Dockerfile e a configuração do Kamal — e o
-        <%= link_to "README", "https://github.com/alextakitani/ponto#readme" %>
-        é o guia completo.
+        <%= t("landing.host.sub_html", readme_link: link_to(t("landing.host.readme"), "https://github.com/alextakitani/ponto#readme")) %>
       </p>
 
       <ol class="lp-steps">
         <li class="lp-step">
           <span class="lp-step__n tabular-nums">1</span>
           <div>
-            <h3 class="lp-step__title">Clone o repositório</h3>
+            <h3 class="lp-step__title"><%= t("landing.host.steps.clone.title") %></h3>
             <p class="lp-step__text muted">
-              <code>git clone</code> no seu servidor — ou na sua máquina,
-              para experimentar.
+              <%= t("landing.host.steps.clone.text_html") %>
             </p>
           </div>
         </li>
         <li class="lp-step">
           <span class="lp-step__n tabular-nums">2</span>
           <div>
-            <h3 class="lp-step__title">Deploy com Docker ou Kamal</h3>
+            <h3 class="lp-step__title"><%= t("landing.host.steps.deploy.title") %></h3>
             <p class="lp-step__text muted">
-              <code>kamal setup</code> (ou <code>docker build</code> na mão) —
-              o <code>Dockerfile</code> e o <code>config/deploy.yml</code> já
-              estão no repo.
+              <%= t("landing.host.steps.deploy.text_html") %>
             </p>
           </div>
         </li>
         <li class="lp-step">
           <span class="lp-step__n tabular-nums">3</span>
           <div>
-            <h3 class="lp-step__title">Configure <code>ADMIN_EMAIL</code> e SMTP</h3>
+            <h3 class="lp-step__title"><%= t("landing.host.steps.configure.title_html") %></h3>
             <p class="lp-step__text muted">
-              O login é sem senha: um código de 6 dígitos chega por e-mail.
-              Configure o SMTP nas credenciais e defina o e-mail do
-              administrador.
+              <%= t("landing.host.steps.configure.text") %>
             </p>
           </div>
         </li>
         <li class="lp-step">
           <span class="lp-step__n tabular-nums">4</span>
           <div>
-            <h3 class="lp-step__title">O primeiro acesso cria o administrador</h3>
+            <h3 class="lp-step__title"><%= t("landing.host.steps.bootstrap.title") %></h3>
             <p class="lp-step__text muted">
-              Com o banco vazio, o primeiro login com o <code>ADMIN_EMAIL</code>
-              cria a conta de administrador. A partir dela, convide quem quiser.
+              <%= t("landing.host.steps.bootstrap.text_html") %>
             </p>
           </div>
         </li>
@@ -258,43 +236,40 @@
 
     <%# ═══════════════ STACK (argumento self-hoster) ═══════════════ %>
     <section class="lp-section lp-stack" aria-labelledby="stack-h">
-      <h2 id="stack-h" class="lp-section__title">Leve de operar no seu homelab</h2>
+      <h2 id="stack-h" class="lp-section__title"><%= t("landing.stack.heading") %></h2>
       <ul class="lp-facts">
         <li class="lp-fact">
-          <span class="lp-fact__k">Backup = 1 arquivo</span>
-          <span class="lp-fact__v muted">SQLite: fazer backup é copiar um único <code>.sqlite3</code>.</span>
+          <span class="lp-fact__k"><%= t("landing.stack.backup.key") %></span>
+          <span class="lp-fact__v muted"><%= t("landing.stack.backup.value_html") %></span>
         </li>
         <li class="lp-fact">
-          <span class="lp-fact__k">Zero Node, zero build</span>
-          <span class="lp-fact__v muted">Rails 8 + Hotwire com importmap. Sem pipeline de JavaScript.</span>
+          <span class="lp-fact__k"><%= t("landing.stack.no_node.key") %></span>
+          <span class="lp-fact__v muted"><%= t("landing.stack.no_node.value") %></span>
         </li>
         <li class="lp-fact">
-          <span class="lp-fact__k">Seus dados são seus</span>
-          <span class="lp-fact__v muted">Criptografados em disco — nem o administrador da instância enxerga o seu conteúdo.</span>
+          <span class="lp-fact__k"><%= t("landing.stack.your_data.key") %></span>
+          <span class="lp-fact__v muted"><%= t("landing.stack.your_data.value") %></span>
         </li>
         <li class="lp-fact">
-          <span class="lp-fact__k">Portabilidade sempre</span>
-          <span class="lp-fact__v muted">Exporte tudo o que é seu, quando quiser — nada fica preso aqui.</span>
+          <span class="lp-fact__k"><%= t("landing.stack.portability.key") %></span>
+          <span class="lp-fact__v muted"><%= t("landing.stack.portability.value") %></span>
         </li>
         <li class="lp-fact">
-          <span class="lp-fact__k">Código aberto (O'Saasy)</span>
-          <span class="lp-fact__v muted">Leia, audite, contribua. Hospede onde quiser — apenas não revenda como SaaS. <%= link_to "Veja no GitHub", "https://github.com/alextakitani/ponto" %>.</span>
+          <span class="lp-fact__k"><%= t("landing.stack.open_source.key") %></span>
+          <span class="lp-fact__v muted"><%= t("landing.stack.open_source.value_html", github_link: link_to(t("landing.stack.open_source.github_link"), "https://github.com/alextakitani/ponto")) %></span>
         </li>
         <li class="lp-fact">
-          <span class="lp-fact__k">Multiusuário, sem times</span>
-          <span class="lp-fact__v muted">Cada conta vive isolada das demais; o acesso é por convite.</span>
+          <span class="lp-fact__k"><%= t("landing.stack.multiuser.key") %></span>
+          <span class="lp-fact__v muted"><%= t("landing.stack.multiuser.value") %></span>
         </li>
       </ul>
     </section>
 
     <%# ═══════════════ CTA FINAL ═══════════════ %>
     <section class="lp-section lp-final" aria-labelledby="final-h">
-      <h2 id="final-h" class="lp-section__title">Peça acesso ao Ponto Cloud</h2>
+      <h2 id="final-h" class="lp-section__title"><%= t("landing.final.heading") %></h2>
       <p class="lp-section__sub muted">
-        Não quer hospedar? Use esta instância por <strong>US$ 1/mês</strong>.
-        Deixe seu e-mail — pedidos aprovados recebem o convite na caixa
-        de entrada. Prefere hospedar você mesmo? O código está no
-        <%= link_to "GitHub", "https://github.com/alextakitani/ponto" %>.
+        <%= t("landing.final.sub_html", github_link: link_to(t("landing.final.github_link"), "https://github.com/alextakitani/ponto")) %>
       </p>
       <div class="lp-final__cta">
         <% if @operator_setup_needed %>
@@ -302,7 +277,7 @@
         <% else %>
           <%= render "access_requests/form" %>
           <p class="lp-final__signin muted">
-            Já tem conta? <%= link_to "Entrar", sign_in_path %>
+            <%= t("landing.final.signin_prompt") %> <%= link_to t("landing.nav.sign_in"), sign_in_path %>
           </p>
         <% end %>
       </div>
@@ -311,9 +286,10 @@
 
   <footer class="lp-foot">
     <span class="lp-foot__brand"><span class="lp-mark lp-mark--sm" aria-hidden="true"></span>Ponto</span>
-    <nav class="lp-foot__nav" aria-label="Rodapé">
-      <%= link_to "GitHub", "https://github.com/alextakitani/ponto" %>
-      <%= link_to "Entrar", sign_in_path %>
+    <nav class="lp-foot__nav" aria-label="<%= t("landing.footer.nav_label") %>">
+      <%= render "shared/locale_switcher" %>
+      <%= link_to t("landing.nav.github"), "https://github.com/alextakitani/ponto" %>
+      <%= link_to t("landing.nav.sign_in"), sign_in_path %>
     </nav>
   </footer>
 </div>

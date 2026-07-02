@@ -2,6 +2,7 @@ class ApplicationController < ActionController::Base
   include Authentication
   include RequestForgeryProtection
   include ActionPolicy::Controller
+  include SetLocale
 
   # Contexto de autorização do Action Policy (Q40/Q41): a policy raciocina sobre
   # `Current.user`. Autorização negada -> 403 (HTML e JSON) — user comum NÃO vê
