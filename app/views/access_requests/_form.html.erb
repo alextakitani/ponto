@@ -1,0 +1,22 @@
+<%# Form público "pedir acesso" (Q24). E-mail obrigatório; nome e observação opcionais. %>
+<%= form_with url: access_requests_path, method: :post, class: "landing__form" do |f| %>
+  <div class="field">
+    <%= f.label :email, "E-mail" %>
+    <%= f.email_field :email,
+          required: true,
+          autocomplete: "email",
+          placeholder: "voce@exemplo.com" %>
+  </div>
+
+  <div class="field">
+    <%= f.label :name, "Nome (opcional)" %>
+    <%= f.text_field :name, autocomplete: "name" %>
+  </div>
+
+  <div class="field">
+    <%= f.label :note, "Observação (opcional)" %>
+    <%= f.text_area :note, rows: 3 %>
+  </div>
+
+  <%= f.submit "Pedir acesso" %>
+<% end %>

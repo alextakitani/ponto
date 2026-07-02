@@ -1,0 +1,61 @@
+/*
+ * Landing pública de uma dobra (Q67). Sem seções de marketing: nome + frase +
+ * form "pedir acesso" centrados, rodapé discreto. Só tokens (tokens.css).
+ */
+
+.landing {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  padding: var(--space-6) var(--space-4);
+}
+
+.landing__panel {
+  width: min(26rem, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.landing__brand {
+  font-size: var(--text-2xl);
+  letter-spacing: -0.02em;
+}
+
+.landing__pitch {
+  font-size: var(--text-lg);
+  margin-top: calc(-1 * var(--space-2));
+}
+
+.landing__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.landing__form .field {
+  display: flex;
+  flex-direction: column;
+}
+
+.landing__notice {
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-text);
+  background-color: var(--color-surface-sunken);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+}
+
+.landing__signin {
+  font-size: var(--text-sm);
+  margin-top: var(--space-2);
+}
+
+.landing__footer {
+  font-size: var(--text-sm);
+}

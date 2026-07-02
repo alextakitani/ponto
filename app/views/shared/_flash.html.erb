@@ -1,0 +1,7 @@
+<%# Mensagens de flash (notice/alert) — renderizadas em toda tela. %>
+<% flash.each do |type, message| %>
+  <% next if type.to_s == "sign_in_code" # segredo de dev, exposto via header/JS, não na tela %>
+  <div class="flash flash--<%= type == "alert" ? "alert" : "notice" %>" role="status">
+    <%= message %>
+  </div>
+<% end %>

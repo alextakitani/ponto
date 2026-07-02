@@ -1,0 +1,56 @@
+require "test_helper"
+
+# Fluxo de controle NOSSO do pedido de acesso público (Q24):
+# delega ao AccessRequest.record (de-dup) e SEMPRE responde genérico
+# (anti-enumeração) — independente de já existir conta ou pedido.
+class AccessRequestsTest < ActionDispatch::IntegrationTest
+  GENERIC = "Recebemos seu pedido"
+
+  test "pedido novo cria um AccessRequest pending" do
+    assert_difference -> { AccessRequest.pending.count }, +1 do
+      post access_requests_path, params: { access_request: { email: "novo@example.com" } }
+    end
+
+    follow_redirect!
+    assert_match GENERIC, response.body
+  end
+
+  test "e-mail de conta existente não cria pedido, resposta genérica" do
+    create_user(email: "conta@example.com")
+
+    assert_no_difference -> { AccessRequest.count } do
+      post access_requests_path, params: { access_request: { email: "conta@example.com" } }
+    end
+
+    follow_redirect!
+    assert_match GENERIC, response.body
+  end
+
+  test "pedido pending existente não duplica e atualiza a note" do
+    first = AccessRequest.record(email: "dup@example.com", note: "primeira")
+
+    assert_no_difference -> { AccessRequest.count } do
+      post access_requests_path, params: { access_request: { email: "dup@example.com", note: "segunda" } }
+    end
+
+    assert_equal "segunda", first.reload.note
+    follow_redirect!
+    assert_match GENERIC, response.body
+  end
+
+  test "e-mail em branco/ausente não estoura 500; resposta genérica" do
+    assert_no_difference -> { AccessRequest.count } do
+      post access_requests_path, params: { access_request: { email: "" } }
+    end
+
+    follow_redirect!
+    assert_match GENERIC, response.body
+  end
+
+  test "público: não exige autenticação" do
+    post access_requests_path, params: { access_request: { email: "anon@example.com" } }
+
+    assert_response :redirect
+    assert_no_match(/sign_in/, response.location)
+  end
+end

@@ -114,6 +114,25 @@ svg {
   gap: var(--space-3);
 }
 
+/*
+ * Flash (notice/alert) — faixa discreta no topo, renderizada em toda tela.
+ * notice = neutro; alert = tom de erro (usa --color-danger).
+ */
+.flash {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface-sunken);
+  color: var(--color-text);
+}
+
+.flash--alert {
+  color: var(--color-on-danger);
+  background-color: var(--color-danger);
+  border-bottom-color: transparent;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
