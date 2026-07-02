@@ -1,0 +1,19 @@
+# Chaves Rails de formatação numérica pt-BR (separador/delimitador + moeda).
+# Arquivo SEPARADO de propósito: o `pt-BR.yml` da landing vive na main e o Rails
+# carrega TODOS os YAML de config/locales — mantê-los em arquivos distintos evita
+# conflito add/add no git (chaves diferentes do mesmo top-level `pt-BR:`).
+#
+# Sem estas chaves, `Money#format` com `locale_backend = :i18n` (ver
+# config/initializers/money.rb) caía no fallback do gem ("R$1234.56"). Com elas,
+# `Money.new(123_456, "BRL").format` → "R$ 1.234,56".
+pt-BR:
+  number:
+    format:
+      separator: ","
+      delimiter: "."
+    currency:
+      format:
+        unit: "R$"
+        format: "%u %n"
+        separator: ","
+        delimiter: "."

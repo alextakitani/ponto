@@ -61,3 +61,7 @@ group :development do
 end
 
 gem "action_policy", "~> 0.7.6"
+
+# Dinheiro em Ruby puro (sem Node) — rate/amount viram objetos Money via `monetize`
+# (Q11/Q20). Ver config/initializers/money.rb.
+gem "money-rails", "~> 3.0"
