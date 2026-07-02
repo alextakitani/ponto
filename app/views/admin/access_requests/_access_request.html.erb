@@ -5,7 +5,13 @@
   <td class="muted"><%= access_request.note %></td>
   <td class="muted"><%= access_request.created_at.to_date.iso8601 %></td>
   <td class="admin__actions">
-    <%= button_to "Aprovar", admin_access_request_approval_path(access_request), class: "btn btn--quiet" %>
-    <%= button_to "Rejeitar", admin_access_request_rejection_path(access_request), class: "btn btn--quiet" %>
+    <%= button_to admin_access_request_approval_path(access_request), class: "btn btn--quiet" do %>
+      <%= icon("check") %>
+      Aprovar
+    <% end %>
+    <%= button_to admin_access_request_rejection_path(access_request), class: "btn btn--quiet" do %>
+      <%= icon("x") %>
+      Rejeitar
+    <% end %>
   </td>
 </tr>
