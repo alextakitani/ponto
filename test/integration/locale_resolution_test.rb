@@ -47,6 +47,21 @@ class LocaleResolutionTest < ActionDispatch::IntegrationTest
     assert_locale "en"
   end
 
+  test "param sobrescreve sessão DIFERENTE já persistida e re-grava a escolha" do
+    # Req 1: param en grava en na sessão.
+    get root_path(locale: "en")
+    assert_locale "en"
+
+    # Req 2: param pt-BR precisa VENCER a sessão en e re-gravar pt-BR
+    # (prova que a precedência é param > sessão, não o contrário).
+    get root_path(locale: "pt-BR")
+    assert_locale "pt-BR"
+
+    # Req 3: sem param, herda a sessão já re-gravada como pt-BR.
+    get root_path
+    assert_locale "pt-BR"
+  end
+
   test "sem param nem sessão, Accept-Language en-US resolve en" do
     get root_path, headers: { "Accept-Language" => "en-US,en;q=0.9" }
     assert_locale "en"

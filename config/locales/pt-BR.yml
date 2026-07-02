@@ -119,3 +119,19 @@ pt-BR:
       rate_limited: "Muitos pedidos. Aguarde um minuto."
   shared:
     bootstrap_notice: "Nenhuma conta existe e ADMIN_EMAIL não está configurado — defina a variável de ambiente e recarregue."
+  # Mensagens de erro de validação do Active Record em pt-BR (default do app).
+  # NÃO é a suíte completa do rails-i18n — só as chaves que a nossa UI de fato
+  # exibe ao usuário (User#email presence/uniqueness/format + a exceção
+  # RecordInvalid reembrulhada em User#suspend!). Validações customizadas usam
+  # strings literais no próprio model, então não passam por aqui.
+  errors:
+    format: "%{attribute} %{message}"
+    messages:
+      record_invalid: "A validação falhou: %{errors}"
+  activerecord:
+    errors:
+      messages:
+        record_invalid: "A validação falhou: %{errors}"
+        blank: "não pode ficar em branco"
+        taken: "já está em uso"
+        invalid: "não é válido"

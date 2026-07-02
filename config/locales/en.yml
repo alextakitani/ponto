@@ -39,7 +39,7 @@ en:
         text: "Terminal commands and JSON output for AI agents, like Claude. Uses the same token as the extension."
     frozen:
       heading: "January's number doesn't change in June"
-      sub: "Every entry keeps the hourly rate from the day it was logged. Gave a client a raise? The new rate applies from here on out — history stays intact and old invoices stay correct."
+      sub: "Every entry keeps the hourly rate from the day it was logged. Raised a client's rate? The new rate applies from here on out — history stays intact and old invoices stay correct."
       now: "current rate"
       lock_title: "frozen"
     host:
@@ -79,7 +79,7 @@ en:
         github_link: "See it on GitHub"
       multiuser:
         key: "Multi-user, no teams"
-        value: "Each account lives isolated from the rest; access is invite-only."
+        value: "Each account stays isolated from the others; access is invite-only."
     final:
       heading: "Request access to Ponto Cloud"
       sub_html: "Don't want to self-host? Use this instance for <strong>US$ 1/month</strong>. Leave your email — approved requests get the invite in their inbox. Prefer to host it yourself? The code is on %{github_link}."
