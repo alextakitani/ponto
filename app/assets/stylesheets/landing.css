@@ -1,48 +1,189 @@
 /*
- * Landing pública de uma dobra (Q67). Sem seções de marketing: nome + frase +
- * form "pedir acesso" centrados, rodapé discreto. Só tokens (tokens.css).
+ * Landing de PRODUTO do Ponto (Q77 — substitui a landing de 1 dobra).
+ * Só tokens (tokens.css) + os poucos tokens de cor-de-projeto abaixo.
+ *
+ * Direção: a mesma linguagem "minimal densa Linear" do app, mas a página
+ * abre com o PRODUTO como tese — um mockup do tracker com o timer correndo.
+ * Assinatura: a "régua de tiques" (lp-ruler) — eixo de horas do dia, a
+ * metáfora literal de "marcar ponto". Diferencia pela ESPECIFICIDADE
+ * (mockups reais, números tabulares, BRL/EUR, terminal com comandos verdadeiros),
+ * não por decoração.
+ *
+ * Cores de PROJETO: o app dá personalidade pela cor dos projetos (CLAUDE.md).
+ * Aqui elas aparecem SÓ dentro dos mockups (swatches, fatias do donut) — são
+ * dado do produto, não enfeite. Valores calibrados p/ AA de foreground e
+ * legibilidade nos DOIS temas.
  */
 
-.landing {
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-6);
-  padding: var(--space-6) var(--space-4);
+:root {
+  --color-project-a: #d97706; /* âmbar */
+  --color-project-b: #0d9488; /* teal  */
+  --color-project-c: #7c3aed; /* violeta (distinto do índigo-acento) */
+  --lp-mono: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 
-.landing__panel {
-  width: min(26rem, 100%);
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-project-a: #f0a04b; /* âmbar claro — legível sobre surface escura */
+    --color-project-b: #2dd4bf; /* teal claro  */
+    --color-project-c: #a78bfa; /* violeta claro */
+  }
+}
+
+/* ─────────────────────────── Shell ─────────────────────────── */
+
+.lp {
+  --lp-max: 68rem;
+  --lp-gutter: var(--space-5);
+}
+
+.lp main {
+  display: block;
+}
+
+.lp-section {
+  max-width: var(--lp-max);
+  margin: 0 auto;
+  padding: var(--space-8) var(--lp-gutter);
+}
+
+.lp-section__title {
+  font-size: clamp(1.5rem, 1rem + 2.2vw, 2.25rem);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  max-width: 22ch;
+}
+
+.lp-section__sub {
+  margin-top: var(--space-3);
+  font-size: var(--text-lg);
+  max-width: 56ch;
+}
+
+/* Marca: um "ponto" quadrado no acento (não um logo genérico). */
+.lp-mark {
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 2px;
+  background-color: var(--color-accent);
+  vertical-align: baseline;
+}
+
+.lp-mark--sm {
+  width: 0.6em;
+  height: 0.6em;
+}
+
+/* ─────────────────────────── Header ─────────────────────────── */
+
+.lp-head {
+  max-width: var(--lp-max);
+  margin: 0 auto;
+  padding: var(--space-4) var(--lp-gutter);
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.lp-head__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.lp-head__nav {
+  display: flex;
   gap: var(--space-4);
 }
 
-.landing__brand {
-  font-size: var(--text-2xl);
-  letter-spacing: -0.02em;
+.lp-head__link {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-subtle);
+  text-decoration: none;
 }
 
-.landing__pitch {
+.lp-head__link:hover {
+  color: var(--color-text);
+}
+
+/* ─────────────────────────── Hero ─────────────────────────── */
+
+.lp-hero {
+  max-width: var(--lp-max);
+  margin: 0 auto;
+  padding: var(--space-6) var(--lp-gutter) var(--space-8);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  align-items: center;
+}
+
+@media (min-width: 60rem) {
+  .lp-hero {
+    grid-template-columns: 1.05fr 1fr;
+    gap: var(--space-6);
+    padding-top: var(--space-8);
+  }
+}
+
+.lp-eyebrow {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.lp-hero__title {
+  margin-top: var(--space-3);
+  font-size: clamp(2rem, 1.2rem + 3.8vw, 3.25rem);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.lp-hero__lede {
+  margin-top: var(--space-4);
   font-size: var(--text-lg);
-  margin-top: calc(-1 * var(--space-2));
+  color: var(--color-text-subtle);
+  max-width: 44ch;
 }
 
-.landing__form {
+/* CTA (form pedir acesso no hero) */
+.lp-cta {
+  margin-top: var(--space-5);
+  max-width: 24rem;
+}
+
+.lp-cta__label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-3);
+}
+
+/* O form vem do partial access_requests/form (class .landing__form no ERB). */
+.lp-cta .landing__form,
+.lp-final__cta .landing__form {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  margin-top: var(--space-2);
 }
 
-.landing__form .field {
+.lp-cta .landing__form .field,
+.lp-final__cta .landing__form .field {
   display: flex;
   flex-direction: column;
 }
 
-.landing__notice {
+.lp-notice {
   padding: var(--space-3) var(--space-4);
   color: var(--color-text);
   background-color: var(--color-surface-sunken);
@@ -51,11 +192,587 @@
   font-size: var(--text-sm);
 }
 
-.landing__signin {
-  font-size: var(--text-sm);
-  margin-top: var(--space-2);
+/* ─────────── Mockup do tracker (assinatura / herói) ─────────── */
+
+.lp-shot {
+  position: relative;
 }
 
-.landing__footer {
+.lp-app {
+  background-color: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 32px -18px rgba(0, 0, 0, 0.3);
+}
+
+.lp-app__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface-sunken);
+}
+
+.lp-app__dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background-color: var(--color-border-strong);
+  flex: none;
+}
+
+/* Ponto "vivo" do timer correndo — pulsa (respeita reduced-motion na base). */
+.lp-app__dot--live {
+  background-color: var(--color-accent);
+  animation: lp-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes lp-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.82); }
+}
+
+.lp-app__field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.lp-app__proj {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lp-app__desc {
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+}
+
+.lp-clock {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  flex: none;
+}
+
+.lp-clock--sm {
+  font-size: var(--text-lg);
+}
+
+.lp-app__stop {
+  flex: none;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-on-danger);
+  background-color: var(--color-danger);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: default;
+}
+
+.lp-app__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lp-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+}
+
+.lp-row:last-child {
+  border-bottom: 0;
+}
+
+.lp-row__proj {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: var(--weight-medium);
+  min-width: 0;
+}
+
+.lp-row__proj,
+.lp-row__desc {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lp-row__dur {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-subtle);
+  text-align: right;
+}
+
+.lp-row__amt {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--weight-medium);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Bolinha de projeto — a cor É o dado. */
+.lp-swatch {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  flex: none;
+}
+
+.lp-swatch--a { background-color: var(--color-project-a); }
+.lp-swatch--b { background-color: var(--color-project-b); }
+.lp-swatch--c { background-color: var(--color-project-c); }
+
+/* ────────────── Régua de tiques (assinatura) ────────────── */
+
+.lp-ruler {
+  max-width: var(--lp-max);
+  margin: 0 auto;
+  padding: 0 var(--lp-gutter);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.lp-ruler__tick {
+  position: relative;
+  width: 1px;
+  height: 0.5rem;
+  background-color: var(--color-border-strong);
+}
+
+.lp-ruler__label {
+  position: absolute;
+  bottom: calc(100% + 3px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-subtle);
+}
+
+/* ─────────────────────── Três provas ─────────────────────── */
+
+.lp-proofs {
+  margin-top: var(--space-6);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+@media (min-width: 48rem) {
+  .lp-proofs {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.lp-proof {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.lp-proof__art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 9rem;
+  padding: var(--space-4);
+  background-color: var(--color-surface-sunken);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.lp-proof__title {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.lp-proof__text {
+  font-size: var(--text-sm);
+}
+
+.lp-badge {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.02em;
+  padding: 1px var(--space-2);
+  color: var(--color-accent);
+  background-color: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* Mockup 1: relatório (donut SVG + barras) */
+.lp-report {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.lp-donut {
+  width: 5rem;
+  height: 5rem;
+  flex: none;
+  transform: rotate(-90deg);
+}
+
+.lp-donut__track {
+  fill: none;
+  stroke: var(--color-border);
+  stroke-width: 5;
+}
+
+.lp-donut__seg {
+  fill: none;
+  stroke-width: 5;
+  stroke-linecap: butt;
+}
+
+.lp-donut__seg--a { stroke: var(--color-project-a); }
+.lp-donut__seg--b { stroke: var(--color-project-b); }
+.lp-donut__seg--c { stroke: var(--color-project-c); }
+
+.lp-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 4.5rem;
+}
+
+.lp-bars__bar {
+  width: 8px;
+  min-height: 3px;
+  background-color: var(--color-accent);
+  border-radius: 2px 2px 0 0;
+  opacity: 0.85;
+}
+
+/* Mockup 2: popup da extensão */
+.lp-popup {
+  width: 100%;
+  max-width: 15rem;
+  background-color: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.lp-popup__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface-sunken);
+}
+
+.lp-popup__title {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.lp-popup__timer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.lp-popup__proj {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lp-popup__btn {
+  display: block;
+  width: calc(100% - 2 * var(--space-3));
+  margin: 0 var(--space-3) var(--space-3);
+  padding: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-on-danger);
+  background-color: var(--color-danger);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: default;
+}
+
+/* Mockup 3: terminal do CLI */
+.lp-term {
+  width: 100%;
+  background-color: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.lp-term__bar {
+  display: flex;
+  gap: 6px;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface-sunken);
+}
+
+.lp-term__tl {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-border-strong);
+}
+
+.lp-term__body {
+  margin: 0;
+  padding: var(--space-3);
+  font-family: var(--lp-mono);
+  font-size: var(--text-xs);
+  line-height: 1.7;
+  color: var(--color-text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.lp-term__ps { color: var(--color-text-subtle); }
+.lp-term__ok { color: var(--color-project-b); font-weight: var(--weight-medium); }
+
+/* ─────────────────────── Rate congelada ─────────────────────── */
+
+.lp-frozen {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  align-items: center;
+}
+
+@media (min-width: 52rem) {
+  .lp-frozen {
+    grid-template-columns: 1.2fr 1fr;
+  }
+}
+
+.lp-frozen__proof {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.lp-freeze-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-surface-sunken);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.lp-freeze-row__when {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  width: 2.5rem;
+  flex: none;
+}
+
+.lp-freeze-row__rate {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  flex: 1;
+}
+
+.lp-lock {
+  font-size: var(--text-base);
+  filter: grayscale(0.2);
+}
+
+.lp-freeze-row__now {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  padding: 1px var(--space-2);
+  color: var(--color-accent);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+  border-radius: 999px;
+}
+
+/* ─────────────────────────── Passos ─────────────────────────── */
+
+.lp-steps {
+  list-style: none;
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 48rem) {
+  .lp-steps {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5);
+  }
+}
+
+.lp-step {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+
+.lp-step__n {
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent);
+  background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+  border-radius: 50%;
+}
+
+.lp-step__title {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  margin-bottom: 2px;
+}
+
+.lp-step__text {
+  font-size: var(--text-sm);
+}
+
+/* code inline nos passos/stack */
+.lp-step code,
+.lp-fact code,
+.lp-proof__title code {
+  font-family: var(--lp-mono);
+  font-size: 0.92em;
+  padding: 1px 5px;
+  background-color: var(--color-surface-sunken);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+/* ─────────────────────────── Stack ─────────────────────────── */
+
+.lp-facts {
+  list-style: none;
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  border-top: 1px solid var(--color-border);
+}
+
+@media (min-width: 44rem) {
+  .lp-facts {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: var(--space-6);
+  }
+}
+
+.lp-fact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.lp-fact__k {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+}
+
+.lp-fact__v {
+  font-size: var(--text-sm);
+}
+
+/* ─────────────────────── CTA final ─────────────────────── */
+
+.lp-final {
+  text-align: center;
+}
+
+.lp-final .lp-section__title,
+.lp-final .lp-section__sub {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lp-final__cta {
+  margin: var(--space-6) auto 0;
+  max-width: 24rem;
+  text-align: left;
+}
+
+.lp-final__signin {
+  margin-top: var(--space-3);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+
+/* ─────────────────────────── Footer ─────────────────────────── */
+
+.lp-foot {
+  max-width: var(--lp-max);
+  margin: 0 auto;
+  padding: var(--space-6) var(--lp-gutter) var(--space-8);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.lp-foot__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: var(--weight-semibold);
+}
+
+.lp-foot__nav {
+  display: flex;
+  gap: var(--space-4);
   font-size: var(--text-sm);
 }
