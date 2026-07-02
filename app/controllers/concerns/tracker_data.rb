@@ -36,10 +36,8 @@ module TrackerData
     end
 
     def tracker_group_date(entry, time_zone, now: Time.current)
-      if entry.ended_at?
-        entry.started_at.in_time_zone(time_zone).to_date
-      else
-        now.in_time_zone(time_zone).to_date
-      end
+      # Q6: o entry pertence INTEIRO ao dia do started_at (no fuso do user), sem
+      # fatiar na meia-noite — inclusive o que está rodando (não cai no "hoje").
+      entry.started_at.in_time_zone(time_zone).to_date
     end
 end
