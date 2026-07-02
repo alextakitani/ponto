@@ -47,13 +47,4 @@ class AdminAccessRequestsTest < ActionDispatch::IntegrationTest
     perform_enqueued_jobs { post admin_access_request_approval_path(request) }
     assert_redirected_to admin_root_path
   end
-
-  private
-    def sign_in_as(email, admin: false)
-      User.create!(email: email, admin: admin)
-      perform_enqueued_jobs { post sign_in_path, params: { email: email } }
-      code = ActionMailer::Base.deliveries.last.subject[/\d{6}/]
-      post sign_in_session_path, params: { code: code }
-      ActionMailer::Base.deliveries.clear
-    end
 end

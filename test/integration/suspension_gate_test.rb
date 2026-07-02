@@ -15,7 +15,7 @@ class SuspensionGateTest < ActionDispatch::IntegrationTest
   # --- HTML: sessão de cookie -------------------------------------------------
 
   test "user suspenso (sessão HTML) é redirecionado pra página de conta suspensa" do
-    user = sign_in_as("membro@example.com")
+    user = sign_in_as("membro@example.com", keep_active_admin: true)
     suspend(user)
 
     get home_path
@@ -23,14 +23,14 @@ class SuspensionGateTest < ActionDispatch::IntegrationTest
   end
 
   test "user NÃO suspenso passa normalmente" do
-    sign_in_as("membro@example.com")
+    sign_in_as("membro@example.com", keep_active_admin: true)
 
     get home_path
     assert_response :success
   end
 
   test "a própria página de conta suspensa é acessível mesmo suspenso (sem loop)" do
-    user = sign_in_as("membro@example.com")
+    user = sign_in_as("membro@example.com", keep_active_admin: true)
     suspend(user)
 
     get suspended_path
@@ -38,7 +38,7 @@ class SuspensionGateTest < ActionDispatch::IntegrationTest
   end
 
   test "reativar restaura o acesso sem novo login (sessão sobrevive)" do
-    user = sign_in_as("membro@example.com")
+    user = sign_in_as("membro@example.com", keep_active_admin: true)
     suspend(user)
     get home_path
     assert_redirected_to suspended_path
@@ -49,7 +49,7 @@ class SuspensionGateTest < ActionDispatch::IntegrationTest
   end
 
   test "user suspenso ainda consegue sair (logout não é barrado pelo gate)" do
-    user = sign_in_as("membro@example.com")
+    user = sign_in_as("membro@example.com", keep_active_admin: true)
     suspend(user)
 
     delete sign_out_path
@@ -70,16 +70,6 @@ class SuspensionGateTest < ActionDispatch::IntegrationTest
   end
 
   private
-
-  # Cria o user e estabelece a sessão de cookie pelo fluxo real de login.
-  def sign_in_as(email)
-    user = create_user(email: email)
-    keep_one_active_admin
-    perform_enqueued_jobs { post sign_in_path, params: { email: email } }
-    code = ActionMailer::Base.deliveries.last.subject[/\d{6}/]
-    post sign_in_session_path, params: { code: code }
-    user
-  end
 
   # Suspender exige outro admin ativo (invariante Q34c) — garantimos um.
   def suspend(user)

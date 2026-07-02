@@ -18,6 +18,7 @@
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/icon.png">
 
-<%# Ordem de cascata explícita: tokens (custom properties) → base → forms → telas. %>
-<%= stylesheet_link_tag "tokens", "base", "forms", "landing", "admin", "shell", "clients", "projects", "data-turbo-track": "reload" %>
+<%# Ordem de cascata explícita: tokens (custom properties) → base → forms → catalog
+    (componentes genéricos das telas) → específicos de cada tela. %>
+<%= stylesheet_link_tag "tokens", "base", "forms", "catalog", "landing", "admin", "shell", "projects", "data-turbo-track": "reload" %>
 <%= javascript_importmap_tags %>

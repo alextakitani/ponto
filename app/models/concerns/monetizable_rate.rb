@@ -1,6 +1,11 @@
 # Rate faturável/hora (Ruby puro, Q11/Q42) compartilhada por Client e Project — o
 # writer `rate=` e o parser vivem AQUI em vez de duplicados em cada model.
 #
+# ⚠️ NÃO incluir no TimeEntry (Fase 3): este concern é pra rate EDITÁVEL pelo usuário
+# (parser de form). O snapshot do TimeEntry (Q10/Q11) é CONGELADO no before_save a
+# partir de `project.effective_rate_cents` — colunas locais próprias, sem writer de
+# form. É o terceiro caminho, de propósito.
+#
 # Por que NÃO deixamos o money-rails validar/parsear (`disable_validation: true`):
 # o validator dele segue o locale do REQUEST (`Money.locale_backend = :i18n`) e, sob
 # o locale default :pt-BR, lê nosso decimal canônico "150.00" como MILHAR e rejeita

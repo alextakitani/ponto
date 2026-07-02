@@ -1,7 +1,9 @@
 <%# Seção de tarefas dentro do edit do projeto (TELA 02). Turbo Frame recarregável
     ("project_tasks") — as ações inline (criar/renomear/arquivar/deletar) re-renderizam
-    esta seção via Turbo Stream. Lista as tasks ATIVAS + o form de criar no fim. %>
-<% tasks = project.tasks.active.to_a.sort_by { |t| t.name.downcase } %>
+    esta seção via Turbo Stream. Lista as tasks ATIVAS + o form de criar no fim.
+    `tasks` chega do controller (que já materializou `active_tasks`); se não, o partial
+    resolve sozinho — sem query dupla quando o caller já passou a coleção. %>
+<% tasks = local_assigns.fetch(:tasks) { project.active_tasks } %>
 
 <div class="task-list">
   <% if tasks.any? %>

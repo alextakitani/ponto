@@ -1,7 +1,7 @@
 /*
- * Telas de Projects/Tasks (Fatia 2.3). Reusa os componentes genéricos de clients.css
- * (page-header, data-table, empty-state, form-stack). Aqui só o que é específico:
- * bolinha de cor, grid de swatches, hint de rate herdada e a seção de tasks inline.
+ * Telas de Projects/Tasks (Fatia 2.3). Reusa os componentes genéricos de catalog.css
+ * (page-header, data-table, empty-state, form-stack, form-hint). Aqui só o que é
+ * específico: bolinha de cor, grid de swatches e a seção de tasks inline.
  * Só tokens; denso; claro/escuro automático (Q64).
  */
 
@@ -78,13 +78,6 @@
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15), var(--focus-ring);
 }
 
-/* --- Hint de rate herdada (Q45) --------------------------------------------- */
-.form-hint {
-  margin: var(--space-1) 0 0;
-  font-size: var(--text-xs);
-  color: var(--color-text-subtle);
-}
-
 /* --- Seção de Tarefas aninhada no projeto (TELA 02) ------------------------- */
 .project-tasks {
   margin-top: var(--space-8);
@@ -129,12 +122,6 @@
 
 .task-row__actions form {
   margin: 0;
-}
-
-/* Botão pequeno (ações inline de task) — modificador dobrado como .btn--quiet. */
-.btn.btn--sm {
-  padding: var(--space-1) var(--space-2);
-  font-size: var(--text-xs);
 }
 
 /* Form de criar/renomear task inline. */

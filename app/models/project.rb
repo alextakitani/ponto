@@ -49,6 +49,13 @@ class Project < ApplicationRecord
   # dos relatórios (Q21) nasce sem fatias de cor repetida sem o usuário pensar nisso.
   before_validation :assign_least_used_color, on: :create, if: -> { color.blank? }
 
+  # Tasks ATIVAS ordenadas por nome (case-insensitive), materializadas em memória —
+  # `name` é criptografado (Q25c), então o ORDER BY do SQLite bateria no ciphertext.
+  # Fonte única do "tasks.active ordenado" que os controllers e o partial `_section` usam.
+  def active_tasks
+    tasks.active.to_a.sort_by { |t| t.name.downcase }
+  end
+
   # Rate EFETIVA (Q22): override do projeto, senão a do cliente, senão nil.
   # Congela no snapshot do TimeEntry (Fase 3); a UI e o JSON expõem já resolvida.
   def effective_rate_cents
