@@ -1,24 +1,307 @@
-<% content_for :title, "Ponto — time tracker enxuto e self-hosted" %>
+<% content_for :title, "Ponto — time tracker self-hosted pra quem fatura por hora" %>
+<% content_for :description, "Time tracker self-hosted pra quem cobra por hora: timer de 1 clique, relatórios que somam e export mensal em .xlsx/CSV que você manda como fatura." %>
 
-<main class="landing">
-  <div class="landing__panel">
-    <h1 class="landing__brand">Ponto</h1>
-    <p class="landing__pitch muted">
-      Time tracker enxuto e self-hosted: timer, projetos e relatório mensal.
-    </p>
+<div class="lp">
+  <%# ── Cabeçalho: marca + acessos secundários (GitHub, entrar) ── %>
+  <header class="lp-head">
+    <a class="lp-head__brand" href="#topo">
+      <span class="lp-mark" aria-hidden="true"></span>Ponto
+    </a>
+    <nav class="lp-head__nav" aria-label="Links">
+      <%= link_to "GitHub", "https://github.com/alextakitani/ponto", class: "lp-head__link" %>
+      <%= link_to "Entrar", sign_in_path, class: "lp-head__link" %>
+    </nav>
+  </header>
 
-    <% if @operator_setup_needed %>
-      <%= render "shared/bootstrap_notice", css_class: "landing__notice" %>
-    <% else %>
-      <%= render "access_requests/form" %>
-    <% end %>
+  <main id="topo">
+    <%# ═══════════════ HERO ═══════════════ %>
+    <section class="lp-hero">
+      <div class="lp-hero__pitch">
+        <p class="lp-eyebrow">Time tracker self-hosted</p>
+        <h1 class="lp-hero__title">
+          Marque o ponto.<br>O relatório vira fatura.
+        </h1>
+        <p class="lp-hero__lede">
+          Pra quem cobra por hora: um timer de 1 clique, rate por cliente
+          e um export mensal que você manda como fatura. Roda no seu
+          servidor, seus dados na sua mão.
+        </p>
 
-    <p class="landing__signin muted">
-      Já tenho conta <%= link_to "→ entrar", sign_in_path %>
-    </p>
-  </div>
+        <%# Contrato testado preservado: form "pedir acesso" (POST /access_requests)
+            OU o aviso de operador (Q38), ancorado em #acesso. %>
+        <div id="acesso" class="lp-cta">
+          <% if @operator_setup_needed %>
+            <%= render "shared/bootstrap_notice", css_class: "lp-notice" %>
+          <% else %>
+            <p class="lp-cta__label">Peça acesso — o acesso é por convite.</p>
+            <%= render "access_requests/form" %>
+          <% end %>
+        </div>
+      </div>
 
-  <footer class="landing__footer muted">
-    <%= link_to "GitHub", "https://github.com/alextakitani/ponto" %>
+      <%# ── Assinatura: mockup do tracker com o timer CORRENDO (produto = tese) ── %>
+      <div class="lp-shot" aria-hidden="true">
+        <div class="lp-app">
+          <div class="lp-app__bar">
+            <span class="lp-app__dot lp-app__dot--live"></span>
+            <div class="lp-app__field">
+              <span class="lp-app__proj"><span class="lp-swatch lp-swatch--a"></span>Kubernetes homelab</span>
+              <span class="lp-app__desc">migração do ingress</span>
+            </div>
+            <span class="lp-clock tabular-nums">01:47:12</span>
+            <button class="lp-app__stop" type="button" tabindex="-1">Parar</button>
+          </div>
+
+          <ul class="lp-app__list">
+            <li class="lp-row">
+              <span class="lp-row__proj"><span class="lp-swatch lp-swatch--a"></span>Kubernetes homelab</span>
+              <span class="lp-row__desc muted">certificado wildcard</span>
+              <span class="lp-row__dur tabular-nums">2:10:00</span>
+              <span class="lp-row__amt tabular-nums">R$&nbsp;260,00</span>
+            </li>
+            <li class="lp-row">
+              <span class="lp-row__proj"><span class="lp-swatch lp-swatch--b"></span>App do cliente</span>
+              <span class="lp-row__desc muted">code review</span>
+              <span class="lp-row__dur tabular-nums">0:45:00</span>
+              <span class="lp-row__amt tabular-nums">€&nbsp;60,00</span>
+            </li>
+            <li class="lp-row">
+              <span class="lp-row__proj"><span class="lp-swatch lp-swatch--c"></span>Consultoria</span>
+              <span class="lp-row__desc muted">reunião de escopo</span>
+              <span class="lp-row__dur tabular-nums">1:00:00</span>
+              <span class="lp-row__amt tabular-nums">R$&nbsp;180,00</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <%# ── Régua de tiques: a assinatura tipográfica (eixo de horas do dia) ── %>
+    <div class="lp-ruler" aria-hidden="true">
+      <% %w[08 09 10 11 12 13 14 15 16 17 18].each do |h| %>
+        <span class="lp-ruler__tick"><span class="lp-ruler__label tabular-nums"><%= h %></span></span>
+      <% end %>
+    </div>
+
+    <%# ═══════════════ TRÊS PROVAS (mockups reais) ═══════════════ %>
+    <section class="lp-section" aria-labelledby="prova-h">
+      <h2 id="prova-h" class="lp-section__title">Do timer à fatura, num app só</h2>
+      <p class="lp-section__sub muted">
+        Um clique no topo de toda tela. Catálogo Cliente&nbsp;→&nbsp;Projeto&nbsp;→&nbsp;Task,
+        rate por hora por cliente (BRL, EUR…). No fim do mês, o relatório exporta.
+      </p>
+
+      <div class="lp-proofs">
+        <%# 1. Relatório: donut por projeto + barras por dia (SVG inline, theme-aware) %>
+        <article class="lp-proof">
+          <div class="lp-proof__art" aria-hidden="true">
+            <div class="lp-report">
+              <svg class="lp-donut" viewBox="0 0 42 42">
+                <circle class="lp-donut__track" cx="21" cy="21" r="15.9155"></circle>
+                <circle class="lp-donut__seg lp-donut__seg--a" cx="21" cy="21" r="15.9155"
+                        stroke-dasharray="48 52" stroke-dashoffset="25"></circle>
+                <circle class="lp-donut__seg lp-donut__seg--b" cx="21" cy="21" r="15.9155"
+                        stroke-dasharray="31 69" stroke-dashoffset="77"></circle>
+                <circle class="lp-donut__seg lp-donut__seg--c" cx="21" cy="21" r="15.9155"
+                        stroke-dasharray="21 79" stroke-dashoffset="46"></circle>
+              </svg>
+              <div class="lp-bars">
+                <% [40, 65, 30, 80, 55, 70, 20].each do |h| %>
+                  <span class="lp-bars__bar" style="height: <%= h %>%"></span>
+                <% end %>
+              </div>
+            </div>
+          </div>
+          <h3 class="lp-proof__title">Relatórios que somam</h3>
+          <p class="lp-proof__text muted">
+            Barras por dia, donut por projeto, group-by em 2 níveis.
+            Summary e Detailed. Export mensal <strong>.xlsx e CSV</strong> —
+            o entregável que vira fatura.
+          </p>
+        </article>
+
+        <%# 2. Popup da extensão de Chrome %>
+        <article class="lp-proof">
+          <div class="lp-proof__art" aria-hidden="true">
+            <div class="lp-popup">
+              <div class="lp-popup__head">
+                <span class="lp-mark lp-mark--sm" aria-hidden="true"></span>
+                <span class="lp-popup__title">Ponto</span>
+              </div>
+              <div class="lp-popup__timer">
+                <span class="lp-swatch lp-swatch--b"></span>
+                <span class="lp-popup__proj">App do cliente</span>
+                <span class="lp-clock lp-clock--sm tabular-nums">00:24:08</span>
+              </div>
+              <button class="lp-popup__btn" type="button" tabindex="-1">Parar timer</button>
+            </div>
+          </div>
+          <h3 class="lp-proof__title">
+            Extensão de Chrome <span class="lp-badge">em breve</span>
+          </h3>
+          <p class="lp-proof__text muted">
+            Start/stop do popup, sem trocar de aba. Mesma API do app — o
+            servidor continua a fonte da verdade.
+          </p>
+        </article>
+
+        <%# 3. Terminal do CLI (comandos reais) %>
+        <article class="lp-proof">
+          <div class="lp-proof__art" aria-hidden="true">
+            <div class="lp-term">
+              <div class="lp-term__bar">
+                <span class="lp-term__tl"></span><span class="lp-term__tl"></span><span class="lp-term__tl"></span>
+              </div>
+              <pre class="lp-term__body"><span class="lp-term__ps">$</span> ponto timer start --project kube
+<span class="lp-term__ok">ok</span> timer correndo · Kubernetes homelab
+<span class="lp-term__ps">$</span> ponto timer show --jq .data.elapsed
+"01:47:12"</pre>
+            </div>
+          </div>
+          <h3 class="lp-proof__title">
+            CLI <code>ponto</code> <span class="lp-badge">em breve</span>
+          </h3>
+          <p class="lp-proof__text muted">
+            Comandos no terminal, saída JSON pros seus agentes de IA
+            (Claude e cia.). Mesmo token da extensão.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <%# ═══════════════ RATE CONGELADA ═══════════════ %>
+    <section class="lp-section lp-frozen" aria-labelledby="frozen-h">
+      <div class="lp-frozen__copy">
+        <h2 id="frozen-h" class="lp-section__title">O número de janeiro não muda em junho</h2>
+        <p class="lp-section__sub muted">
+          Cada lançamento congela a rate do dia em que foi feito. Deu aumento
+          pro cliente? Só vale daqui pra frente — o histórico fica intacto,
+          e a fatura passada continua batendo.
+        </p>
+      </div>
+      <div class="lp-frozen__proof" aria-hidden="true">
+        <div class="lp-freeze-row">
+          <span class="lp-freeze-row__when tabular-nums">jan</span>
+          <span class="lp-freeze-row__rate tabular-nums">R$&nbsp;120,00/h</span>
+          <span class="lp-lock" title="congelado">🔒</span>
+        </div>
+        <div class="lp-freeze-row">
+          <span class="lp-freeze-row__when tabular-nums">jun</span>
+          <span class="lp-freeze-row__rate tabular-nums">R$&nbsp;150,00/h</span>
+          <span class="lp-freeze-row__now">rate atual</span>
+        </div>
+      </div>
+    </section>
+
+    <%# ═══════════════ SELF-HOST (didático e honesto) ═══════════════ %>
+    <section class="lp-section" aria-labelledby="host-h">
+      <h2 id="host-h" class="lp-section__title">Self-host em 4 passos</h2>
+      <p class="lp-section__sub muted">
+        Uma app Rails, SQLite, zero Node. O repo já vem com Dockerfile e
+        config do Kamal. O
+        <%= link_to "README", "https://github.com/alextakitani/ponto#readme" %>
+        é o guia completo.
+      </p>
+
+      <ol class="lp-steps">
+        <li class="lp-step">
+          <span class="lp-step__n tabular-nums">1</span>
+          <div>
+            <h3 class="lp-step__title">Clone do GitHub</h3>
+            <p class="lp-step__text muted">
+              <code>git clone</code> o repositório na sua máquina ou servidor.
+            </p>
+          </div>
+        </li>
+        <li class="lp-step">
+          <span class="lp-step__n tabular-nums">2</span>
+          <div>
+            <h3 class="lp-step__title">Deploy com Docker ou Kamal</h3>
+            <p class="lp-step__text muted">
+              <code>kamal setup</code> (ou <code>docker build</code> na mão) —
+              o <code>Dockerfile</code> e o <code>config/deploy.yml</code> já
+              estão no repo.
+            </p>
+          </div>
+        </li>
+        <li class="lp-step">
+          <span class="lp-step__n tabular-nums">3</span>
+          <div>
+            <h3 class="lp-step__title">Configure <code>ADMIN_EMAIL</code> + SMTP</h3>
+            <p class="lp-step__text muted">
+              O login é passwordless — um código de 6 dígitos por e-mail.
+              Aponte o SMTP nas credenciais e defina seu e-mail de admin.
+            </p>
+          </div>
+        </li>
+        <li class="lp-step">
+          <span class="lp-step__n tabular-nums">4</span>
+          <div>
+            <h3 class="lp-step__title">Primeiro acesso cria o admin</h3>
+            <p class="lp-step__text muted">
+              Com o banco vazio, entrar com o <code>ADMIN_EMAIL</code> cria a
+              conta de admin. Daí você convida quem quiser.
+            </p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <%# ═══════════════ STACK (argumento self-hoster) ═══════════════ %>
+    <section class="lp-section lp-stack" aria-labelledby="stack-h">
+      <h2 id="stack-h" class="lp-section__title">Leve de operar num homelab</h2>
+      <ul class="lp-facts">
+        <li class="lp-fact">
+          <span class="lp-fact__k">Backup = 1 arquivo</span>
+          <span class="lp-fact__v muted">SQLite. Copiou o <code>.sqlite3</code>, fez backup.</span>
+        </li>
+        <li class="lp-fact">
+          <span class="lp-fact__k">Zero Node, zero build</span>
+          <span class="lp-fact__v muted">Rails 8 + Hotwire, importmap. Sem pipeline de JS.</span>
+        </li>
+        <li class="lp-fact">
+          <span class="lp-fact__k">Seus dados são seus</span>
+          <span class="lp-fact__v muted">Criptografados no disco. O admin da instância não vê o seu conteúdo.</span>
+        </li>
+        <li class="lp-fact">
+          <span class="lp-fact__k">Portabilidade sempre</span>
+          <span class="lp-fact__v muted">Export dos seus dados na hora que quiser — nada preso aqui.</span>
+        </li>
+        <li class="lp-fact">
+          <span class="lp-fact__k">Código aberto (O'Saasy)</span>
+          <span class="lp-fact__v muted">Leia, audite, mande PR. Self-hoste à vontade — só não pode revender como SaaS. <%= link_to "No GitHub", "https://github.com/alextakitani/ponto" %>.</span>
+        </li>
+        <li class="lp-fact">
+          <span class="lp-fact__k">Multi-usuário, sem times</span>
+          <span class="lp-fact__v muted">Cada conta é uma bolha isolada. Acesso por convite.</span>
+        </li>
+      </ul>
+    </section>
+
+    <%# ═══════════════ CTA FINAL ═══════════════ %>
+    <section class="lp-section lp-final" aria-labelledby="final-h">
+      <h2 id="final-h" class="lp-section__title">Comece pelo pedido de acesso</h2>
+      <p class="lp-section__sub muted">
+        Manda seu e-mail. Se for aprovado, você recebe o convite por e-mail.
+      </p>
+      <div class="lp-final__cta">
+        <% if @operator_setup_needed %>
+          <%= render "shared/bootstrap_notice", css_class: "lp-notice" %>
+        <% else %>
+          <%= render "access_requests/form" %>
+          <p class="lp-final__signin muted">
+            Já tem conta? <%= link_to "Entrar", sign_in_path %>
+          </p>
+        <% end %>
+      </div>
+    </section>
+  </main>
+
+  <footer class="lp-foot">
+    <span class="lp-foot__brand"><span class="lp-mark lp-mark--sm" aria-hidden="true"></span>Ponto</span>
+    <nav class="lp-foot__nav" aria-label="Rodapé">
+      <%= link_to "GitHub", "https://github.com/alextakitani/ponto" %>
+      <%= link_to "Entrar", sign_in_path %>
+    </nav>
   </footer>
-</main>
+</div>
