@@ -22,7 +22,7 @@ class TrackerUiTest < ActionDispatch::IntegrationTest
     )
 
     other = create_user(email: "other-tracker@example.com")
-    other.time_entries.create!(description: "Alheio", started_at: Time.current - 1.hour, ended_at: Time.current)
+    other_entry = other.time_entries.create!(description: "Alheio", started_at: Time.current - 1.hour, ended_at: Time.current)
 
     get home_path
 
@@ -31,7 +31,29 @@ class TrackerUiTest < ActionDispatch::IntegrationTest
     assert_select "[data-day='2026-07-01']", count: 1
     assert_select "[data-entry-id='#{newer.id}']", count: 1
     assert_select "[data-entry-id='#{older.id}']", count: 1
-    assert_select "body", { text: /Alheio/, count: 0 }
+    # Isolamento (Q23) com dentes: o `assert_select "body", text:, count: 0` casava
+    # vazio (falso ok). Asserção específica no id do entry alheio + no corpo.
+    assert_select "[data-entry-id='#{other_entry.id}']", count: 0
+    assert_not_includes response.body, "Alheio"
+  end
+
+  test "entry RODANDO agrupa no dia do started_at, não no dia de hoje (Q6)" do
+    @user.update!(time_zone: "UTC")
+    running = nil
+    # started em 01/07 23:00, "agora" é 02/07 01:00 (ainda rodando): tem que cair
+    # no grupo de 01/07 (dia do started_at), NÃO no de 02/07 (hoje). Determinístico.
+    running = @user.time_entries.create!(
+      description: "Atravessou a meia-noite",
+      started_at: Time.utc(2026, 7, 1, 23, 0, 0),
+      ended_at: nil
+    )
+    travel_to Time.utc(2026, 7, 2, 1, 0, 0) do
+      get home_path
+    end
+
+    assert_response :success
+    assert_select "[data-day='2026-07-01'] [data-entry-id='#{running.id}']", count: 1
+    assert_select "[data-day='2026-07-02'] [data-entry-id='#{running.id}']", count: 0
   end
 
   test "POST /timer via turbo inicia o timer e renderiza a barra no estado rodando" do
