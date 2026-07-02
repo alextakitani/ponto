@@ -18,6 +18,15 @@ class User < ApplicationRecord
   # - destruir o último admin ativo: abortado no before_destroy.
   scope :active_admins, -> { where(admin: true, suspended_at: nil) }
 
+  # Pré-carrega o COUNT de sessions por conta numa query só (mata o N+1 do
+  # invited?/status na listagem do admin). Expõe a coluna virtual sessions_count
+  # que o #invited? aproveita quando presente.
+  scope :with_sessions_count, -> {
+    left_joins(:sessions)
+      .select("users.*, COUNT(sessions.id) AS sessions_count")
+      .group("users.id")
+  }
+
   validate :must_keep_one_active_admin, if: :demoting_last_active_admin?
   validate :must_keep_one_active_admin_on_suspend, if: :suspending_last_active_admin?
   before_destroy :must_keep_one_active_admin_on_destroy
@@ -70,8 +79,14 @@ class User < ApplicationRecord
   end
 
   # "Convidado" = criado mas nunca entrou. Também gate do "reenviar convite" (Q31).
+  # Se a query trouxe o sessions_count (scope with_sessions_count), usamos ele e
+  # evitamos o COUNT por linha; senão, caímos no sessions.none? de sempre.
   def invited?
-    sessions.none?
+    if has_attribute?(:sessions_count)
+      self[:sessions_count].to_i.zero?
+    else
+      sessions.none?
+    end
   end
 
   # A invariante ≥1 admin ativo vive na validação (barra até update cru); aqui

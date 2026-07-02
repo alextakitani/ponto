@@ -75,4 +75,38 @@ class AccessRequestApprovalTest < ActiveSupport::TestCase
     assert_raises(AccessRequest::InvalidTransition) { request.reject! }
     assert_empty ActionMailer::Base.deliveries
   end
+
+  # --- atomicidade do approve! (Fix code review) ------------------------------
+  # Se a criação do User falha, a transação faz rollback: o request CONTINUA
+  # pending E nenhum convite é enfileirado. O enqueue do mailer mora FORA da
+  # transação (job em banco separado + sem enqueue_after_transaction_commit), mas
+  # só dispara se a transação commitou — logo, um create! que estoura não pode
+  # deixar e-mail órfão.
+  test "approve! faz rollback se User.create! falha: request segue pending e sem e-mail" do
+    request = AccessRequest.create!(email: "falha@example.com", name: "Falha")
+
+    with_failing_user_create do
+      assert_no_difference -> { User.count } do
+        assert_no_enqueued_jobs do
+          assert_raises(ActiveRecord::RecordInvalid) { request.approve! }
+        end
+      end
+    end
+
+    assert request.reload.pending?, "o request deve continuar pending após o rollback"
+    assert_empty ActionMailer::Base.deliveries
+  end
+
+  private
+    # Minitest 6 não traz mais o `stub`; substituímos User.create! por um que
+    # estoura (RecordInvalid) e restauramos no ensure. Cada worker paralelo é um
+    # processo próprio, então mexer no singleton method aqui não vaza pros outros.
+    def with_failing_user_create
+      original = User.method(:create!)
+      User.define_singleton_method(:create!) { |*| raise ActiveRecord::RecordInvalid.new(User.new) }
+      yield
+    ensure
+      User.singleton_class.send(:remove_method, :create!)
+      User.define_singleton_method(:create!, original)
+    end
 end

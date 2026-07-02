@@ -10,7 +10,7 @@ class Admin::BasePolicy < ApplicationPolicy
   # NÃO caem no default_rule. Por isso aliasamos todas explicitamente pra manage?:
   # o piso do painel é "tem que ser admin", pra QUALQUER verbo.
   default_rule :manage?
-  alias_rule :index?, :show?, :new?, :create?, :edit?, :update?, :destroy?, :manage?, to: :manage?
+  alias_rule :index?, :show?, :new?, :create?, :edit?, :update?, :destroy?, to: :manage?
 
   def manage?
     admin?
