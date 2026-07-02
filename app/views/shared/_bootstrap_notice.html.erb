@@ -1,0 +1,9 @@
+<%# Aviso de operador (Q38): sem NENHUMA conta e sem ADMIN_EMAIL configurado, o
+    app não consegue nem convidar o 1º admin. Pedimos a variável de ambiente em
+    vez do fallback perigoso ("1º a logar vira admin"). Fonte única desta copy:
+    a landing e o _email_form renderizam ESTE partial. `css_class` deixa cada
+    contexto aplicar seu próprio estilo (landing__notice na landing; muted no form). %>
+<p class="<%= local_assigns.fetch(:css_class, "muted") %>" role="alert">
+  Nenhuma conta existe e ADMIN_EMAIL não está configurado — defina a variável
+  de ambiente e recarregue.
+</p>

@@ -8,10 +8,7 @@
     </p>
 
     <% if @operator_setup_needed %>
-      <p class="landing__notice" role="alert">
-        Nenhuma conta existe e ADMIN_EMAIL não está configurado — defina a
-        variável de ambiente e recarregue.
-      </p>
+      <%= render "shared/bootstrap_notice", css_class: "landing__notice" %>
     <% else %>
       <%= render "access_requests/form" %>
     <% end %>

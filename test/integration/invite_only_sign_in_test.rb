@@ -47,10 +47,26 @@ class InviteOnlySignInTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", root_path # link "pedir acesso"
   end
 
+  # ⚠️ Armadilha do merge (shared/_flash global): flash.now[:account_missing] é
+  # uma FLAG de UI (true/false), não uma mensagem. O banner global itera todas as
+  # chaves do flash; se não pular account_missing, renderiza um banner com o
+  # texto literal "true". Este teste guarda contra isso.
+  test "resposta de conta inexistente NÃO renderiza banner com o texto 'true'" do
+    create_user(email: "conhecido@example.com")
+    ENV.delete("ADMIN_EMAIL")
+
+    post sign_in_path, params: { email: "desconhecido@example.com" }
+
+    assert_response :unprocessable_entity
+    assert_select ".flash", text: "true", count: 0
+    assert_no_match(/class="flash[^"]*"[^>]*>\s*true\s*</, response.body)
+  end
+
   # Um alert genérico (redirect de página protegida) NÃO deve ganhar o link
   # "pedir acesso" — só a conta inexistente (Q28) puxa a chave dedicada.
+  # A raiz agora é a landing pública (Q36); a home protegida virou /home.
   test "redirect de página protegida para o login NÃO mostra o link Pedir acesso" do
-    get root_path            # sem sessão -> redireciona pro login com flash[:alert]
+    get home_path            # sem sessão -> redireciona pro login com flash[:alert]
     follow_redirect!
 
     assert_response :success

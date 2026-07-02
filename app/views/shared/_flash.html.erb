@@ -1,6 +1,11 @@
 <%# Mensagens de flash (notice/alert) — renderizadas em toda tela. %>
+<%# Chaves puladas: NÃO são mensagens de UI, então não viram banner.
+    - sign_in_code: segredo de dev, exposto via header/JS, não na tela.
+    - account_missing: flag de UI (true/false), não mensagem — puxa o link
+      "pedir acesso" no _email_form; sem o skip, viraria um banner "true". %>
+<% skipped = %w[sign_in_code account_missing] %>
 <% flash.each do |type, message| %>
-  <% next if type.to_s == "sign_in_code" # segredo de dev, exposto via header/JS, não na tela %>
+  <% next if skipped.include?(type.to_s) %>
   <div class="flash flash--<%= type.to_s == "alert" ? "alert" : "notice" %>" role="<%= type.to_s == "alert" ? "alert" : "status" %>">
     <%= message %>
   </div>
