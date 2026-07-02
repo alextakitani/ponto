@@ -6,6 +6,9 @@
 #   destroy        -> logout
 class SessionsController < ApplicationController
   allow_unauthenticated_access only: %i[new create verify create_session]
+  # Um user suspenso ainda precisa conseguir SAIR (o gate barraria o logout,
+  # travando o botão "Sair" da própria página de conta suspensa — Q34).
+  allow_suspended_access only: :destroy
   before_action :ensure_email_pending, only: %i[verify create_session]
 
   # Rate limit no envio é a defesa principal do esquema (decisões §3).
@@ -15,9 +18,12 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = User.find_or_create_by(email: User.normalize_value_for(:email, params[:email]))
+    email = User.normalize_value_for(:email, params[:email])
+    # Convite-only (Q28): entrar NÃO cria conta. Único caso que cria é o bootstrap
+    # do 1º admin via ADMIN_EMAIL (Q37), quando o banco ainda está vazio.
+    user = User.find_by(email: email) || User.bootstrap_admin(email)
 
-    if user.persisted?
+    if user
       begin_sign_in_code_authentication(user.send_sign_in_code)
 
       respond_to do |format|
@@ -25,7 +31,10 @@ class SessionsController < ApplicationController
         format.html { redirect_to verify_sign_in_path }
       end
     else
-      flash.now[:alert] = "E-mail inválido."
+      # Resposta explícita por decisão de design (sem enumeração-paranoia).
+      # O link de "pedir acesso" vive na view (aponta pra root_path por ora).
+      # TODO(Task 1.3): trocar o alvo pela landing com o form de "pedir acesso".
+      flash.now[:alert] = "Essa conta não existe. Peça acesso na página inicial."
       render :new, status: :unprocessable_entity
     end
   end
