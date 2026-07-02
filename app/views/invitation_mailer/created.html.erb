@@ -1,0 +1,9 @@
+<p>Olá<%= @user.name.present? ? " #{@user.name}" : "" %>,</p>
+
+<p>Sua conta no <strong>Ponto</strong> foi criada. Bem-vindo!</p>
+
+<p>Para entrar, use o link abaixo e informe seu e-mail — enviaremos um código de acesso na hora:</p>
+
+<p><%= link_to "Entrar no Ponto", sign_in_url %></p>
+
+<p>É só isso: sem senha. O código chega por e-mail sempre que você for entrar.</p>

@@ -1,0 +1,27 @@
+<% content_for :title, "Ponto — time tracker enxuto e self-hosted" %>
+
+<main class="landing">
+  <div class="landing__panel">
+    <h1 class="landing__brand">Ponto</h1>
+    <p class="landing__pitch muted">
+      Time tracker enxuto e self-hosted: timer, projetos e relatório mensal.
+    </p>
+
+    <% if @operator_setup_needed %>
+      <p class="landing__notice" role="alert">
+        Nenhuma conta existe e ADMIN_EMAIL não está configurado — defina a
+        variável de ambiente e recarregue.
+      </p>
+    <% else %>
+      <%= render "access_requests/form" %>
+    <% end %>
+
+    <p class="landing__signin muted">
+      Já tenho conta <%= link_to "→ entrar", sign_in_path %>
+    </p>
+  </div>
+
+  <footer class="landing__footer muted">
+    <%= link_to "GitHub", "https://github.com/alextakitani/ponto" %>
+  </footer>
+</main>
