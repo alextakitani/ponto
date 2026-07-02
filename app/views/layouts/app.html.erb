@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+  <head>
+    <%= render "layouts/head" %>
+  </head>
+
+  <body class="app">
+    <%# Sidebar fixa (desktop). Nav de trabalho no topo; rodapé = Preferências/Admin/
+        Sair (não são navegação de trabalho — Q65b). Só "Clientes" tem tela nesta
+        fatia; os demais renderizam DESABILITADOS com badge "em breve" (sem link
+        morto; aria-disabled). %>
+    <aside class="shell-sidebar">
+      <div class="shell-sidebar__brand">Ponto</div>
+
+      <nav class="shell-nav" aria-label="Navegação principal">
+        <%= render "layouts/shell/nav_item", label: "Tracker",    active: false, current: false %>
+        <%= render "layouts/shell/nav_item", label: "Relatórios", active: false, current: false %>
+        <%= render "layouts/shell/nav_item", label: "Projetos",   active: false, current: false %>
+        <%= render "layouts/shell/nav_item", label: "Clientes",   active: true,  current: current_page?(clients_path), href: clients_path %>
+        <%= render "layouts/shell/nav_item", label: "Tags",       active: false, current: false %>
+      </nav>
+
+      <div class="shell-sidebar__footer">
+        <%= render "layouts/shell/nav_item", label: "Preferências", active: false, current: false %>
+        <% if current_user.admin? %>
+          <%= link_to "Admin", admin_root_path, class: "shell-nav__item" %>
+        <% end %>
+        <%= button_to "Sair", sign_out_path, method: :delete, class: "shell-nav__item shell-nav__item--button" %>
+      </div>
+    </aside>
+
+    <div class="shell-main">
+      <%# Barra fina reservada pra futura barra do timer (start/stop) — Fase 3.
+          Placeholder discreto; NÃO construir timer aqui. %>
+      <div class="shell-timerbar" aria-hidden="true">
+        <span class="muted">O timer chega na Fase 3.</span>
+      </div>
+
+      <div id="flash"><%= render "shared/flash" %></div>
+
+      <main class="shell-content">
+        <%= yield %>
+      </main>
+    </div>
+
+    <%# Bottom tab bar (mobile ≤ breakpoint — Q65/Q65b). Tracker · Relatórios ·
+        Projetos · Mais. "Mais" abre uma lista (via <details>, zero JS) com Clientes ·
+        Tags · Preferências · Admin(se admin) · Sair. Os sem tela = "em breve". %>
+    <nav class="shell-tabs" aria-label="Navegação mobile">
+      <%= render "layouts/shell/tab_item", label: "Tracker",    active: false, current: false %>
+      <%= render "layouts/shell/tab_item", label: "Relatórios", active: false, current: false %>
+      <%= render "layouts/shell/tab_item", label: "Projetos",   active: false, current: false %>
+
+      <details class="shell-tabs__more">
+        <summary class="shell-tabs__item">Mais</summary>
+        <div class="shell-tabs__more-menu">
+          <%= link_to "Clientes", clients_path, class: "shell-nav__item" %>
+          <span class="shell-nav__item shell-nav__item--disabled" aria-disabled="true">
+            Tags <span class="shell-badge">em breve</span>
+          </span>
+          <span class="shell-nav__item shell-nav__item--disabled" aria-disabled="true">
+            Preferências <span class="shell-badge">em breve</span>
+          </span>
+          <% if current_user.admin? %>
+            <%= link_to "Admin", admin_root_path, class: "shell-nav__item" %>
+          <% end %>
+          <%= button_to "Sair", sign_out_path, method: :delete, class: "shell-nav__item shell-nav__item--button" %>
+        </div>
+      </details>
+    </nav>
+  </body>
+</html>

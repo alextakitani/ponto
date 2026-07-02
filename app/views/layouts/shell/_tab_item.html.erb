@@ -1,0 +1,11 @@
+<%# Tab da bottom bar (mobile). Mesma regra do nav_item: sem tela nesta fatia =
+    desabilitado "em breve". Só quando `active` vira link real. %>
+<% if active %>
+  <%= link_to label, href, class: "shell-tabs__item #{'shell-tabs__item--current' if current}",
+        aria: { current: ("page" if current) } %>
+<% else %>
+  <span class="shell-tabs__item shell-tabs__item--disabled" aria-disabled="true">
+    <%= label %>
+    <span class="shell-badge">em breve</span>
+  </span>
+<% end %>

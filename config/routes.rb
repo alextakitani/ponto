@@ -30,6 +30,15 @@ Rails.application.routes.draw do
   # o logado pra cá.
   get "home" => "home#show", as: :home
 
+  # Clientes (Fatia 2.2) — 1ª tabela de domínio. Arquivar/desarquivar seguem a
+  # disciplina REST do projeto (STYLE.md): ação sem verbo padrão vira sub-resource
+  # singular, não custom action. Espelha o `resource :suspension` do admin:
+  #   arquivar    = POST   /clients/:id/archival   (cria o arquivamento)
+  #   desarquivar = DELETE /clients/:id/archival   (remove o arquivamento)
+  resources :clients do
+    resource :archival, only: %i[create destroy], module: :clients
+  end
+
   # Painel de admin (Q68) — PÁGINA ÚNICA em /admin (dashboard#show) com dois
   # resources REST por baixo. Regra do projeto (STYLE.md): ação sem verbo padrão
   # vira resource/membro REST, não custom action. Por isso suspensão/reativação/

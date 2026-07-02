@@ -1,0 +1,59 @@
+<% content_for :title, "Clientes" %>
+
+<header class="page-header">
+  <div>
+    <h1>Clientes</h1>
+    <p class="muted">Cadastre seus clientes e a taxa faturável por hora de cada um.</p>
+  </div>
+  <%= link_to "Novo cliente", new_client_path, class: "btn" %>
+</header>
+
+<div class="page-toolbar">
+  <%# Busca por nome (filtra EM RUBY no controller — name é criptografado). %>
+  <%= form_with url: clients_path, method: :get, class: "page-search" do |form| %>
+    <% if @showing_archived %><%= form.hidden_field :archived, value: "1" %><% end %>
+    <%= form.search_field :q, value: params[:q], placeholder: "Buscar por nome…",
+          autocomplete: "off", "aria-label": "Buscar clientes por nome" %>
+  <% end %>
+
+  <%# Alterna entre ativos e arquivados (link discreto — Q7). %>
+  <% if @showing_archived %>
+    <%= link_to "← Ver ativos", clients_path, class: "muted" %>
+  <% else %>
+    <%= link_to "Ver arquivados", clients_path(archived: "1"), class: "muted" %>
+  <% end %>
+</div>
+
+<% if @clients.any? %>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Moeda</th>
+        <th class="data-table__num">Valor/hora</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= render partial: "clients/client", collection: @clients, as: :client %>
+    </tbody>
+  </table>
+<% elsif params[:q].present? %>
+  <div class="empty-state">
+    <p>Nenhum cliente encontrado para “<%= params[:q] %>”.</p>
+  </div>
+<% elsif @showing_archived %>
+  <div class="empty-state">
+    <p>Nenhum cliente arquivado por aqui.</p>
+  </div>
+<% else %>
+  <%# Empty state convidativo — primeira coisa que o usuário vê. %>
+  <div class="empty-state">
+    <h2>Comece cadastrando um cliente</h2>
+    <p class="muted">
+      Um cliente guarda a taxa faturável por hora e a moeda. Depois você aponta
+      seus projetos e horas para ele — e o relatório mensal sai pronto.
+    </p>
+    <%= link_to "Cadastrar primeiro cliente", new_client_path, class: "btn" %>
+  </div>
+<% end %>

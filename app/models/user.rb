@@ -5,6 +5,9 @@ class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   has_many :sign_in_codes, dependent: :destroy
   has_many :access_tokens, dependent: :destroy
+  # Domínio isolado por user (Q23). dependent: :destroy leva a bolha junto na
+  # deleção da conta (destroy_completely — Q33).
+  has_many :clients, dependent: :destroy
 
   normalizes :email, with: ->(value) { value.strip.downcase.presence }
 

@@ -1,12 +1,17 @@
-<div class="card">
-  <h1>Ponto</h1>
-  <p>Você está autenticado como <strong><%= current_user.email %></strong>.</p>
-  <p class="muted">As telas de timer, projetos e relatórios entram nas próximas fases.</p>
+<% content_for :title, "Ponto" %>
 
-  <%# Link p/ o painel só pro admin (Q68). A nav real vem na fase de telas. %>
-  <% if current_user.admin? %>
-    <%= link_to "Admin", admin_root_path, class: "btn btn--quiet" %>
-  <% end %>
+<header class="page-header">
+  <div>
+    <h1>Bem-vindo ao Ponto</h1>
+    <p class="muted">Você está autenticado como <strong><%= current_user.email %></strong>.</p>
+  </div>
+</header>
 
-  <%= button_to "Sair", sign_out_path, method: :delete %>
+<div class="empty-state">
+  <h2>O timer chega na Fase 3</h2>
+  <p class="muted">
+    Enquanto isso, adiante o cadastro: seus clientes guardam a taxa por hora e a
+    moeda que vão alimentar os relatórios.
+  </p>
+  <%= link_to "Cadastre seus clientes", clients_path, class: "btn" %>
 </div>
