@@ -8,19 +8,21 @@ class BearerAuthTest < ActionDispatch::IntegrationTest
     @read = @user.access_tokens.create!(permission: "read")
   end
 
+  # home_path é uma página PROTEGIDA (require_authentication). root_path virou a
+  # landing pública (Q36), então o exercício do concern usa a home.
   test "Bearer em request JSON autentica (não redireciona pro login)" do
-    get root_path, headers: bearer(@read), as: :json
+    get home_path, headers: bearer(@read), as: :json
     assert_not_equal 302, response.status
     assert_not_equal 401, response.status
   end
 
   test "request JSON sem token é rejeitado com 401" do
-    get root_path, as: :json
+    get home_path, as: :json
     assert_response :unauthorized
   end
 
   test "Bearer é ignorado em request HTML: cai no fluxo de login (302)" do
-    get root_path, headers: bearer(@read)
+    get home_path, headers: bearer(@read)
     assert_redirected_to sign_in_path
   end
 

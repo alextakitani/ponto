@@ -16,6 +16,13 @@ Rails.application.routes.draw do
   post   "sign_in/session" => "sessions#create_session", as: :sign_in_session
   delete "sign_out"        => "sessions#destroy",        as: :sign_out
 
-  # Home protegida (placeholder até as telas de domínio).
-  root "home#show"
+  # Landing pública na raiz (Q36/Q67): anônimo vê a landing; logado é
+  # redirecionado pra home. Pedido de acesso público grava um AccessRequest (Q24).
+  root "landing#show"
+  resources :access_requests, only: :create
+
+  # Home protegida (placeholder até as telas de domínio). É pra onde o login
+  # cai: after_authentication_url volta pra root_url, e a landing redireciona
+  # o logado pra cá.
+  get "home" => "home#show", as: :home
 end

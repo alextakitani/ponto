@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_29_192952) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_02_144813) do
+  create_table "access_requests", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.string "name"
+    t.text "note"
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_access_requests_on_email"
+  end
+
   create_table "access_tokens", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "label"

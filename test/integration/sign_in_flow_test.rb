@@ -8,17 +8,19 @@ class SignInFlowTest < ActionDispatch::IntegrationTest
   setup { ActionMailer::Base.deliveries.clear }
 
   test "página protegida sem sessão redireciona para o login" do
-    get root_path
+    get home_path
     assert_redirected_to sign_in_path
   end
 
   test "fluxo feliz: e-mail -> código -> sessão -> acessa página protegida" do
     code = request_code_for("alex@example.com")
 
+    # Login volta pra root_url (after_authentication_url); a landing então
+    # redireciona o logado pra home protegida.
     post sign_in_session_path, params: { code: code }
     assert_redirected_to root_path
 
-    get root_path
+    get home_path
     assert_response :success
   end
 
