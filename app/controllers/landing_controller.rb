@@ -10,16 +10,11 @@ class LandingController < ApplicationController
       # o redirect pra ela em vez do placeholder.
       redirect_to home_path
     else
-      @operator_setup_needed = operator_setup_needed?
+      # Estado especial (Q38): sem NENHUMA conta e sem ADMIN_EMAIL configurado, o
+      # app ainda não pode nem convidar o admin — mostramos um aviso de operador
+      # no lugar do form de pedir acesso. bootstrap_blocked? normaliza o env
+      # (strip/downcase/presence), então é mais robusto que o predicado cru.
+      @operator_setup_needed = User.bootstrap_blocked?
     end
-  end
-
-  private
-
-  # Estado especial (Q38): sem NENHUMA conta e sem ADMIN_EMAIL configurado, o
-  # app ainda não pode nem convidar o admin — mostramos um aviso de operador no
-  # lugar do form de pedir acesso.
-  def operator_setup_needed?
-    User.none? && ENV["ADMIN_EMAIL"].blank?
   end
 end
