@@ -150,15 +150,15 @@ svg {
 
 /*
  * Tema escuro: o gabinete (#1f2829) quase some sobre a --color-surface escura.
- * Pinta um badge creme arredondado atrás da marca p/ ela continuar legível.
- * padding + margem negativa mantêm o SVG no mesmo tamanho visual, só com respiro.
+ * Badge creme atrás da marca via background + ANEL em box-shadow — sem
+ * padding/margin: porcentagem de padding/margin resolve contra a largura do
+ * PAI (não do próprio box), o que colapsava o SVG e cobria o wordmark.
  */
 @media (prefers-color-scheme: dark) {
   .logo-mark {
     background-color: #f4ead2;
     border-radius: 22%;
-    padding: 10%;
-    margin: -10%;
+    box-shadow: 0 0 0 2px #f4ead2;
   }
 }
 
