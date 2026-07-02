@@ -19,22 +19,35 @@
     <% end %>
   </td>
   <td class="data-table__actions">
+    <%# Summary = botão compacto sem label visível → aria-label (Q80). %>
     <details class="row-menu" data-controller="menu">
-      <summary class="btn btn--quiet">⋮</summary>
+      <summary class="btn btn--quiet" aria-label="Ações de <%= project.name %>"><%= icon("ellipsis-vertical") %></summary>
       <div class="row-menu__items">
-        <%= link_to "Editar", edit_project_path(project), class: "btn btn--quiet" %>
+        <%= link_to edit_project_path(project), class: "btn btn--quiet" do %>
+          <%= icon("pencil") %>
+          Editar
+        <% end %>
 
         <% if project.archived? %>
-          <%= button_to "Desarquivar", project_archival_path(project), method: :delete, class: "btn btn--quiet" %>
+          <%= button_to project_archival_path(project), method: :delete, class: "btn btn--quiet" do %>
+            <%= icon("archive-restore") %>
+            Desarquivar
+          <% end %>
         <% else %>
-          <%= button_to "Arquivar", project_archival_path(project), class: "btn btn--quiet" %>
+          <%= button_to project_archival_path(project), class: "btn btn--quiet" do %>
+            <%= icon("archive") %>
+            Arquivar
+          <% end %>
         <% end %>
 
         <%# Hard-delete com confirmação (Q7). As tasks caem junto; a Fase 3 restringe
             quando houver entries. %>
-        <%= button_to "Deletar", project_path(project), method: :delete,
+        <%= button_to project_path(project), method: :delete,
               class: "btn btn--danger",
-              data: { turbo_confirm: "Deletar “#{project.name}” definitivamente? Esta ação não pode ser desfeita." } %>
+              data: { turbo_confirm: "Deletar “#{project.name}” definitivamente? Esta ação não pode ser desfeita." } do %>
+          <%= icon("trash-2") %>
+          Deletar
+        <% end %>
       </div>
     </details>
   </td>

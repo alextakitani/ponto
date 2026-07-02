@@ -92,6 +92,29 @@ svg {
 }
 
 /*
+ * Ícones inline (Lucide vendorizado — Q80, helper `icon`). Sempre acompanham um
+ * label (Q63); herdam a cor do texto via currentColor (claro/escuro de graça).
+ * Em containers flex (botões, nav) o alinhamento vem do align-items do pai; no
+ * fluxo inline, o vertical-align negativo assenta o ícone na linha do texto denso.
+ */
+.icon {
+  display: inline-block;
+  flex: none;
+  vertical-align: -0.1875em; /* -3px a 16px — centro óptico com texto 13–14px */
+}
+
+/* Tamanhos por CSS (vencem os atributos width/height que o helper emite). */
+.icon--sm {
+  width: 14px;
+  height: 14px;
+}
+
+.icon--lg {
+  width: 40px;
+  height: 40px;
+}
+
+/*
  * Container centralizado das telas simples (auth, etc.). Painel elevado discreto.
  * Componente mínimo p/ manter as telas existentes legíveis; telas de app virão
  * com seu próprio shell nas próximas fases.

@@ -5,12 +5,16 @@
     <h1>Projetos</h1>
     <p class="muted">Organize suas horas por projeto — cada um herda a taxa do cliente ou define a sua.</p>
   </div>
-  <%= link_to "Novo projeto", new_project_path, class: "btn" %>
+  <%= link_to new_project_path, class: "btn" do %>
+    <%= icon("plus") %>
+    Novo projeto
+  <% end %>
 </header>
 
 <div class="page-toolbar">
   <%# Busca por nome (filtra EM RUBY no controller — name é criptografado). %>
   <%= form_with url: projects_path, method: :get, class: "page-search" do |form| %>
+    <%= icon("search") %>
     <% if @showing_archived %><%= form.hidden_field :archived, value: "1" %><% end %>
     <% if params[:client_id].present? %><%= form.hidden_field :client_id, value: params[:client_id] %><% end %>
     <%= form.search_field :q, value: params[:q], placeholder: "Buscar por nome…",
@@ -60,11 +64,15 @@
   </div>
 <% else %>
   <div class="empty-state">
+    <%= icon("folder-open", class: "icon--lg") %>
     <h2>Comece criando um projeto</h2>
     <p class="muted">
       Um projeto agrupa suas horas e pode herdar a taxa faturável do cliente
       (ou definir a sua). Depois você registra o tempo nele.
     </p>
-    <%= link_to "Criar primeiro projeto", new_project_path, class: "btn" %>
+    <%= link_to new_project_path, class: "btn" do %>
+      <%= icon("plus") %>
+      Criar primeiro projeto
+    <% end %>
   </div>
 <% end %>

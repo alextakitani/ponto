@@ -1,20 +1,33 @@
 <%# Uma tarefa na lista (TELA 02). Renomear = form inline de edição; arquivar/deletar
-    via botões. Cada linha é um <li> com id pra o Turbo Stream endereçar. %>
+    via botões. Cada linha é um <li> com id pra o Turbo Stream endereçar. Botões
+    densos (btn--sm) levam ícone menor (icon--sm) pra não estourar a linha (Q80). %>
 <li id="<%= dom_id(task) %>" class="task-row">
   <span class="task-row__name"><%= task.name %></span>
 
   <div class="task-row__actions">
     <%# Renomear: GET responde um Turbo Stream que troca esta linha por um form inline. %>
-    <%= link_to "Renomear", edit_task_path(task), class: "btn btn--quiet btn--sm",
-          data: { turbo_stream: true } %>
-
-    <% if task.archived? %>
-      <%= button_to "Desarquivar", task_archival_path(task), method: :delete, class: "btn btn--quiet btn--sm" %>
-    <% else %>
-      <%= button_to "Arquivar", task_archival_path(task), class: "btn btn--quiet btn--sm" %>
+    <%= link_to edit_task_path(task), class: "btn btn--quiet btn--sm",
+          data: { turbo_stream: true } do %>
+      <%= icon("pencil", class: "icon--sm") %>
+      Renomear
     <% end %>
 
-    <%= button_to "Deletar", task_path(task), method: :delete, class: "btn btn--danger btn--sm",
-          data: { turbo_confirm: "Deletar a tarefa “#{task.name}”?" } %>
+    <% if task.archived? %>
+      <%= button_to task_archival_path(task), method: :delete, class: "btn btn--quiet btn--sm" do %>
+        <%= icon("archive-restore", class: "icon--sm") %>
+        Desarquivar
+      <% end %>
+    <% else %>
+      <%= button_to task_archival_path(task), class: "btn btn--quiet btn--sm" do %>
+        <%= icon("archive", class: "icon--sm") %>
+        Arquivar
+      <% end %>
+    <% end %>
+
+    <%= button_to task_path(task), method: :delete, class: "btn btn--danger btn--sm",
+          data: { turbo_confirm: "Deletar a tarefa “#{task.name}”?" } do %>
+      <%= icon("trash-2", class: "icon--sm") %>
+      Deletar
+    <% end %>
   </div>
 </li>

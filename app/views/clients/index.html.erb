@@ -5,12 +5,16 @@
     <h1>Clientes</h1>
     <p class="muted">Cadastre seus clientes e a taxa faturável por hora de cada um.</p>
   </div>
-  <%= link_to "Novo cliente", new_client_path, class: "btn" %>
+  <%= link_to new_client_path, class: "btn" do %>
+    <%= icon("plus") %>
+    Novo cliente
+  <% end %>
 </header>
 
 <div class="page-toolbar">
   <%# Busca por nome (filtra EM RUBY no controller — name é criptografado). %>
   <%= form_with url: clients_path, method: :get, class: "page-search" do |form| %>
+    <%= icon("search") %>
     <% if @showing_archived %><%= form.hidden_field :archived, value: "1" %><% end %>
     <%= form.search_field :q, value: params[:q], placeholder: "Buscar por nome…",
           autocomplete: "off", "aria-label": "Buscar clientes por nome" %>
@@ -49,11 +53,15 @@
 <% else %>
   <%# Empty state convidativo — primeira coisa que o usuário vê. %>
   <div class="empty-state">
+    <%= icon("users", class: "icon--lg") %>
     <h2>Comece cadastrando um cliente</h2>
     <p class="muted">
       Um cliente guarda a taxa faturável por hora e a moeda. Depois você aponta
       seus projetos e horas para ele — e o relatório mensal sai pronto.
     </p>
-    <%= link_to "Cadastrar primeiro cliente", new_client_path, class: "btn" %>
+    <%= link_to new_client_path, class: "btn" do %>
+      <%= icon("plus") %>
+      Cadastrar primeiro cliente
+    <% end %>
   </div>
 <% end %>

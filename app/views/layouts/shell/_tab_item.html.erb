@@ -1,10 +1,15 @@
 <%# Tab da bottom bar (mobile). Mesma regra do nav_item: sem tela nesta fatia =
-    desabilitado "em breve". Só quando `active` vira link real. %>
+    desabilitado "em breve". Só quando `active` vira link real. Ícone em cima do
+    label (layout em coluna — Q65), sempre acompanhado do texto (Q63/Q80). %>
 <% if active %>
-  <%= link_to label, href, class: "shell-tabs__item #{'shell-tabs__item--current' if current}",
-        aria: { current: ("page" if current) } %>
+  <%= link_to href, class: "shell-tabs__item #{'shell-tabs__item--current' if current}",
+        aria: { current: ("page" if current) } do %>
+    <%= icon(icon_name) %>
+    <%= label %>
+  <% end %>
 <% else %>
   <span class="shell-tabs__item shell-tabs__item--disabled" aria-disabled="true">
+    <%= icon(icon_name) %>
     <%= label %>
     <span class="shell-badge">em breve</span>
   </span>
