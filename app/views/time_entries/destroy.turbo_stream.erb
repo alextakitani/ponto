@@ -1,0 +1,7 @@
+<%= turbo_stream.replace "tracker_entries" do %>
+  <%= render "home/tracker_entries", day_groups: @tracker_day_groups %>
+<% end %>
+
+<%= turbo_stream.replace "timer_bar" do %>
+  <%= render "timers/frame", time_entry: @current_timer, form_time_entry: nil %>
+<% end %>

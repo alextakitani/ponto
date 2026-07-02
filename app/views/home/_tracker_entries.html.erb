@@ -1,0 +1,13 @@
+<div id="tracker_entries" class="tracker-list">
+  <% if day_groups.any? %>
+    <% day_groups.each do |day_group| %>
+      <%= render "home/day_group", day_group: day_group %>
+    <% end %>
+  <% else %>
+    <div class="empty-state">
+      <%= icon("timer", class: "icon--lg") %>
+      <h2>Comece seu primeiro timer</h2>
+      <p class="muted">Escolha um projeto se quiser, descreva o trabalho e inicie o cronômetro para registrar sua primeira entrada.</p>
+    </div>
+  <% end %>
+</div>

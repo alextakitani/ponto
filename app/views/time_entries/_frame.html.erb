@@ -1,0 +1,49 @@
+<%= turbo_frame_tag time_entry do %>
+  <article id="<%= dom_id(time_entry) %>" class="tracker-entry <%= "tracker-entry--running" unless time_entry.ended_at? %>"
+      data-entry-id="<%= time_entry.id %>" data-running="<%= !time_entry.ended_at? %>">
+    <div class="tracker-entry__main">
+      <div class="tracker-entry__summary">
+        <span class="tracker-entry__description"><%= tracker_entry_description(time_entry) %></span>
+        <span class="tracker-entry__separator" aria-hidden="true">·</span>
+        <span class="tracker-entry__project">
+          <% if time_entry.project %>
+            <span class="project-dot" style="background-color: <%= time_entry.project.color %>" aria-hidden="true"></span>
+          <% end %>
+          <%= tracker_entry_project_name(time_entry) %>
+        </span>
+        <span class="tracker-entry__separator" aria-hidden="true">·</span>
+        <span class="tracker-entry__range muted tabular-nums"><%= tracker_entry_time_range(time_entry) %></span>
+      </div>
+    </div>
+
+    <div class="tracker-entry__actions">
+      <span class="tracker-entry__duration tabular-nums">
+        <% if time_entry.ended_at? %>
+          <%= tracker_duration(time_entry.duration_seconds) %>
+        <% else %>
+          <span data-controller="stopwatch" data-stopwatch-started-at-value="<%= time_entry.started_at.iso8601 %>">
+            <%= tracker_duration(0) %>
+          </span>
+        <% end %>
+      </span>
+
+      <details class="row-menu" data-controller="menu">
+        <summary class="btn btn--quiet btn--sm" aria-label="Ações de <%= tracker_entry_description(time_entry) %>">
+          <%= icon("ellipsis-vertical") %>
+        </summary>
+        <div class="row-menu__items">
+          <%= link_to edit_time_entry_path(time_entry), class: "btn btn--quiet", data: { turbo_frame: dom_id(time_entry) } do %>
+            <%= icon("pencil") %>
+            Editar
+          <% end %>
+
+          <%= button_to time_entry_path(time_entry), method: :delete, class: "btn btn--danger",
+                data: { turbo_confirm: "Excluir esta entrada?" } do %>
+            <%= icon("trash-2") %>
+            Excluir
+          <% end %>
+        </div>
+      </details>
+    </div>
+  </article>
+<% end %>

@@ -1,0 +1,57 @@
+<% if time_entry %>
+  <div class="timer-bar timer-bar--running">
+    <div class="timer-bar__context">
+      <p class="timer-bar__eyebrow">Timer em andamento</p>
+      <div class="timer-bar__title">
+        <span><%= tracker_entry_description(time_entry) %></span>
+        <span class="timer-bar__separator" aria-hidden="true">·</span>
+        <span class="timer-bar__project">
+          <% if time_entry.project %>
+            <span class="project-dot" style="background-color: <%= time_entry.project.color %>" aria-hidden="true"></span>
+          <% end %>
+          <%= tracker_entry_project_name(time_entry) %>
+        </span>
+      </div>
+    </div>
+
+    <div class="timer-bar__actions">
+      <span class="timer-bar__stopwatch tabular-nums" data-controller="stopwatch"
+          data-stopwatch-started-at-value="<%= time_entry.started_at.iso8601 %>">
+        <%= tracker_duration(0) %>
+      </span>
+      <%= button_to timer_path, method: :delete, class: "btn btn--danger" do %>
+        <%= icon("square") %>
+        Parar
+      <% end %>
+    </div>
+  </div>
+<% else %>
+  <% form_time_entry ||= TimeEntry.new %>
+
+  <%= form_with url: timer_path, scope: :timer, class: "timer-bar timer-bar--idle" do |form| %>
+    <div class="timer-bar__fields">
+      <div class="timer-bar__input">
+        <%= form.label :description, "Descrição", class: "timer-bar__label" %>
+        <%= form.text_field :description, value: form_time_entry.description,
+              placeholder: "No que você está trabalhando?" %>
+      </div>
+
+      <div class="timer-bar__select">
+        <%= form.label :project_id, "Projeto", class: "timer-bar__label" %>
+        <%= form.select :project_id, grouped_options_for_select(tracker_grouped_project_options, form_time_entry.project_id),
+              { include_blank: "(sem projeto)" } %>
+      </div>
+    </div>
+
+    <div class="timer-bar__actions">
+      <%= form.button type: :submit, class: "btn" do %>
+        <%= icon("play") %>
+        Iniciar
+      <% end %>
+    </div>
+
+    <% if form_time_entry.errors.any? %>
+      <p class="timer-bar__error" role="alert"><%= form_time_entry.errors.full_messages.to_sentence %></p>
+    <% end %>
+  <% end %>
+<% end %>

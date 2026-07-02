@@ -1,0 +1,58 @@
+<%= form_with model: time_entry, class: "tracker-entry tracker-entry--editing" do |form| %>
+  <% if time_entry.errors.any? %>
+    <div class="form-errors" role="alert">
+      <ul>
+        <% time_entry.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="tracker-entry__edit-grid">
+    <div class="form-field">
+      <%= form.label :description, "Descrição" %>
+      <%= form.text_field :description, placeholder: "No que você está trabalhando?" %>
+    </div>
+
+    <div class="form-field">
+      <%= form.label :project_id, "Projeto" %>
+      <%= form.select :project_id, grouped_options_for_select(tracker_grouped_project_options, time_entry.project_id),
+            { include_blank: "(sem projeto)" } %>
+    </div>
+
+    <div class="form-field">
+      <%= form.label :started_at, "Início" %>
+      <%= form.datetime_local_field :started_at, value: tracker_datetime_local_value(time_entry.started_at) %>
+    </div>
+
+    <label class="tracker-billable">
+      <%= form.check_box :billable %>
+      Faturável
+    </label>
+  </div>
+
+  <dl class="tracker-entry__readonly tabular-nums">
+    <div>
+      <dt>Fim</dt>
+      <dd><%= time_entry.ended_at? ? tracker_local_time(time_entry.ended_at) : "Rodando" %></dd>
+    </div>
+    <div>
+      <dt>Duração</dt>
+      <dd>
+        <% if time_entry.ended_at? %>
+          <%= tracker_duration(time_entry.duration_seconds) %>
+        <% else %>
+          <span data-controller="stopwatch" data-stopwatch-started-at-value="<%= time_entry.started_at.iso8601 %>">
+            <%= tracker_duration(0) %>
+          </span>
+        <% end %>
+      </dd>
+    </div>
+  </dl>
+
+  <div class="form-actions">
+    <%= form.submit "Salvar", class: "btn btn--sm" %>
+    <%= link_to "Cancelar", time_entry_path(time_entry), class: "btn btn--quiet btn--sm" %>
+  </div>
+<% end %>
