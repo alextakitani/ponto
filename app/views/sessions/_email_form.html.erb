@@ -11,13 +11,17 @@
     </p>
   <% end %>
 
-  <%# Erro de login (ex.: conta inexistente — Q28). O link de "pedir acesso"
-      aponta pra root_path por ora; TODO(Task 1.3): trocar pela landing. %>
+  <%# Alert genérico (login exigido, rate limit, e-mail em branco): só o texto.
+      O shared/_flash ainda não existe nesta branch, então o form mostra o alert
+      aqui — mas SEM o link "pedir acesso", que é exclusivo da conta inexistente. %>
   <% if flash[:alert].present? %>
-    <p class="muted" role="alert">
-      <%= flash[:alert] %>
-      <%= link_to "Pedir acesso", root_path %>
-    </p>
+    <p class="muted" role="alert"><%= flash[:alert] %></p>
+  <% end %>
+
+  <%# Conta inexistente (Q28): a chave dedicada account_missing puxa o link de
+      "pedir acesso" (aponta pra root_path por ora; TODO(Task 1.3): landing). %>
+  <% if flash[:account_missing] %>
+    <p class="muted"><%= link_to "Pedir acesso", root_path %></p>
   <% end %>
 
   <%= form_with url: sign_in_path, method: :post do |f| %>

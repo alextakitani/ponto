@@ -3,6 +3,11 @@ require "test_helper"
 # Login é convite-only (Q28/Q37/Q38): entrar NÃO cria conta. Exceções controladas:
 # bootstrap do 1º admin via ADMIN_EMAIL, e aviso de operador quando não há conta
 # nem ADMIN_EMAIL. Testamos o controle de fluxo NOSSO, não o framework.
+#
+# ⚠️ Paralelização: estes testes mutam ENV["ADMIN_EMAIL"] e dependem de User.none?
+# (banco vazio). Isso é seguro no modo default do Rails (parallelize por PROCESSOS:
+# cada worker é um fork com ENV e DB próprios). QUEBRARIA com
+# parallelize(with: :threads), onde os workers compartilham ENV e a mesma conexão.
 class InviteOnlySignInTest < ActionDispatch::IntegrationTest
   include ActiveJob::TestHelper
 
@@ -40,6 +45,17 @@ class InviteOnlySignInTest < ActionDispatch::IntegrationTest
     assert_select "form[action=?]", sign_in_path # continua no form de e-mail
     assert_match(/conta não existe/i, response.body)
     assert_select "a[href=?]", root_path # link "pedir acesso"
+  end
+
+  # Um alert genérico (redirect de página protegida) NÃO deve ganhar o link
+  # "pedir acesso" — só a conta inexistente (Q28) puxa a chave dedicada.
+  test "redirect de página protegida para o login NÃO mostra o link Pedir acesso" do
+    get root_path            # sem sessão -> redireciona pro login com flash[:alert]
+    follow_redirect!
+
+    assert_response :success
+    assert_match(/Faça login para continuar/, response.body) # o alert genérico aparece
+    assert_select "a[href=?]", root_path, false # mas SEM o link "pedir acesso"
   end
 
   # --- C: bootstrap do 1º admin via ADMIN_EMAIL -------------------------------
