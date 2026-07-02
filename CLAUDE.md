@@ -161,6 +161,13 @@ Hierarquia **Client → Project → Task → TimeEntry**, com **Tags** por fora.
 ⚠️ **Toda tabela de domínio tem `user_id`** (isolamento Q23) — escopar TODA query por
 `Current.user`. Tabelas usam **money-rails** (`monetize`) pra valores (Q11/Q20).
 
+> **Fundações: money-rails ✓, AR Encryption ✓, Archivable ✓, relation_scope ✓
+> (Fatia 2.1).** money-rails (BRL default, HALF_UP) em `config/initializers/money.rb`;
+> chaves de AR Encryption nas credentials (Rails 8 lê sozinho); concern `Archivable`
+> (`active`/`archived`, SEM default_scope) em `app/models/concerns/archivable.rb`; o
+> `relation_scope` de tenant + ownership base em `app/policies/application_policy.rb`.
+> As tabelas de domínio abaixo consomem essa infra ao nascer.
+
 | Tabela | Campos-chave | Notas |
 |---|---|---|
 | `Client` | user_id, name, **rate_cents (default)**, currency (default BRL) | rate = taxa faturável/hora PADRÃO do cliente. Moeda mora aqui. `monetize :rate_cents, allow_nil: true, with_model_currency: :currency`. |
