@@ -70,14 +70,27 @@ select {
 }
 
 /*
+ * A cor da seta (stroke='%235c626e') é o valor CLARO de --color-text-subtle
+ * embutido no data-URI. Um data-URI NÃO aceita var(), então duplicamos a regra
+ * aqui com o valor ESCURO do token (#9aa0ac) pra a seta seguir o dark mode.
+ * ⚠️ Manter em sincronia com --color-text-subtle em tokens.css (ambos os temas).
+ */
+@media (prefers-color-scheme: dark) {
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%239aa0ac' stroke-width='1.5'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+  }
+}
+
+/*
  * Botões. .btn = acento sólido; .btn--quiet = neutro.
  * input[type=submit] e button[type=submit] herdam o visual de .btn por padrão,
  * pra que os forms existentes (auth) fiquem certos sem classe extra.
+ * Só submits ganham o acento implicitamente: <button> de toggle/ícone (Stimulus)
+ * fica neutro de propósito. Links (<a>/link_to) só viram botão com class="btn".
  */
 .btn,
 input[type="submit"],
-button[type="submit"],
-button:not([type]) {
+button[type="submit"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -98,8 +111,7 @@ button:not([type]) {
 
 .btn:hover,
 input[type="submit"]:hover,
-button[type="submit"]:hover,
-button:not([type]):hover {
+button[type="submit"]:hover {
   color: var(--color-on-accent);
   background-color: var(--color-accent-hover);
 }
