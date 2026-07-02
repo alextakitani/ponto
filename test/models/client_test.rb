@@ -181,6 +181,26 @@ class ClientTest < ActiveSupport::TestCase
     assert_includes client.errors.full_messages, "Valor por hora não é um valor válido"
   end
 
+  # --- Hard-delete restrito por projetos (Q7) ---------------------------------
+
+  test "cliente COM projeto não é hard-deletado (restrict_with_error)" do
+    client = @user.clients.create!(name: "ComProjeto")
+    @user.projects.create!(name: "P1", client: client)
+
+    assert_no_difference -> { Client.count } do
+      assert_not client.destroy
+    end
+    assert client.errors[:base].present?
+  end
+
+  test "cliente SEM projeto é hard-deletado normalmente" do
+    client = @user.clients.create!(name: "SemProjeto")
+
+    assert_difference -> { Client.count }, -1 do
+      assert client.destroy
+    end
+  end
+
   # --- Encryption sanity (Q25c) -----------------------------------------------
 
   test "name não aparece em claro no SQL cru (criptografado at rest)" do

@@ -1,0 +1,7 @@
+<%# Task deletada: re-renderiza a seção (a linha some; empty state reaparece se era a
+    última). @project foi setado no destroy antes de apagar a task. %>
+<%= turbo_stream.replace "project_tasks" do %>
+  <%= turbo_frame_tag "project_tasks" do %>
+    <%= render "projects/tasks/section", project: @project %>
+  <% end %>
+<% end %>

@@ -1,5 +1,6 @@
 <%# Uma linha densa da lista de clientes. Colunas numéricas em tabular-nums.
-    Menu ⋮ (<details> zero-JS) com editar/arquivar/desarquivar/deletar. %>
+    Menu ⋮ (<details> + Stimulus menu_controller p/ fechar ao clicar fora / Escape —
+    light-dismiss; o <details> ainda funciona sem JS). %>
 <tr id="<%= dom_id(client) %>">
   <td>
     <%= link_to client.name, edit_client_path(client) %>
@@ -10,7 +11,7 @@
     <%= client_rate(client) %>
   </td>
   <td class="data-table__actions">
-    <details class="row-menu">
+    <details class="row-menu" data-controller="menu">
       <summary class="btn btn--quiet">⋮</summary>
       <div class="row-menu__items">
         <%= link_to "Editar", edit_client_path(client), class: "btn btn--quiet" %>

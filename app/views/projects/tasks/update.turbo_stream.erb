@@ -1,0 +1,6 @@
+<%# Task renomeada: re-renderiza a seção inteira (a linha volta ao normal). %>
+<%= turbo_stream.replace "project_tasks" do %>
+  <%= turbo_frame_tag "project_tasks" do %>
+    <%= render "projects/tasks/section", project: @task.project %>
+  <% end %>
+<% end %>

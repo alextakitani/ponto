@@ -1,0 +1,74 @@
+<%# Form do Project (Q45 + Q52). Controlado pelo Stimulus rate_inheritance: trocar o
+    cliente no select atualiza AO VIVO o texto do placeholder de rate herdada. O mapa
+    client_id→rate formatada vai embutido em data-attributes (zero fetch). Sem cliente
+    ou cliente sem taxa → texto "sem cliente/sem taxa → defina um valor ou fica sem". %>
+<%= form_with model: project, class: "form-stack",
+      data: {
+        controller: "rate-inheritance",
+        rate_inheritance_rates_value: client_rates_map(@client_options)
+      } do |form| %>
+  <% if project.errors.any? %>
+    <div class="form-errors" role="alert">
+      <% if project.name_conflicts_with_archived? %>
+        <%# Q44: colisão com um projeto ARQUIVADO ganha mensagem específica. %>
+        <p>
+          Já existe um projeto com esse nome (arquivado).
+          <%= link_to "Desarquive-o", projects_path(archived: "1") %> em vez de criar outro.
+        </p>
+      <% else %>
+        <ul>
+          <% project.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="form-field">
+    <%= form.label :name, "Nome" %>
+    <%= form.text_field :name, autofocus: true, autocomplete: "off" %>
+  </div>
+
+  <div class="form-field">
+    <%= form.label :client_id, "Cliente" %>
+    <%# Só clientes ATIVOS (+ o atual se arquivado — carregados no controller). O change
+        dispara o Stimulus pra recalcular o placeholder herdado (Q45). %>
+    <%= form.select :client_id,
+          options_for_select(@client_options.map { |c| [ c.name, c.id ] }, project.client_id),
+          { include_blank: "Sem cliente" },
+          { data: { rate_inheritance_target: "client", action: "rate-inheritance#clientChanged" } } %>
+  </div>
+
+  <%# Cor = grid de swatches (radio estilizados — Q52). Zero JS: é só radio. O
+      auto-atribuído (menos usada) já vem pré-selecionado pelo model no new. %>
+  <fieldset class="form-field swatch-grid" role="radiogroup" aria-label="Cor do projeto">
+    <legend>Cor</legend>
+    <div class="swatch-grid__options">
+      <% Project::PALETTE.each do |hex| %>
+        <label class="swatch" style="--swatch: <%= hex %>">
+          <%= form.radio_button :color, hex, checked: project.color == hex,
+                class: "swatch__input", "aria-label": "Cor #{hex}" %>
+          <span class="swatch__chip" aria-hidden="true"></span>
+        </label>
+      <% end %>
+    </div>
+  </fieldset>
+
+  <div class="form-field">
+    <%= form.label :rate, "Valor por hora (opcional)" %>
+    <%# Q45: vazio = HERDA do cliente selecionado. O placeholder/texto herdado é
+        renderizado no servidor pro estado inicial e atualizado ao vivo pelo Stimulus. %>
+    <%= form.text_field :rate, value: project_rate_field_value(project),
+          placeholder: "ex.: 150,00", inputmode: "decimal", class: "tabular-nums",
+          data: { rate_inheritance_target: "input" } %>
+    <p class="form-hint" data-rate-inheritance-target="hint">
+      <%= project_rate_hint(project) %>
+    </p>
+  </div>
+
+  <div class="form-actions">
+    <%= form.submit project.persisted? ? "Salvar" : "Criar projeto", class: "btn" %>
+    <%= link_to "Cancelar", projects_path, class: "btn btn--quiet" %>
+  </div>
+<% end %>

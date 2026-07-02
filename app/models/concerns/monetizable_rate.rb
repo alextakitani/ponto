@@ -76,7 +76,19 @@ module MonetizableRate
       elsif amount.negative?
         @rate_input_invalid = true
       else
-        self.rate_cents = Money.from_amount(amount, currency || Money.default_currency).cents
+        self.rate_cents = Money.from_amount(amount, rate_currency).cents
+      end
+    end
+
+    # Currency que define a SUBUNIDADE ao converter amount→cents (JPY 0 casas, BRL 2).
+    # Client TEM coluna `currency`; Project herda a do cliente OU cai no default (a
+    # moeda mora no Client — Q42). Cada model define `rate_currency` conforme sua fonte;
+    # o default aqui usa `currency` se o model tiver a coluna, senão o default global.
+    def rate_currency
+      if respond_to?(:currency) && currency.present?
+        currency
+      else
+        Money.default_currency
       end
     end
 

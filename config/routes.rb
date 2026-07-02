@@ -39,6 +39,20 @@ Rails.application.routes.draw do
     resource :archival, only: %i[create destroy], module: :clients
   end
 
+  # Projetos (Fatia 2.3) — irmão do Client. Mesmo padrão REST: arquivar/desarquivar
+  # via sub-resource singular `archival` (não custom action — STYLE.md). Tasks
+  # (sub-bucket do projeto — Q1) vivem ANINHADAS sob o projeto, com shallow: as ações
+  # de membro (show/edit/update/destroy) ganham rota rasa `/tasks/:id` (não precisam
+  # do project_id), mas index/create/new ficam sob `/projects/:project_id/tasks`
+  # (precisam saber a QUAL projeto pertencem). Archival da task idem (aninhado no id raso).
+  resources :projects do
+    resource :archival, only: %i[create destroy], module: :projects
+
+    resources :tasks, shallow: true, module: :projects do
+      resource :archival, only: %i[create destroy], module: :tasks
+    end
+  end
+
   # Painel de admin (Q68) — PÁGINA ÚNICA em /admin (dashboard#show) com dois
   # resources REST por baixo. Regra do projeto (STYLE.md): ação sem verbo padrão
   # vira resource/membro REST, não custom action. Por isso suspensão/reativação/

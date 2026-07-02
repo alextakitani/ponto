@@ -13,3 +13,10 @@ pt-BR:
         # Project compartilha o parser de rate do Client (concern MonetizableRate) →
         # a MESMA mensagem "não é um valor válido" precisa do mesmo rótulo PT.
         rate: "Valor por hora"
+    errors:
+      messages:
+        # `dependent: :restrict_with_error` (Q7) sem tradução estoura
+        # I18n::MissingTranslationData → 500 (mesma classe de bug que o parser de rate
+        # já combateu). Mensagem amigável: "tem projetos → arquive em vez de deletar".
+        restrict_dependent_destroy:
+          has_many: "não pode ser removido: ainda tem %{record} vinculado(s). Arquive em vez de deletar."

@@ -1,0 +1,70 @@
+<% content_for :title, "Projetos" %>
+
+<header class="page-header">
+  <div>
+    <h1>Projetos</h1>
+    <p class="muted">Organize suas horas por projeto — cada um herda a taxa do cliente ou define a sua.</p>
+  </div>
+  <%= link_to "Novo projeto", new_project_path, class: "btn" %>
+</header>
+
+<div class="page-toolbar">
+  <%# Busca por nome (filtra EM RUBY no controller — name é criptografado). %>
+  <%= form_with url: projects_path, method: :get, class: "page-search" do |form| %>
+    <% if @showing_archived %><%= form.hidden_field :archived, value: "1" %><% end %>
+    <% if params[:client_id].present? %><%= form.hidden_field :client_id, value: params[:client_id] %><% end %>
+    <%= form.search_field :q, value: params[:q], placeholder: "Buscar por nome…",
+          autocomplete: "off", "aria-label": "Buscar projetos por nome" %>
+  <% end %>
+
+  <%# Filtro por cliente (select simples; submete no change via Stimulus-less form). %>
+  <%= form_with url: projects_path, method: :get, class: "page-filter", data: { turbo_action: "replace" } do |form| %>
+    <% if @showing_archived %><%= form.hidden_field :archived, value: "1" %><% end %>
+    <% if params[:q].present? %><%= form.hidden_field :q, value: params[:q] %><% end %>
+    <%= form.select :client_id,
+          options_for_select(@clients.map { |c| [ c.name, c.id ] }, params[:client_id]),
+          { include_blank: "Todos os clientes" },
+          { onchange: "this.form.requestSubmit()", "aria-label": "Filtrar por cliente" } %>
+  <% end %>
+
+  <%# Alterna entre ativos e arquivados (link discreto — Q7). %>
+  <% if @showing_archived %>
+    <%= link_to "← Ver ativos", projects_path, class: "muted" %>
+  <% else %>
+    <%= link_to "Ver arquivados", projects_path(archived: "1"), class: "muted" %>
+  <% end %>
+</div>
+
+<% if @projects.any? %>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Projeto</th>
+        <th>Cliente</th>
+        <th class="data-table__num">Registrado</th>
+        <th class="data-table__num">Valor/hora</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= render partial: "projects/project", collection: @projects, as: :project %>
+    </tbody>
+  </table>
+<% elsif params[:q].present? %>
+  <div class="empty-state">
+    <p>Nenhum projeto encontrado para “<%= params[:q] %>”.</p>
+  </div>
+<% elsif @showing_archived %>
+  <div class="empty-state">
+    <p>Nenhum projeto arquivado por aqui.</p>
+  </div>
+<% else %>
+  <div class="empty-state">
+    <h2>Comece criando um projeto</h2>
+    <p class="muted">
+      Um projeto agrupa suas horas e pode herdar a taxa faturável do cliente
+      (ou definir a sua). Depois você registra o tempo nele.
+    </p>
+    <%= link_to "Criar primeiro projeto", new_project_path, class: "btn" %>
+  </div>
+<% end %>

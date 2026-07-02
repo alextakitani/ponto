@@ -1,0 +1,8 @@
+<%# Renomear: troca a linha da task por um form de edição inline. Cancelar/salvar
+    repõe a linha (update re-renderiza a seção). %>
+<%= turbo_stream.replace dom_id(@task) do %>
+  <li id="<%= dom_id(@task) %>" class="task-row task-row--editing">
+    <%= render "projects/tasks/form", project: @task.project, task: @task %>
+    <%= link_to "Cancelar", edit_project_path(@task.project), class: "btn btn--quiet btn--sm" %>
+  </li>
+<% end %>

@@ -15,7 +15,7 @@
       <nav class="shell-nav" aria-label="Navegação principal">
         <%= render "layouts/shell/nav_item", label: "Tracker",    active: false, current: false %>
         <%= render "layouts/shell/nav_item", label: "Relatórios", active: false, current: false %>
-        <%= render "layouts/shell/nav_item", label: "Projetos",   active: false, current: false %>
+        <%= render "layouts/shell/nav_item", label: "Projetos",   active: true,  current: current_page?(projects_path), href: projects_path %>
         <%= render "layouts/shell/nav_item", label: "Clientes",   active: true,  current: current_page?(clients_path), href: clients_path %>
         <%= render "layouts/shell/nav_item", label: "Tags",       active: false, current: false %>
       </nav>
@@ -49,7 +49,7 @@
     <nav class="shell-tabs" aria-label="Navegação mobile">
       <%= render "layouts/shell/tab_item", label: "Tracker",    active: false, current: false %>
       <%= render "layouts/shell/tab_item", label: "Relatórios", active: false, current: false %>
-      <%= render "layouts/shell/tab_item", label: "Projetos",   active: false, current: false %>
+      <%= render "layouts/shell/tab_item", label: "Projetos",   active: true,  current: current_page?(projects_path), href: projects_path %>
 
       <details class="shell-tabs__more">
         <summary class="shell-tabs__item">Mais</summary>

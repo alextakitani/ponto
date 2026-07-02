@@ -1,0 +1,19 @@
+<% content_for :title, "Editar projeto" %>
+
+<header class="page-header">
+  <div><h1>Editar projeto</h1></div>
+</header>
+
+<%= render "form", project: @project %>
+
+<%# Seção "Tarefas" aninhada no projeto (TELA 02 — Q1). Só ao editar (o projeto já
+    existe). Turbo Frame recarregável; o CRUD inline mora em tasks/*. %>
+<% if @project.persisted? %>
+  <section class="project-tasks">
+    <h2>Tarefas</h2>
+    <p class="muted">Sub-buckets do projeto para separar tipos de trabalho.</p>
+    <%= turbo_frame_tag "project_tasks" do %>
+      <%= render "projects/tasks/section", project: @project %>
+    <% end %>
+  </section>
+<% end %>
