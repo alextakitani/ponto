@@ -2,6 +2,24 @@
   <h1>Entrar no Ponto</h1>
   <p class="muted">Enviamos um código de 6 dígitos para o seu e-mail.</p>
 
+  <%# Aviso de operador (Q38): sem conta nenhuma e sem ADMIN_EMAIL, não dá pra
+      criar o 1º admin. Pedimos a variável de ambiente em vez do fallback perigoso. %>
+  <% if User.bootstrap_blocked? %>
+    <p class="muted" role="alert">
+      Nenhuma conta existe e ADMIN_EMAIL não está configurado — defina a variável
+      de ambiente e recarregue.
+    </p>
+  <% end %>
+
+  <%# Erro de login (ex.: conta inexistente — Q28). O link de "pedir acesso"
+      aponta pra root_path por ora; TODO(Task 1.3): trocar pela landing. %>
+  <% if flash[:alert].present? %>
+    <p class="muted" role="alert">
+      <%= flash[:alert] %>
+      <%= link_to "Pedir acesso", root_path %>
+    </p>
+  <% end %>
+
   <%= form_with url: sign_in_path, method: :post do |f| %>
     <%= f.email_field :email,
           required: true,

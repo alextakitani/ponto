@@ -16,6 +16,10 @@ Rails.application.routes.draw do
   post   "sign_in/session" => "sessions#create_session", as: :sign_in_session
   delete "sign_out"        => "sessions#destroy",        as: :sign_out
 
+  # Página "conta suspensa" (Q34): acessível pelo user suspenso (isenta do gate),
+  # senão o redirect entraria em loop.
+  get "suspended" => "suspensions#show", as: :suspended
+
   # Home protegida (placeholder até as telas de domínio).
   root "home#show"
 end

@@ -8,6 +8,8 @@ module Authentication
   included do
     before_action :set_current_request_details
     before_action :require_authentication
+    # Gate de suspensão (Q34): roda DEPOIS de resolver o user, a cada request.
+    before_action :require_active_account
     helper_method :authenticated?, :current_user
 
     include Authentication::ViaSignInCode
@@ -19,6 +21,12 @@ module Authentication
     def allow_unauthenticated_access(**options)
       skip_before_action :require_authentication, **options
       before_action :resume_session, **options
+    end
+
+    # Isenta do gate de suspensão (Q34): a própria página "conta suspensa" e a
+    # futura rota de export usam isso — senão o redirect entraria em loop.
+    def allow_suspended_access(**options)
+      skip_before_action :require_active_account, **options
     end
   end
 
@@ -40,6 +48,17 @@ module Authentication
 
   def require_authentication
     resume_session || authenticate_by_bearer_token || request_authentication
+  end
+
+  # Barra o user suspenso a cada request (Q34). NÃO destrói a sessão: reativar
+  # restaura o acesso no request seguinte, sem novo login.
+  def require_active_account
+    return unless Current.user&.suspended?
+
+    respond_to do |format|
+      format.html { redirect_to suspended_path }
+      format.json { render json: { error: "conta suspensa" }, status: :forbidden }
+    end
   end
 
   # --- Cookie de sessão (signed_id) ------------------------------------------
