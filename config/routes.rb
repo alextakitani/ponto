@@ -53,6 +53,11 @@ Rails.application.routes.draw do
     end
   end
 
+  # Tracker (Fatia 3.1): o timer atual é um resource SINGULAR (Q13/Q14); as
+  # entradas de tempo são CRUD normal, sempre escopadas ao Current.user.
+  resource :timer, only: %i[show create destroy]
+  resources :time_entries, only: %i[index show create update destroy]
+
   # Painel de admin (Q68) — PÁGINA ÚNICA em /admin (dashboard#show) com dois
   # resources REST por baixo. Regra do projeto (STYLE.md): ação sem verbo padrão
   # vira resource/membro REST, não custom action. Por isso suspensão/reativação/

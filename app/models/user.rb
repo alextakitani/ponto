@@ -9,6 +9,7 @@ class User < ApplicationRecord
   # deleção da conta (destroy_completely — Q33).
   has_many :clients, dependent: :destroy
   has_many :projects, dependent: :destroy
+  has_many :time_entries, dependent: :destroy
   # `tasks` também pende direto do user (isolamento DIRETO Q23 — a Task carrega
   # user_id além de project_id), pra a deleção da conta levar a bolha inteira.
   has_many :tasks, dependent: :destroy

@@ -1,0 +1,33 @@
+<% content_for :title, "Tracker" %>
+
+<header class="page-header">
+  <div>
+    <h1>Tracker</h1>
+    <p class="muted">Entradas do tempo mais recentes primeiro.</p>
+  </div>
+</header>
+
+<div class="stack">
+  <% if @time_entries.any? %>
+    <% @time_entries.each do |time_entry| %>
+      <article class="list-row">
+        <div>
+          <strong><%= link_to(time_entry.description.presence || "Sem descrição", time_entry_path(time_entry)) %></strong>
+          <p class="muted">
+            <%= l(time_entry.started_at, format: :short) %>
+            <% if time_entry.ended_at? %>
+              · <%= l(time_entry.ended_at, format: :short) %>
+            <% else %>
+              · Rodando
+            <% end %>
+          </p>
+        </div>
+      </article>
+    <% end %>
+  <% else %>
+    <div class="empty-state">
+      <h2>Nenhuma entrada ainda</h2>
+      <p class="muted">O timer e as entradas manuais já estão disponíveis pela API desta fatia.</p>
+    </div>
+  <% end %>
+</div>

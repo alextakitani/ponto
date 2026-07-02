@@ -8,6 +8,7 @@ class Project < ApplicationRecord
   # então validamos o dono explicitamente (senão o form de A poderia apontar client
   # de B mandando o id cru). Ver `client_belongs_to_user`.
   belongs_to :client, optional: true
+  has_many :time_entries, dependent: :destroy
   has_many :tasks, dependent: :destroy
 
   include Archivable
