@@ -38,6 +38,35 @@ class TimeEntryTest < ActiveSupport::TestCase
     assert_equal "USD", entry.currency
   end
 
+  test "editar outro campo do entry após mudança de rate NÃO revaloriza o snapshot" do
+    # Guarda a invariante Q10: o snapshot só recarimba quando project_id muda.
+    # Sem project_id mudando, salvar o entry (editar descrição) deve preservar
+    # rate/moeda congeladas mesmo que a rate do cliente tenha mudado no meio.
+    client = @user.clients.create!(name: "Acme", currency: "USD", rate_cents: 15000)
+    project = @user.projects.create!(name: "Site", client: client)
+    entry = @user.time_entries.create!(
+      project: project,
+      started_at: Time.current - 1.hour,
+      ended_at: Time.current
+    )
+
+    client.update!(rate_cents: 99999)
+    entry.update!(description: "descrição editada depois do reajuste")
+    entry.reload
+
+    assert_equal 15000, entry.rate_cents
+    assert_equal "USD", entry.currency
+  end
+
+  test "billable_amount arredonda no centavo com ROUND_HALF_UP" do
+    client = @user.clients.create!(name: "Meia", currency: "BRL", rate_cents: 1)
+    project = @user.projects.create!(name: "Fração", client: client)
+    started_at = Time.current - 30.minutes # 0,5h × 1 centavo = 0,5 centavo → 1 (half-up)
+    entry = @user.time_entries.create!(project: project, started_at:, ended_at: Time.current)
+
+    assert_equal 1, entry.billable_amount.cents
+  end
+
   test "snapshot recarimba quando o projeto muda e usa BRL sem projeto/rate" do
     client = @user.clients.create!(name: "Acme", currency: "EUR", rate_cents: 12000)
     first_project = @user.projects.create!(name: "A", client: client)
