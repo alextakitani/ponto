@@ -9,6 +9,8 @@
 
 # Ignore all environment files.
 /.env*
+# ...mas versione o template documentado (sem segredos).
+!/.env.example
 
 # Ignore all logfiles and tempfiles.
 /log/*

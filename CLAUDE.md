@@ -144,6 +144,9 @@ Não há signup público auto-servido. Acesso é controlado:
   o **admin geral** (primeiro user = admin). `admin` é um **boolean no `User`** (não
   roles). Papel OPERACIONAL: gerencia contas/convites/pedidos; **NÃO vê dados de
   domínio de outros usuários** (isolamento Q23 intacto).
+- **Bootstrap**: o 1º admin nasce via `ENV["ADMIN_EMAIL"]` (Q37) — com o banco vazio,
+  só esse e-mail consegue criar conta (e vira admin); depois fica inerte. É o ÚNICO
+  caminho de bootstrap (sem fallback "1º a logar vira admin"). Ver `.env.example`.
 - **Convite**: o admin cria/convida contas. Magic-code exige **e-mail válido e
   entregável** (é identidade E canal).
 - **Landing page pública** com "**pedir acesso**" → grava um `AccessRequest`

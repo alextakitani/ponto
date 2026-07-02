@@ -13,11 +13,13 @@ class User < ApplicationRecord
 
   # Invariante ≥1 admin ATIVO (Q34c). Admin suspenso NÃO conta como ativo.
   # - rebaixar (admin: true -> false) o último admin ativo: falha na validação;
-  # - destruir o último admin ativo: abortado no before_destroy;
-  # - suspender o último admin ativo: LastAdminError (levantado no suspend!).
+  # - suspender (suspended_at nil -> presente) o último admin ativo: idem, na
+  #   validação — barra até o update cru (sem passar pelo suspend!);
+  # - destruir o último admin ativo: abortado no before_destroy.
   scope :active_admins, -> { where(admin: true, suspended_at: nil) }
 
   validate :must_keep_one_active_admin, if: :demoting_last_active_admin?
+  validate :must_keep_one_active_admin_on_suspend, if: :suspending_last_active_admin?
   before_destroy :must_keep_one_active_admin_on_destroy
 
   # Bootstrap do 1º admin (Q37): só com o banco VAZIO e o e-mail batendo com
@@ -55,10 +57,12 @@ class User < ApplicationRecord
     suspended_at.present?
   end
 
+  # A invariante ≥1 admin ativo vive na validação (barra até update cru); aqui
+  # só reembrulhamos o erro no LastAdminError pela ergonomia da API.
   def suspend!
-    raise LastAdminError, "não é possível suspender o último admin ativo" if last_active_admin?
-
     update!(suspended_at: Time.current)
+  rescue ActiveRecord::RecordInvalid
+    raise LastAdminError, "não é possível suspender o último admin ativo"
   end
 
   def reactivate!
@@ -95,12 +99,25 @@ class User < ApplicationRecord
     persisted? && admin_changed? && admin_was && !admin
   end
 
+  # Só valida na transição suspended_at nil -> presente de um admin (suspensão).
+  def suspending_last_active_admin?
+    persisted? && admin? && suspended_at_changed? && suspended_at_was.nil? && suspended_at.present?
+  end
+
   def must_keep_one_active_admin
     # Se não sobra nenhum OUTRO admin ativo, o rebaixamento deixaria o sistema
     # sem admin ativo.
     return unless no_other_active_admin?
 
     errors.add(:admin, "não pode rebaixar o último admin ativo")
+  end
+
+  def must_keep_one_active_admin_on_suspend
+    # Se não sobra nenhum OUTRO admin ativo, a suspensão deixaria o sistema sem
+    # admin ativo.
+    return unless no_other_active_admin?
+
+    errors.add(:suspended_at, "não pode suspender o último admin ativo")
   end
 
   def must_keep_one_active_admin_on_destroy

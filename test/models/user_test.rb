@@ -59,6 +59,16 @@ class UserTest < ActiveSupport::TestCase
     assert_not admin.reload.suspended?
   end
 
+  # update cru de suspended_at (sem passar pelo suspend!) também é barrado pela
+  # validação — senão o eixo suspensão fura a invariante ≥1 admin ativo.
+  test "update cru de suspended_at no último admin ativo é barrado pela validação" do
+    admin = create_user(email: "so@example.com")
+    admin.update!(admin: true)
+
+    assert_not admin.update(suspended_at: Time.current)
+    assert_not admin.reload.suspended?
+  end
+
   test "rebaixar o último admin ativo falha na validação" do
     admin = create_user(email: "so@example.com")
     admin.update!(admin: true)

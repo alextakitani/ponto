@@ -32,8 +32,11 @@ class SessionsController < ApplicationController
       end
     else
       # Resposta explícita por decisão de design (sem enumeração-paranoia).
-      # O link de "pedir acesso" vive na view (aponta pra root_path por ora).
-      # TODO(Task 1.3): trocar o alvo pela landing com o form de "pedir acesso".
+      # Chave dedicada (account_missing) só aqui: é o único alert que puxa o link
+      # "pedir acesso" na view. Alerts genéricos (login exigido, rate limit) usam
+      # flash[:alert] cru e NÃO ganham o link.
+      # TODO(Task 1.3): trocar o alvo do link pela landing com o form de acesso.
+      flash.now[:account_missing] = true
       flash.now[:alert] = "Essa conta não existe. Peça acesso na página inicial."
       render :new, status: :unprocessable_entity
     end
