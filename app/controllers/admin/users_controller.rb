@@ -1,0 +1,53 @@
+module Admin
+  # Contas (Q29/Q33). create = convidar (cria User + dispara o convite Pull);
+  # destroy = deletar a bolha inteira, com proteções (Q33).
+  class UsersController < BaseController
+    before_action :set_user, only: :destroy
+
+    # Convidar (Q29/Q30/Q32): cria a conta e dispara o InvitationMailer.created.
+    # E-mail duplicado é barrado pela unicidade do User -> erro amigável no form.
+    def create
+      user = User.new(user_params)
+
+      if user.save
+        InvitationMailer.with(user: user).created.deliver_later
+        redirect_to admin_root_path, notice: "Convite enviado para #{user.email}."
+      else
+        redirect_to admin_root_path, alert: user.errors.full_messages.to_sentence
+      end
+    end
+
+    # Deletar (Q33): confirmação por digitação do E-MAIL do alvo. E-mail errado ->
+    # recusa. Não pode deletar A SI MESMO (policy). Último admin ativo -> barrado
+    # pelo model (destroy_completely devolve false). Cascade leva a bolha inteira.
+    def destroy
+      authorize! @user, to: :destroy?, with: Admin::UserPolicy
+
+      if confirmation_matches?
+        if @user.destroy_completely
+          redirect_to admin_root_path, notice: "Conta de #{@user.email} removida."
+        else
+          redirect_to admin_root_path, alert: @user.errors.full_messages.to_sentence
+        end
+      else
+        redirect_to admin_root_path, alert: "Confirmação não confere: digite o e-mail exato da conta."
+      end
+    end
+
+    private
+      def set_user
+        @user = User.find(params[:id])
+      end
+
+      def user_params
+        params.require(:user).permit(:email, :name)
+      end
+
+      # Guard-rail contra deleção acidental (Q33): o form manda o e-mail digitado.
+      def confirmation_matches?
+        ActiveSupport::SecurityUtils.secure_compare(
+          params[:email_confirmation].to_s, @user.email.to_s
+        )
+      end
+  end
+end

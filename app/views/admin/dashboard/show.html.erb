@@ -1,0 +1,45 @@
+<% content_for :title, "Admin" %>
+<div class="admin">
+  <header class="admin__header">
+    <h1>Admin</h1>
+    <p class="muted">Gerencie contas e pedidos de acesso. (Dados de domínio não aparecem aqui.)</p>
+  </header>
+
+  <%# Fila de pedidos pendentes — só renderiza quando há pendentes (Q68). %>
+  <% if @pending_requests.any? %>
+    <section class="admin__section" id="access_requests">
+      <h2>Pedidos de acesso</h2>
+      <table class="admin__table">
+        <thead>
+          <tr><th>E-mail</th><th>Nome</th><th>Observação</th><th>Data</th><th></th></tr>
+        </thead>
+        <tbody>
+          <%= render partial: "admin/access_requests/access_request", collection: @pending_requests %>
+        </tbody>
+      </table>
+    </section>
+  <% end %>
+
+  <%# Convidar (Q29): email + nome opcional. %>
+  <section class="admin__section" id="invite">
+    <h2>Convidar</h2>
+    <%= form_with url: admin_users_path, class: "admin__invite" do |form| %>
+      <%= form.email_field :email, name: "user[email]", placeholder: "email@exemplo.com", required: true %>
+      <%= form.text_field :name, name: "user[name]", placeholder: "Nome (opcional)" %>
+      <%= form.submit "Convidar", class: "btn" %>
+    <% end %>
+  </section>
+
+  <%# Contas (Q31): status derivado (convidado/ativo/suspenso), ações por linha. %>
+  <section class="admin__section" id="users">
+    <h2>Contas</h2>
+    <table class="admin__table">
+      <thead>
+        <tr><th>E-mail</th><th>Nome</th><th>Admin</th><th>Status</th><th>Ações</th></tr>
+      </thead>
+      <tbody>
+        <%= render partial: "admin/users/user", collection: @users %>
+      </tbody>
+    </table>
+  </section>
+</div>

@@ -1,0 +1,5 @@
+<%# Recusado: a linha some da fila inline; o flash aparece no banner global. %>
+<%= turbo_stream.remove @access_request %>
+<%= turbo_stream.update "flash" do %>
+  <%= render "shared/flash" %>
+<% end %>

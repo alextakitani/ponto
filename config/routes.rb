@@ -29,4 +29,31 @@ Rails.application.routes.draw do
   # cai: after_authentication_url volta pra root_url, e a landing redireciona
   # o logado pra cá.
   get "home" => "home#show", as: :home
+
+  # Painel de admin (Q68) — PÁGINA ÚNICA em /admin (dashboard#show) com dois
+  # resources REST por baixo. Regra do projeto (STYLE.md): ação sem verbo padrão
+  # vira resource/membro REST, não custom action. Por isso suspensão/reativação/
+  # promoção/rebaixamento viram SUB-RESOURCES singulares aninhados em user (cada
+  # um com seu par create/destroy REST), em vez de POSTs custom soltos:
+  #   suspender  = POST   /admin/users/:id/suspension   (cria a suspensão)
+  #   reativar   = DELETE /admin/users/:id/suspension   (remove a suspensão)
+  #   promover   = POST   /admin/users/:id/admin_role    (concede admin)
+  #   rebaixar   = DELETE /admin/users/:id/admin_role    (revoga admin)
+  #   reenviar   = POST   /admin/users/:id/invitation    (re-dispara o convite)
+  # users: só create (convidar) e destroy (deletar). access_requests: aprovar/
+  # recusar viram sub-resources singulares (approval/rejection) — mesma disciplina.
+  namespace :admin do
+    root "dashboard#show"
+
+    resources :users, only: %i[create destroy] do
+      resource :suspension,  only: %i[create destroy], module: :users
+      resource :admin_role,  only: %i[create destroy], module: :users
+      resource :invitation,  only: :create,            module: :users
+    end
+
+    resources :access_requests, only: [] do
+      resource :approval,  only: :create, module: :access_requests
+      resource :rejection, only: :create, module: :access_requests
+    end
+  end
 end

@@ -1,0 +1,55 @@
+<%# Uma linha da tabela de contas. É o próprio admin logado? Menu de ações some
+    onde não se aplica (auto-deleção, reenviar convite p/ quem já entrou). %>
+<tr id="<%= dom_id(user) %>">
+  <td>
+    <%= user.email %>
+    <% if user == current_user %><span class="muted">(você)</span><% end %>
+  </td>
+  <td><%= user.name %></td>
+  <td><%= "sim" if user.admin? %></td>
+  <td><%= user_status_label(user) %></td>
+  <td class="admin__actions">
+    <details class="admin__menu">
+      <summary class="btn btn--quiet">Ações</summary>
+      <div class="admin__menu-items">
+        <%# Reenviar convite: só pra convidado (nunca entrou). %>
+        <% if user.invited? %>
+          <%= button_to "Reenviar convite", admin_user_invitation_path(user), class: "btn btn--quiet" %>
+        <% end %>
+
+        <%# Suspender / Reativar. %>
+        <% if user.suspended? %>
+          <%= button_to "Reativar", admin_user_suspension_path(user), method: :delete, class: "btn btn--quiet" %>
+        <% else %>
+          <%= button_to "Suspender", admin_user_suspension_path(user), class: "btn btn--quiet" %>
+        <% end %>
+
+        <%# Promover / Rebaixar. %>
+        <% if user.admin? %>
+          <%= button_to "Rebaixar", admin_user_admin_role_path(user), method: :delete, class: "btn btn--quiet" %>
+        <% else %>
+          <%= button_to "Promover a admin", admin_user_admin_role_path(user), class: "btn btn--quiet" %>
+        <% end %>
+
+        <%# Deletar: nunca A SI MESMO (a policy também barra). Expande a confirmação
+            por digitação do e-mail (Q33), sem JS. %>
+        <% if user != current_user %>
+          <details class="admin__confirm">
+            <summary class="btn btn--danger">Deletar…</summary>
+            <div class="admin__confirm-box">
+              <p class="muted">
+                Isso apaga a conta e TODOS os dados dela, de forma permanente.
+                Exporte os dados antes se precisar — o export estará disponível em breve.
+              </p>
+              <%= form_with url: admin_user_path(user), method: :delete do |form| %>
+                <label class="muted">Para confirmar, digite <strong><%= user.email %></strong>:</label>
+                <%= form.text_field :email_confirmation, autocomplete: "off" %>
+                <%= form.submit "Deletar definitivamente", class: "btn btn--danger" %>
+              <% end %>
+            </div>
+          </details>
+        <% end %>
+      </div>
+    </details>
+  </td>
+</tr>

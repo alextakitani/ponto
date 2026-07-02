@@ -57,6 +57,23 @@ class User < ApplicationRecord
     suspended_at.present?
   end
 
+  # Status derivado pra listagem do admin (Q31) — SEM coluna nova. Suspenso tem
+  # prioridade; senão, "convidado" (nunca entrou) vs "ativo" (já entrou).
+  def status
+    if suspended?
+      :suspended
+    elsif invited?
+      :invited
+    else
+      :active
+    end
+  end
+
+  # "Convidado" = criado mas nunca entrou. Também gate do "reenviar convite" (Q31).
+  def invited?
+    sessions.none?
+  end
+
   # A invariante ≥1 admin ativo vive na validação (barra até update cru); aqui
   # só reembrulhamos o erro no LastAdminError pela ergonomia da API.
   def suspend!
@@ -67,6 +84,16 @@ class User < ApplicationRecord
 
   def reactivate!
     update!(suspended_at: nil)
+  end
+
+  # Deletar conta = apagar a BOLHA inteira do usuário (Q33/Q33a). Hoje a bolha é
+  # só o auth: sessions/sign_in_codes/access_tokens saem pelos `dependent: :destroy`
+  # das associações acima. A fatia de domínio (Clients/Projects/TimeEntries…)
+  # ESTENDE este método pra levar junto os dados de domínio no mesmo destroy.
+  # O before_destroy (invariante ≥1 admin ativo) barra e devolve false, como todo
+  # `destroy` do Active Record.
+  def destroy_completely
+    destroy
   end
 
   # Emite um código de 6 dígitos, manda por e-mail e devolve o SignInCode
