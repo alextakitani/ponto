@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_02_171531) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_02_190000) do
   create_table "access_requests", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -92,6 +92,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_02_171531) do
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 
+  create_table "time_entries", force: :cascade do |t|
+    t.boolean "billable", default: true, null: false
+    t.datetime "created_at", null: false
+    t.string "currency", default: "BRL", null: false
+    t.text "description"
+    t.datetime "ended_at"
+    t.integer "project_id"
+    t.integer "rate_cents"
+    t.datetime "started_at", null: false
+    t.integer "task_id"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["project_id"], name: "index_time_entries_on_project_id"
+    t.index ["task_id"], name: "index_time_entries_on_task_id"
+    t.index ["user_id"], name: "index_time_entries_on_user_id"
+    t.index ["user_id"], name: "index_time_entries_running_per_user", unique: true, where: "ended_at IS NULL"
+  end
+
   create_table "users", force: :cascade do |t|
     t.boolean "admin", default: false, null: false
     t.datetime "created_at", null: false
@@ -111,4 +129,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_02_171531) do
   add_foreign_key "sign_in_codes", "users"
   add_foreign_key "tasks", "projects"
   add_foreign_key "tasks", "users"
+  add_foreign_key "time_entries", "projects"
+  add_foreign_key "time_entries", "tasks", on_delete: :nullify
+  add_foreign_key "time_entries", "users"
 end

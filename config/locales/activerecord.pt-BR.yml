@@ -13,6 +13,9 @@ pt-BR:
         # Project compartilha o parser de rate do Client (concern MonetizableRate) →
         # a MESMA mensagem "não é um valor válido" precisa do mesmo rótulo PT.
         rate: "Valor por hora"
+      time_entry:
+        started_at: "Início"
+        ended_at: "Fim"
     errors:
       messages:
         # `dependent: :restrict_with_error` (Q7) sem tradução estoura
