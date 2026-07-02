@@ -9,7 +9,7 @@ class AccessRequestsController < ApplicationController
 
   def create
     AccessRequest.record(**access_request_params)
-    redirect_to root_path, notice: "Recebemos seu pedido — você será avisado se for aprovado."
+    redirect_to root_path, notice: t("access_requests.create.received")
   end
 
   private
@@ -19,6 +19,6 @@ class AccessRequestsController < ApplicationController
   end
 
   def rate_limit_exceeded
-    redirect_to root_path, alert: "Muitos pedidos. Aguarde um minuto."
+    redirect_to root_path, alert: t("access_requests.create.rate_limited")
   end
 end

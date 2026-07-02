@@ -37,6 +37,15 @@ module Ponto
     config.time_zone = "America/Sao_Paulo"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # i18n (Q79) — a LANDING é bilíngue pt-BR/en; o resto do app é pt-BR
+    # hardcoded (fora de escopo). Default pt-BR. Fallback SÓ para :"pt-BR" (a
+    # copy canônica): assim uma chave faltante degrada pro PT sem quebrar. Isso
+    # NÃO nos autoriza a deixar buracos na copy EN — garantimos cobertura total
+    # das chaves em en.yml (o teste checa que a página EN não vaza strings PT).
+    config.i18n.available_locales = [ :"pt-BR", :en ]
+    config.i18n.default_locale = :"pt-BR"
+    config.i18n.fallbacks = [ :"pt-BR" ]
+
     # Don't generate system test files.
     config.generators.system_tests = nil
   end

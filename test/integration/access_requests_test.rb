@@ -4,7 +4,10 @@ require "test_helper"
 # delega ao AccessRequest.record (de-dup) e SEMPRE responde genérico
 # (anti-enumeração) — independente de já existir conta ou pedido.
 class AccessRequestsTest < ActionDispatch::IntegrationTest
-  GENERIC = "Recebemos seu pedido"
+  # Resposta genérica (anti-enumeração): idêntica nos 3 casos. Lida via I18n.t
+  # (Q79) em vez de string literal — a semântica "resposta única" é o que importa,
+  # não a copy. Sem locale no request, resolve no default pt-BR.
+  GENERIC = I18n.t("access_requests.create.received")
 
   test "pedido novo cria um AccessRequest pending" do
     assert_difference -> { AccessRequest.pending.count }, +1 do

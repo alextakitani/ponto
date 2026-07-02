@@ -114,6 +114,36 @@
   color: var(--color-text);
 }
 
+/* Seletor de idioma (Q79): bandeirinhas emoji. Inativa dessaturada/apagada;
+   ativa em opacidade cheia com um sublinhado sutil no acento. */
+.lp-lang {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.lp-lang__flag {
+  display: inline-block;
+  padding: 0 var(--space-1);
+  font-size: var(--text-lg);
+  line-height: 1;
+  text-decoration: none;
+  opacity: 0.45;
+  filter: grayscale(0.4);
+  border-radius: var(--radius-sm);
+}
+
+.lp-lang__flag:hover {
+  opacity: 0.8;
+  filter: grayscale(0);
+}
+
+.lp-lang__flag--active {
+  opacity: 1;
+  filter: none;
+  box-shadow: inset 0 -2px 0 var(--color-accent);
+}
+
 /* ─────────────────────────── Hero ─────────────────────────── */
 
 .lp-hero {

@@ -1,31 +1,121 @@
-# Files in the config/locales directory are used for internationalization and
-# are automatically loaded by Rails. If you want to use locales other than
-# English, add the necessary files in this directory.
+# English translation of the landing copy (Q79). Marketing tone: direct,
+# specific, sales-driven — mirroring the canonical pt-BR (config/locales/pt-BR.yml).
+# Full key coverage on purpose: fallbacks point at :"pt-BR", so any missing key
+# would leak Portuguese onto the English page. Keep this file complete.
 #
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t "hello"
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t("hello") %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more about the API, please read the Rails Internationalization guide
-# at https://guides.rubyonrails.org/i18n.html.
-#
-# Be aware that YAML interprets the following case-insensitive strings as
-# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
-# must be quoted to be interpreted as strings. For example:
-#
-#     en:
-#       "yes": yup
-#       enabled: "ON"
-
+# `_html` keys carry the same embedded markup (<strong>/<br>/&nbsp;) the original
+# copy had; the text is still our own copy, no user data interpolated.
 en:
-  hello: "Hello world"
+  landing:
+    meta:
+      title: "Ponto — self-hosted time tracker for people who bill by the hour"
+      description: "Self-hosted time tracker for people who bill by the hour: one-click timer, clear reports, and a monthly .xlsx/CSV export ready to become an invoice."
+    nav:
+      links_label: "Links"
+      github: "GitHub"
+      sign_in: "Sign in"
+    lang_switcher:
+      pt: "Português"
+      en: "English"
+    hero:
+      eyebrow: "Self-hosted time tracker"
+      title_html: "Clock in.<br>The report becomes the invoice."
+      lede: "Built for people who bill by the hour: a one-click timer, per-client hourly rates, and a monthly export that's ready to become an invoice. Runs on your own server — your data stays with you."
+    cloud:
+      pitch_html: "Don't want to self-host? Use <strong>Ponto Cloud</strong> — this very instance, for just <strong>US$ 1/month</strong>. Access is invite-only: request yours."
+    proofs:
+      heading: "From timer to invoice, without leaving the app"
+      sub_html: "The timer stays at the top of every screen. Organize work as Client&nbsp;→&nbsp;Project&nbsp;→&nbsp;Task, set each client's hourly rate (in dollars, euros…), and export the report at month's end."
+      reports:
+        title: "Reports that close out the month"
+        text_html: "Hours per day, breakdown by project, and two-level grouping — from summary to detail. Export to <strong>.xlsx or CSV</strong> and attach it straight to the invoice."
+      extension:
+        title: "Chrome extension"
+        badge: "coming soon"
+        text: "Start and stop the timer right from the popup, without switching tabs. It's the same API as the app — the server stays the source of truth."
+      cli:
+        title: "CLI"
+        badge: "coming soon"
+        text: "Terminal commands and JSON output for AI agents, like Claude. Uses the same token as the extension."
+    frozen:
+      heading: "January's number doesn't change in June"
+      sub: "Every entry keeps the hourly rate from the day it was logged. Gave a client a raise? The new rate applies from here on out — history stays intact and old invoices stay correct."
+      now: "current rate"
+      lock_title: "frozen"
+    host:
+      heading: "Self-host in 4 steps"
+      sub_html: "A single Rails app with SQLite, no Node. The repo already ships the Dockerfile and Kamal config — and the %{readme_link} is the full guide."
+      readme: "README"
+      steps:
+        clone:
+          title: "Clone the repository"
+          text_html: "<code>git clone</code> onto your server — or your own machine, to give it a try."
+        deploy:
+          title: "Deploy with Docker or Kamal"
+          text_html: "<code>kamal setup</code> (or <code>docker build</code> by hand) — the <code>Dockerfile</code> and <code>config/deploy.yml</code> are already in the repo."
+        configure:
+          title_html: "Set <code>ADMIN_EMAIL</code> and SMTP"
+          text: "Sign-in is passwordless: a 6-digit code arrives by email. Configure SMTP in the credentials and set the admin's email."
+        bootstrap:
+          title: "The first sign-in creates the admin"
+          text_html: "With an empty database, the first sign-in using <code>ADMIN_EMAIL</code> creates the admin account. From there, invite whoever you want."
+    stack:
+      heading: "Light to run on your homelab"
+      backup:
+        key: "Backup = 1 file"
+        value_html: "SQLite: backing up is copying a single <code>.sqlite3</code>."
+      no_node:
+        key: "Zero Node, zero build"
+        value: "Rails 8 + Hotwire with importmap. No JavaScript pipeline."
+      your_data:
+        key: "Your data is yours"
+        value: "Encrypted on disk — not even the instance admin can see your content."
+      portability:
+        key: "Portable, always"
+        value: "Export everything that's yours, whenever you want — nothing is locked in here."
+      open_source:
+        key: "Open source (O'Saasy)"
+        value_html: "Read it, audit it, contribute. Host it wherever you like — just don't resell it as a SaaS. %{github_link}."
+        github_link: "See it on GitHub"
+      multiuser:
+        key: "Multi-user, no teams"
+        value: "Each account lives isolated from the rest; access is invite-only."
+    final:
+      heading: "Request access to Ponto Cloud"
+      sub_html: "Don't want to self-host? Use this instance for <strong>US$ 1/month</strong>. Leave your email — approved requests get the invite in their inbox. Prefer to host it yourself? The code is on %{github_link}."
+      github_link: "GitHub"
+      signin_prompt: "Already have an account?"
+    footer:
+      nav_label: "Footer"
+    mockups:
+      tracker:
+        project_a: "Kubernetes homelab"
+        project_b: "Client app"
+        project_c: "Consulting"
+        desc_running: "ingress migration"
+        desc_cert: "wildcard certificate"
+        desc_review: "code review"
+        desc_scope: "scoping meeting"
+        stop: "Stop"
+      extension:
+        title: "Ponto"
+        project: "Client app"
+        stop: "Stop timer"
+      terminal:
+        cmd1: "ponto timer start --project kube"
+        status: "ok"
+        result1: " timer running · Kubernetes homelab"
+        cmd2: "ponto timer show --jq .data.elapsed"
+        out2: '"01:47:12"'
+  access_requests:
+    form:
+      email_label: "Email"
+      email_placeholder: "you@example.com"
+      name_label: "Name (optional)"
+      note_label: "Note (optional)"
+      submit: "Request access"
+    create:
+      received: "We got your request — you'll be notified if it's approved."
+      rate_limited: "Too many requests. Please wait a minute."
+  shared:
+    bootstrap_notice: "No account exists and ADMIN_EMAIL isn't configured — set the environment variable and reload."

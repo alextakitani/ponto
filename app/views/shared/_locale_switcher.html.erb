@@ -1,0 +1,15 @@
+<%# Seletor de idioma com bandeirinhas (Q79) — 🇧🇷 / 🇺🇸 como emoji, sem imagem.
+    Cada bandeira é um link pra própria página com o param de locale; o param
+    persiste na sessão (ver SetLocale). Estado ativo marcado com aria-current e
+    a classe --active (estilo em landing.css). aria-label pra leitor de tela. %>
+<span class="lp-lang" role="group" aria-label="<%= t("landing.nav.links_label") %>">
+  <% { "pt-BR" => { flag: "🇧🇷", label: t("landing.lang_switcher.pt") },
+       "en"    => { flag: "🇺🇸", label: t("landing.lang_switcher.en") } }.each do |locale, meta| %>
+    <% active = I18n.locale.to_s == locale %>
+    <%= link_to meta[:flag], root_path(locale: locale),
+          class: class_names("lp-lang__flag", "lp-lang__flag--active" => active),
+          lang: locale,
+          "aria-label": meta[:label],
+          "aria-current": (active ? "true" : nil) %>
+  <% end %>
+</span>
