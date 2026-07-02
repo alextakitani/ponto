@@ -1,4 +1,5 @@
 <% content_for :title, "Ponto — time tracker self-hosted pra quem fatura por hora" %>
+<% content_for :description, "Time tracker self-hosted pra quem cobra por hora: timer de 1 clique, relatórios que somam e export mensal em .xlsx/CSV que você manda como fatura." %>
 
 <div class="lp">
   <%# ── Cabeçalho: marca + acessos secundários (GitHub, entrar) ── %>
@@ -93,9 +94,9 @@
       <div class="lp-proofs">
         <%# 1. Relatório: donut por projeto + barras por dia (SVG inline, theme-aware) %>
         <article class="lp-proof">
-          <div class="lp-proof__art">
+          <div class="lp-proof__art" aria-hidden="true">
             <div class="lp-report">
-              <svg class="lp-donut" viewBox="0 0 42 42" role="img" aria-label="Donut por projeto">
+              <svg class="lp-donut" viewBox="0 0 42 42">
                 <circle class="lp-donut__track" cx="21" cy="21" r="15.9155"></circle>
                 <circle class="lp-donut__seg lp-donut__seg--a" cx="21" cy="21" r="15.9155"
                         stroke-dasharray="48 52" stroke-dashoffset="25"></circle>
@@ -121,7 +122,7 @@
 
         <%# 2. Popup da extensão de Chrome %>
         <article class="lp-proof">
-          <div class="lp-proof__art">
+          <div class="lp-proof__art" aria-hidden="true">
             <div class="lp-popup">
               <div class="lp-popup__head">
                 <span class="lp-mark lp-mark--sm" aria-hidden="true"></span>
@@ -146,7 +147,7 @@
 
         <%# 3. Terminal do CLI (comandos reais) %>
         <article class="lp-proof">
-          <div class="lp-proof__art">
+          <div class="lp-proof__art" aria-hidden="true">
             <div class="lp-term">
               <div class="lp-term__bar">
                 <span class="lp-term__tl"></span><span class="lp-term__tl"></span><span class="lp-term__tl"></span>
@@ -267,8 +268,8 @@
           <span class="lp-fact__v muted">Export dos seus dados na hora que quiser — nada preso aqui.</span>
         </li>
         <li class="lp-fact">
-          <span class="lp-fact__k">Open source</span>
-          <span class="lp-fact__v muted">Leia, audite, mande PR. <%= link_to "No GitHub", "https://github.com/alextakitani/ponto" %>.</span>
+          <span class="lp-fact__k">Código aberto (O'Saasy)</span>
+          <span class="lp-fact__v muted">Leia, audite, mande PR. Self-hoste à vontade — só não pode revender como SaaS. <%= link_to "No GitHub", "https://github.com/alextakitani/ponto" %>.</span>
         </li>
         <li class="lp-fact">
           <span class="lp-fact__k">Multi-usuário, sem times</span>
