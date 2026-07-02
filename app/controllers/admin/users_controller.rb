@@ -44,10 +44,11 @@ module Admin
       end
 
       # Guard-rail contra deleção acidental (Q33): o form manda o e-mail digitado.
+      # Comparação normalizada (não secure_compare): o e-mail do alvo já aparece na
+      # própria tela, então timing não é ameaça aqui — e o e-mail do User já vem
+      # normalizado (strip/downcase). Bônus: aceita variação de caixa/espaço.
       def confirmation_matches?
-        ActiveSupport::SecurityUtils.secure_compare(
-          params[:email_confirmation].to_s, @user.email.to_s
-        )
+        params[:email_confirmation].to_s.strip.downcase == @user.email
       end
   end
 end

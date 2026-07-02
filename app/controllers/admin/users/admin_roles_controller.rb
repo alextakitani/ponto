@@ -7,8 +7,11 @@ module Admin
       before_action :set_user
 
       def create
-        @user.update!(admin: true)
-        redirect_to admin_root_path, notice: "#{@user.email} agora é admin."
+        if @user.update(admin: true)
+          redirect_to admin_root_path, notice: "#{@user.email} agora é admin."
+        else
+          redirect_to admin_root_path, alert: @user.errors.full_messages.to_sentence
+        end
       end
 
       def destroy

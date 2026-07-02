@@ -7,7 +7,7 @@ module Admin
       before_action :set_user
 
       def create
-        if @user.sessions.none?
+        if @user.invited?
           InvitationMailer.with(user: @user).created.deliver_later
           redirect_to admin_root_path, notice: "Convite reenviado para #{@user.email}."
         else

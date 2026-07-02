@@ -41,16 +41,30 @@ class AccessRequest < ApplicationRecord
   def approve!
     ensure_pending!
 
+    # A transação cobre SÓ a criação da conta + a marca approved (atomicidade: se
+    # o create! estoura, o request continua pending). O enqueue do convite fica
+    # FORA dela e SÓ acontece se a transação commitou e um user novo foi criado.
+    #
+    # Por que fora da transação: o job roda no solid_queue, que em produção vive
+    # num BANCO separado (database: queue) — o worker não enxerga nossa transação
+    # aberta e, como `enqueue_after_transaction_commit` é false, poderia pegar o
+    # job antes do COMMIT e resolver o GlobalID pra um User ainda não visível
+    # (RecordNotFound). Em dev o adapter é :inline (roda síncrono), o que também
+    # não deve acontecer com a transação aberta. Enfileirar depois do commit evita
+    # os dois. Edge preservado: e-mail que JÁ virou conta -> sem convite.
+    created_user = nil
+
     transaction do
-      if (user = User.find_by(email: email))
+      if User.exists?(email: email)
         # Já é conta: só resolvemos o pedido, sem duplicar conta/convite.
         approved!
       else
-        user = User.create!(email: email, name: name)
+        created_user = User.create!(email: email, name: name)
         approved!
-        InvitationMailer.with(user: user).created.deliver_later
       end
     end
+
+    InvitationMailer.with(user: created_user).created.deliver_later if created_user
   end
 
   # Recusa o pedido (Q35): SILENCIOSO — nenhum e-mail, nenhuma conta. Só a partir
