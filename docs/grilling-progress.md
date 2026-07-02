@@ -1,7 +1,26 @@
 # Grilling — Ponto (time-tracker) — progresso
 
 > Sessão de grilling (/grilling) sobre as frentes em aberto do design.
-> Última sessão: 30/06/2026. **▶ RETOMAR NA QUESTÃO 27** (Q1–Q26 fechadas).
+> Última sessão: 02/07/2026. **🏁 GRILLING COMPLETO — Q1–Q76, TODOS os ramos
+> fechados.** Único tema em aberto: cobrança $1/mês (💤 ADIADA por decisão do Alex).
+> O que resta é IMPLEMENTAÇÃO (ordem: Q39 catálogo-primeiro; pendências de auth
+> listadas na seção "Frentes"). ✅ CLAUDE.md re-reconciliada em 02/07 (Q52–Q76).
+> **Ramo CLI: FECHADO** (Q73–Q76, aberto pelo Alex após o 1º fecho): superfície
+> JSON total no app; `ponto-cli` em Go = fork estrutural do fizzy-cli (MIT);
+> nasce incremental pós-Timer; config herdada com adaptações self-hosted.
+> **Ramo TELAS: FECHADO** (Q60–Q71): Calendar/Dashboard/Timesheet cortados,
+> URLs/home, CSS custom-properties, **estética MODERNA minimal densa (Linear) —
+> REVOGA o retrô**, dark automático, bottom tabs no mobile, Preferências, landing
+> 1 dobra, admin 1 página, PWA c/ página offline, Inter, SVG server-rendered.
+> **Ramo IMPORTADOR: FECHADO** (Q72): JSON único versionado, import só em bolha vazia.
+> **Ramo Auth/convite/admin/landing: FECHADO** (Q27 escolheu o ramo; Q28–Q38).
+> **Ramo Modelo de dados / telas de domínio: FECHADO** (Q39–Q52):
+> ordem de build, Action Policy p/ authz+isolamento, moeda por Client, mix de moedas,
+> unicidade de nome, rate UX, entry manual, Split/Duplicate, edição inline, seletores,
+> Tags UI/inline-create, cor do Project (paleta fixa — Q52).
+> **Ramo Relatório/Export: FECHADO** (Q18–Q21, Q43, Q53–Q58): período enxuto+setas,
+> 6 filtros OR/AND, Weekly cortada, rounding por-entry, rodando fora do report,
+> PORO `Report` (1 query + pipeline Ruby). Restam: TELAS, Importador, Timesheet.
 > Revisões importantes: Q3/Q4 revisadas pela Q14; Q1 parcialmente revogada pela Q15;
 > Q11 estendida pela Q18; **Q23 revoga o "single-user/User-único" → app MULTI-USUÁRIO**;
 > Q24 = acesso por CONVITE + admin + landing; Q25 = privacidade/encryption;
@@ -11,8 +30,8 @@
 > ✅ **CLAUDE.md reconciliada em 30/06** com Q1–Q24 (multi-user, rate override,
 > project_id nulável, billable, convite/admin, fuso por user, money-rails, export).
 > **Ramo da extensão de Chrome: FECHADO 100%** (Q9, Q12, Q13, Q14, Q15, Q17).
-> **Ramo Relatório/Export: EM ANDAMENTO** (Q18+; ref: xlsx real do Clockify em
-> `~/Dropbox/empresa/Kube/invoices/2026/Clockify_Time_Report_Detailed_05_01_2026-05_31_2026.xlsx`).
+> (Ref do ramo Relatório: xlsx real do Clockify em
+> `~/Dropbox/empresa/Kube/invoices/2026/Clockify_Time_Report_Detailed_05_01_2026-05_31_2026.xlsx`.)
 
 ## Como retomar
 Rodar `/grilling` de novo e dizer "continuar de onde paramos, ver `docs/grilling-progress.md`".
@@ -371,6 +390,227 @@ Conversa em **português**.
     contradiz o open source. O paywall (Q27) é sobre ACESSO/USO do app, não sobre levar
     os próprios dados embora. (Revisei a ideia inicial do Alex de amarrar a "pago".)
 
+## Sessão 01/07/2026 — Ramo Auth/convite/admin/landing (Q27–Q38)
+
+> Estado do código no início: só auth existe (User/Session/SignInCode/AccessToken +
+> concerns). NENHUMA tabela de domínio, sem admin/time_zone no User, sem landing.
+> ⚠️ Bug de design encontrado: `SessionsController#create` faz
+> `User.find_or_create_by(email:)` → é signup ABERTO, contradiz a Q24 (convite-only).
+> Corrigir na implementação (vira `find_by`).
+
+- **Q27 — Ramo escolhido: Auth/convite/admin/landing.** É o ramo FRESCO (aberto pela
+  Q24/Q23, nunca detalhado), BLOQUEIA todo o resto (sem signup/convite + `user_id` nas
+  tabelas nenhuma tela de domínio existe correta) e mexe no auth já construído.
+  Relatório (detalhes finos), Importador e Timesheet ficam pra depois.
+
+- **Q28 — E-mail DESCONHECIDO no login = resposta EXPLÍCITA + link "pedir acesso".**
+  Login vira `find_by` (não `find_or_create_by`). E-mail sem conta → "essa conta não
+  existe, peça acesso" + link pra landing/AccessRequest. Vira oráculo de enumeração,
+  mas o modelo de ameaça do homelab não se importa (mesmo espírito "sem teatro de
+  segurança" do rate-limit). UX > anti-enumeração aqui.
+
+- **Q29 — Convite = REUSAR o magic-code (admin cria User), SEM token de convite.**
+  O magic-code JÁ é "prova que controla o e-mail e entra" = exatamente o que um link de
+  convite faz. Convite = admin cria o `User` → sistema manda o MESMO magic-code (copy
+  de boas-vindas na 1ª vez). Sem `Invitation` token, sem tela de aceite, zero código
+  novo de auth. A diferença "convite vs login" é só o TEXTO do e-mail.
+
+- **Q30 — Convite = PULL (não push do código).** E-mail de convite é INFORMATIVO
+  ("sua conta existe, entre em `ponto/entrar`"), NÃO carrega código. O magic-code de 6
+  dígitos nasce quando o convidado LOGA (fluxo normal). Motivo: o código expira em 15
+  min — no push, convite aberto horas depois viraria "código expirado". Pull mantém um
+  único gerador de código (o do login) e o convite não carrega segredo (seguro se
+  vazar/for encaminhado).
+
+- **Q31 — Estado do convidado = DERIVAR de `sessions`, SEM coluna nova.** "Convidado,
+  nunca entrou" = `user.sessions.none?`. Cobre copy de boas-vindas (Q29), status
+  pendente/ativo na tela de admin e "reenviar convite" — tudo sem enum `status` nem
+  `invited_at`. Segue o princípio "modelo limpo, sem estado especulativo" (Q22/Q23).
+  (Suspensão é OUTRA coisa e ganha coluna própria — ver Q34.)
+
+- **Q32 — Ações do admin sobre uma conta = TODAS as quatro.** (Alex marcou tudo, não
+  só o corte mínimo que eu recomendei.) Admin faz: **criar/convidar** (Q29/Q30),
+  **listar** users (email/name/admin?/já-entrou? via `sessions`), **reenviar convite**
+  (pra quem `sessions.none?`), **suspender/reativar** (Q34), **promover/rebaixar admin**,
+  **deletar conta com cascade** (Q33). Painel de admin é full-featured. Admin continua
+  CEGO pro domínio alheio (Q25b intacta — só toca `User`/`AccessRequest`).
+
+- **Q33 — Deletar conta (cascade + proteções). FECHADA.**
+  - **(a) Mecânica:** cascade via `delete_all`/FK `ON DELETE CASCADE` (SQL direto, sem
+    callbacks — pra apagar a bolha inteira nenhum callback importa). Leva TUDO da bolha
+    (Q23): Clients/Projects/Tasks/TimeEntries/Tags/Taggings + Sessions/SignInCodes/
+    AccessTokens.
+  - **(b) Proteções (TODAS as 4):** confirmar digitando o e-mail do alvo (padrão
+    GitHub) · não pode deletar a si mesmo · não deletar o último admin · oferecer export
+    (Q26) antes.
+  - **(c) Export antes:** OFERECIDO (link "exportar antes de apagar"), não forçado
+    (pode ser conta de teste/spam).
+
+- **Q34 — Suspender/reativar + invariante do último admin. FECHADA.**
+  - **(a) Estado:** `User.suspended_at` (datetime nulável, padrão soft-state igual
+    `archived_at`/`consumed_at` — Q7). "Suspenso?" = `suspended_at.present?`. SEM enum
+    `status` (casa com Q31).
+  - **(b) Gate:** no `require_authentication` (concern `Authentication`), DEPOIS de
+    resolver sessão/bearer, ANTES de liberar → suspenso vira redirect "conta suspensa"
+    (HTML) / 403 (JSON, extensão). Roda a CADA request → sessões vivas do suspenso morrem
+    no próximo request (não só no login). ⚠️ **EXCEÇÃO: a rota de export (Q26) é ISENTA
+    do gate** — suspenso ainda baixa os próprios dados (portabilidade LGPD/GDPR, igual à
+    regra que a cobrança adiada já assumiu).
+  - **(c) Invariante geral "≥1 admin não-suspenso":** cobre delete (Q33) + rebaixar +
+    suspender — nenhuma dessas ações pode deixar o sistema sem admin ativo.
+
+- **Q35 — Ciclo de vida do `AccessRequest`. FECHADA.**
+  - **(a) Aprovar = 1 clique:** cria o `User` (email/name do request) → dispara o
+    e-mail de convite informativo (Pull, Q30) → marca `approved`.
+  - **(b) Rejeitar = SILENCIOSO** (sem e-mail de "negado"). `rejected` só tira da fila
+    do admin. Evita ruído/discussão; no homelab o admin ignora quem não quer.
+  - **(c) De-dup por e-mail:** form tolerante, mas se já existe `User` OU `AccessRequest`
+    pending com o mesmo e-mail, NÃO cria linha nova (atualiza note/timestamp). Fila não
+    polui com re-pedidos.
+  - **(d) Resposta do form = genérica** ("recebemos, você será avisado se aprovado") —
+    SEM revelar se já tinha conta (aqui anti-enumeração é grátis, ao contrário da Q28).
+
+- **Q36 — Raiz `/` = LANDING pública; app logado em subpath. FECHADA.** `/` serve a
+  landing (copy do produto + "pedir acesso" + link discreto "já tenho conta → entrar")
+  pra anônimo; redireciona pro app se logado. Padrão SaaS: a "porta da rua" é pública,
+  não a tela de login. O login vira link na landing. (Subpath exato do app — `/app` vs
+  `/timer` — fica pro ramo de telas de domínio.)
+
+- **Q37 — Bootstrap do 1º admin = via `ADMIN_EMAIL` (env var). FECHADA.** (Alex propôs;
+  melhor que minhas 3 opções.) Com banco vazio (`User.none?`), o login normal roda mas
+  o `create` só PERMITE criar a conta (e marca `admin: true`) SE o e-mail digitado ==
+  `ENV["ADMIN_EMAIL"]`. Qualquer outro e-mail com banco vazio é recusado (Q28).
+  Combina prova de posse do e-mail (magic-code normal) + à prova de corrida (o env
+  pré-decide QUEM pode ser admin → sem sequestro), sem token extra pra digitar.
+  Consequências: **NÃO precisa de rota `/setup` dedicada** (bootstrap = login normal com
+  `if User.none?`); `ADMIN_EMAIL` fica inerte depois do 1º admin (promover outros = Q32).
+
+- **Q38 — `ADMIN_EMAIL` ausente + banco vazio = AVISO EXPLÍCITO na tela. FECHADA.**
+  Se `User.none? && ADMIN_EMAIL` em branco, a landing/login mostram "Nenhuma conta e
+  `ADMIN_EMAIL` não configurado — defina a variável e recarregue". Guia o operador
+  (evita beco-sem-saída silencioso que geraria issue no GitHub). NÃO cair no fallback
+  "1º a logar vira admin" (reabriria o sequestro que a Q37 fechou).
+
+## Sessão 01/07/2026 (cont.) — Ramo Modelo de dados / telas de domínio (Q39–)
+
+- **Q39 — Ordem de build = CATÁLOGO PRIMEIRO (ordem do brief).** Clients → Projects →
+  Tasks → Timer/TimeEntry → Tags → Relatórios. (Alex escolheu; eu recomendei fatia
+  vertical timer-primeiro, mas ele preferiu ter os seletores já populados quando o
+  timer chegar e construir as invariantes contra catálogo real.) Client é a 1ª tabela.
+
+- **Q40 — Isolamento por user_id (Q23) enforçado via `action_policy` (Action Policy).**
+  (Alex escolheu a gem; eu havia recomendado escopo-por-associação sem gem.) Ruby puro,
+  SEM Node/asset → não fere a stack. Faz gates por ação (`update?`/`destroy?`) E escopo
+  de coleção (`relation_scope` filtra `index`/`find` por tenant). ⚠️ Tensão registrada:
+  contraria o espírito "não puxar gem" da Q7 (paranoia) e Q17 (rack-cors) — aceita
+  conscientemente porque a Q41 faz a gem carregar a authz inteira (se paga).
+
+- **Q41 — Action Policy = camada de autorização INTEIRA (Forma A). REVISA Q32/Q34.**
+  Tudo que é "pode/não pode" vira policy, um lugar só: isolamento por user
+  (`relation_scope`), `admin?` do painel (Q32), `suspended?` (Q34), gate de cobrança
+  futuro. **Revisão:** os gates que a Q32/Q34 punham no concern `Authentication`
+  MIGRAM pra policies. O `require_authentication` ainda resolve QUEM é o user (sessão/
+  bearer) e o gate de suspensão pode continuar barrando cedo, mas a decisão canônica de
+  autorização (inclusive "export isento" da Q34) é expressa em policy. Manter o
+  princípio: sem papéis COLABORATIVOS (Q23) — as policies só expressam tenant +
+  admin-operacional + status de conta, não colaboração.
+
+- **Q42 — Currency MORA NO CLIENT (múltiplas moedas reais). Confirma Q11/Q22.**
+  (Alex tem clientes em moedas diferentes — BRL e EUR — de verdade.) `Client.currency`
+  fica; o form de Client tem seletor de moeda; a rate do Client/Project e o snapshot do
+  TimeEntry carregam a moeda do Client. Rejeitada a Forma B (currency por User) porque o
+  mix é real. Consequência: reabre o "mix no export" que a Q19a tinha adiado → Q43.
+
+- **Q43 — Mix de moedas: fluxo por-cliente é mono-moeda; visão 'todos' usa subtotais.**
+  FATO DO ALEX: **ele fatura POR CLIENTE.** Logo o caminho de faturamento (filtrar por
+  cliente → exportar) é SEMPRE mono-moeda por construção — zero fricção, o mix nunca
+  entra numa fatura. Regra única: **NUNCA somar moedas diferentes num total.** Na visão
+  secundária "todos os clientes" com mix, o total do topo (Q21) vira **subtotais por
+  moeda** (BRL: X · EUR: Y), não um número único. SEM aba/arquivo separado, SEM filtro
+  de moeda obrigatório, SEM conversão de câmbio (Forma C rejeitada — briga com o
+  snapshot imutável Q10/Q11). Fecha a pendência da Q19a: "moeda única por export" vira
+  "por-cliente já garante moeda única; visão geral só não soma moedas".
+
+- **Q44 — Nome ÚNICO por usuário, INCLUINDO arquivados. FECHADA.** (Alex escolheu a
+  regra mais rígida; eu recomendei "só entre ativos".) `validates :name, uniqueness:
+  { scope: :user_id }` SEM condição de `archived_at` → um nome nunca repete, mesmo
+  aposentado. Pra reusar, desarquiva o original (é o mesmo cliente, não um novo). Vale
+  p/ Client/Project/Tag por `:user_id`; **Task é única por `:project_id`** ("Deploy"
+  pode existir em vários projetos). ⚠️ UX (nota p/ build, não é decisão nova): quando o
+  create colide com um arquivado, a mensagem deve ser "já existe (arquivado) — desarquivar?"
+  em vez de "nome em uso" cru, pra a regra rígida não virar beco sem saída.
+
+- **Q45 — Form do Project mostra a rate herdada como PLACEHOLDER. FECHADA.** (UI do
+  modelo da Q22.) Input de rate vem vazio, com texto auxiliar "Herdando do cliente:
+  R$ 150 — preencha para sobrescrever". Vazio = herda `client.rate`; digitar = override.
+  Caso comum (Q22: quase sempre herda) = não tocar o campo. Projeto SEM cliente (Q2) →
+  texto vira "sem cliente → defina uma rate ou fica sem". ⚠️ Detalhe Hotwire: o
+  placeholder reflete o cliente SELECIONADO; trocar o dropdown de cliente atualiza o
+  valor herdado ao vivo (Stimulus).
+
+- **Q46 — Entry manual aceita início+fim OU início+duração. FECHADA.** (Concretiza a
+  Q5, que já previa "início+duração que calcula o fim".) Duração é campo EDITÁVEL:
+  digitar "2:30" calcula `ended_at = started_at + duração`. Como o Clockify (tour viu
+  duração editável na linha). Schema INTACTO — grava dois timestamps reais (Q5),
+  `ended_at > started_at` sempre. Início/fim continuam disponíveis pra quem sabe os
+  horários. ⚠️ Padrão Stimulus compartilhado com Q45: **três campos LIGADOS**
+  (início/fim/duração) — mexer em dois recalcula o terceiro. Mesmo tipo de "campos
+  ligados ao vivo" do placeholder de rate.
+
+- **Q47 — Split E Duplicate ambos no primeiro corte. FECHADA.** (Alex quis os dois; eu
+  recomendei adiar Split.) **Duplicate** = re-disparar da Q13 aplicado a entry
+  finalizado (copia descrição/projeto/task/tags, horários novos) — custo ~zero.
+  **Split** = quebrar um entry em dois (entra, mas ganha regras próprias na Q48). Delete
+  já é o CRUD normal. Menu ⋮ do entry = Split · Duplicate · Delete (paridade com o tour).
+
+- **Q48 — Split: mecânica. FECHADA.**
+  - **(a)** A segunda metade (B) nasce **cópia FIEL de A** (mesma descrição/projeto/
+    task/tags/billable); você edita B na lista depois pra trocar o que mudou. NÃO
+    adivinha o novo projeto, NÃO abre form na hora.
+  - **(b)** Cada metade é TimeEntry próprio → cada uma **re-resolve e congela seu
+    snapshot** de rate no `before_save` (Q11). Trocar o projeto de B re-snapshota só B;
+    A mantém o original.
+  - **(c)** Ponto de corte **estritamente entre** started_at e ended_at (nunca nas
+    bordas → evita duração-zero da Q15c); só em entry **finalizado** (não no timer
+    rodando); **transação** atômica (cria B + encurta o ended_at de A).
+  - **(d)** Split PODE cruzar a meia-noite — é manual/explícito (você escolheu cortar),
+    diferente do fatiamento AUTOMÁTICO que a Q6 rejeitou. Cada metade cai no dia do seu
+    próprio started_at → coerente com Q6, não conflita.
+
+- **Q49 — Edição INLINE por linha (Turbo Frame). FECHADA.** (Concretiza a descoberta
+  do tour: editar é inline na lista, não tela separada.)
+  - **(a)** Cada entry = `turbo_frame_tag "time_entry_#{id}"` que troca exibição↔edição
+    sem recarregar a lista. Padrão Hotwire canônico; casa com o `respond_to` da Q9
+    (JSON p/ extensão, HTML/Turbo p/ web).
+  - **(b)** Uma edição por vez (recomendado, NÃO forçado — frames são independentes,
+    abrir duas é possível, só não incentivado).
+  - **(c)** O entry RODANDO (topo, `ended_at` nulo) edita no MESMO frame:
+    descrição/projeto/task/tag/billable/início livres (Q23a), mas **fim/duração
+    READ-ONLY enquanto roda** — só o stop carimba `ended_at` (Q14). Editar NÃO pára o
+    timer (preserva invariante Q3/Q4/Q14).
+  - **(d)** Duração ao vivo da linha do timer = **Stimulus controller client-side**
+    (cronômetro visual). NÃO Turbo Stream por segundo (martelaria o servidor). Servidor
+    continua fonte da verdade no stop.
+
+- **Q50 — Seletor de projeto/task SÓ SELECIONA (sem inline-create). FECHADA.**
+  Estrutura de exibição (tour): **"(sem projeto)" no topo** (Q15) + projetos AGRUPADOS
+  POR CLIENTE (com balde "(sem cliente)", Q2) + tasks aninhadas sob o projeto. Criar
+  Project/Task = só na tela de CRUD (Q39) → **um caminho de criação**, validações/rate
+  (Q44/Q22) num lugar só. Motivo de recusar inline-create: criaria Project "pela metade"
+  (sem cliente/rate/cor) sujando o CAMINHO DO DINHEIRO; e o fluxo do Alex é configurar
+  catálogo com calma ANTES (por isso "catálogo primeiro", Q39), não criar caótico no
+  meio. Inline-create de Project fica como enriquecimento FUTURO.
+
+- **Q51 — Tag CRIA INLINE no seletor de tagging (≠ Project da Q50). FECHADA.**
+  Inconsistência PROPOSITAL e justificada: Tag nasce COMPLETA (só nome + user_id, sem
+  rate/cliente/cor → nada "pela metade" a evitar) e o uso é AD-HOC no lançamento
+  ("marca como 'urgente'"). Logo o seletor de tags permite "Criar tag 'X'" inline.
+  Project protege o caminho do dinheiro → só-na-tela; Tag não tem esse caminho → inline
+  OK. Seletor = multi-select (chips, M:N Q8), mostra só ativas + as que o entry já tem
+  (Q8). Tela de Tags (Q8) existe pra GERENCIAR (renomear/arquivar); CRIAR pode ser inline.
+  ⚠️ Regra geral de inline-create derivada: **cria inline quem nasce completo e é usado
+  ad-hoc (Tag); só-na-tela quem tem caminho do dinheiro / nasce incompleto (Project).**
+
 - **Cobrança $1/mês — ADIADA (NÃO grillada). Esboço só pra não perder o raciocínio:**
   - Construir POR ÚLTIMO, "quando houver gente pedindo acesso" (palavras do Alex). Não
     pôr billing antes do app funcionar.
@@ -383,6 +623,316 @@ Conversa em **português**.
     continua acessível** (portabilidade não depende de pagar).
   - Detalhes NÃO decididos (dependem de volume/origem dos users): trial?, reembolso?,
     múltiplas moedas?, dunning?. Há skills Stripe disponíveis no harness pra quando for.
+
+## Sessão 02/07/2026 — Fecho do Modelo de dados (Q52) + Ramo Relatório/Export (Q53–)
+
+- **Q52 — Cor do Project = PALETA FIXA curada. FECHADA.** (Fecha o ramo Modelo de dados.)
+  - ~12 cores escolhidas a dedo (estética retrô), UI = grid de swatches (radio buttons
+    estilizados, zero JS). SEM picker livre, SEM opção custom (enriquecimento futuro
+    se alguém pedir).
+  - **Auto-atribuição no create:** pré-seleciona a cor MENOS USADA entre os projetos
+    ativos do user → donut (Q21) sem fatias repetidas sem o usuário pensar nisso.
+  - **Schema:** `color` string hex `#RRGGBB`, `null: false`. Validação de FORMATO no
+    model (não inclusão na paleta) → a paleta pode evoluir sem invalidar dado antigo;
+    a paleta é restrição de UI (o form só oferece os swatches).
+  - Motivo: donut legível (contraste garantido entre fatias) + identidade retrô
+    preservada + mais barato que estilizar `<input type="color">` (feio, varia por OS).
+
+- **Q53 — Seletor de período = presets ENXUTOS + setas ‹› + custom. FECHADA.**
+  - **Presets:** Hoje · Esta semana · Este mês · Este ano · Personalizado (2 date
+    inputs). Os "passados" (ontem, semana/mês/ano passado) saem via seta ‹ — presets
+    que duplicam as setas são UI parada (cortados os 9 do Clockify).
+  - **Setas ‹ ›** andam pelo TAMANHO do período ativo (mês→mês, semana→semana; custom
+    → mesmo nº de dias). **Default ao abrir = "Este mês"** (ciclo de faturamento; o
+    export mensal é o entregável principal).
+  - **Semana começa SEGUNDA, fixo** (sem config — início de semana configurável é
+    coisa de produto multi-mercado).
+  - **Bordas no fuso do user (Q23b):** período = [1º dia 00:00, último dia 23:59:59]
+    em `Current.user.time_zone`, comparado contra `started_at` (Q6: entry pertence
+    inteiro ao dia do started_at). O período alimenta Summary, Detailed E o export.
+
+- **Q54 — Filtros finos = 6 dimensões, OR dentro / AND entre. FECHADA.**
+  - **Filtros:** Client · Project · Task · Tag (multi-select, com baldes "(sem X)"
+    filtráveis — Q2/Q15) + **Billable** (todos / só faturável / só não-faturável —
+    substituto útil do "Status" do Clockify, que é approval de equipe e está fora) +
+    **Description** (busca contains, case-insensitive).
+  - **Semântica:** OR dentro da dimensão (projeto A ou B), AND entre dimensões.
+    Padrão facetado do Clockify/qualquer relatório.
+  - **Opções listadas = o que existe no período** (Q8), não o catálogo ativo.
+  - ⚠️ **Description roda em RUBY** (consequência Q25: coluna criptografada → LIKE no
+    banco não funciona). Período (timestamps em claro) restringe primeiro no SQL;
+    filtros de ID (client/project/task/tag) também vão no SQL; contains de descrição
+    filtra em memória. Insumo pro contrato de queries.
+
+- **Q55 — View Weekly = CORTADA. FECHADA.** Relatório tem DUAS abas: **Summary ·
+  Detailed** (como a CLAUDE.md já dizia). A grade projeto × dia da semana do Clockify
+  é a mesma informação do Summary com período "Esta semana", pivotada — e brilha em
+  contexto de EQUIPE (linhas por pessoa), dimensão que cortamos (Q23). Se sentir
+  falta: é uma pivot barata sobre a query de "horas por dia por grupo" que o gráfico
+  de barras do Summary já vai usar (sem schema/query nova). Não confundir com o
+  **Timesheet** (grade semanal de ENTRADA de dados) — esse ainda é um "talvez" a
+  decidir no fim do ramo.
+
+- **Q56 — Rounding: POR ENTRY, blocos 5/15/30, 3 direções. FECHADA.** (Paga a dívida
+  da Q11, que fechou "toggle existe" e adiou os detalhes.)
+  - **Granularidade: POR ENTRY** (fixo). Arredondar total de grupo faria Detailed não
+    bater com Summary/export; por entry, tudo soma consistente em qualquer group-by.
+    (= Clockify.)
+  - **Bloco:** 5 / 15 / 30 min, default **15**. **Direção:** pra cima / mais próximo /
+    pra baixo, default **mais próximo** (as 3 custam o mesmo select).
+  - **Só LEITURA:** recalcula duração exibida + amount (`horas_arredondadas × rate`,
+    centavo ROUND_HALF_UP no fim — Q11/Q19) no relatório/export. NUNCA toca
+    started_at/ended_at/snapshot gravados (Q10/Q11 intactas).
+  - **Config em params do relatório** (URL, viaja pro export), **OFF por padrão**.
+    Persistir como preferência do user: só quando existir a tela de preferências
+    (Q23b) — sem coluna nova agora (feature que o Alex nem usa hoje; xlsx real é exato).
+
+- **Q57 — Entry RODANDO fica FORA do relatório/export. FECHADA.** Relatório e export
+  só enxergam `ended_at IS NOT NULL` (sessões finalizadas, sempre com os dois
+  timestamps — Q5). Papéis: **tracker = presente** (mostra o rodando com cronômetro
+  ao vivo — Q49d); **relatório/export = passado consolidado** (número estável,
+  artefato arquivável — Q10). Zero caso especial de "duração parcial" no pipeline
+  (rounding Q56 / amount Q18 só processam entry completo). O buraco ("Hoje" subconta
+  enquanto roda) é aceito — o export mensal se gera com mês fechado.
+
+- **Q58 — Contrato das queries = PORO `Report` (1 query SQL + pipeline Ruby). FECHADA.
+  🏁 FECHA O RAMO RELATÓRIO/EXPORT.** Encryption (Q25) + fuso por user (Q6/Q23b) já
+  matavam GROUP BY/LIKE no banco — o contrato oficializa:
+  - **1 query SQL:** `Current.user.time_entries` finalizados (Q57)
+    `.where(started_at: range-no-fuso)` (Q53) + filtros por ID (project/task IN com
+    `IS NULL` pros baldes; client via join em projects; tag via EXISTS em taggings;
+    billable) (Q54) + `includes(:task, :tags, project: :client)` contra N+1.
+  - **Pipeline Ruby** (decrypt no load): Description contains (Q54) → rounding
+    opcional por entry (Q56) → corte do dia no fuso (Q6) → agrupamento 1–2 níveis
+    (Q21) → totais (tempo, tempo billable, amounts POR MOEDA — Q43) → série diária
+    (barras) + fatias do donut.
+  - **Onde vive:** `app/models/report.rb` — `Report.new(user:, period:, filters:,
+    group_by:, rounding:)` expõe `groups`/`rows`/`totals`/`daily_series`. Modelo rico
+    vanilla, SEM service layer (STYLE.md). Controller fino monta o Report dos params.
+  - **Uma estrutura, três consumidores:** Summary (groups), Detailed (rows,
+    `started_at` DESC, SEM paginação no 1º corte — volume single-user), export
+    xlsx/CSV da MESMA matriz (Q20). Tela e export sempre batem por construção.
+  - Volume em memória OK: um ano de entries ≈ milhares de linhas, trivial.
+
+- **Q59 — Timesheet = CORTADO DE VEZ (sai do "talvez"). FECHADA.** Vai pra lista
+  "fora de escopo" da CLAUDE.md. Motivo de MODELO, não só de escopo: a grade semanal
+  é entrada por DURAÇÃO PURA ("8h na terça", sem início/fim reais) — exatamente o que
+  a **Q5 rejeitou**. Suportar exigiria inventar timestamps fake ou revogar a Q5,
+  sujando o que corte-de-dia (Q6), split (Q48) e report (Q58) assumem. Público-alvo é
+  outro (preenchimento em lote); nosso fluxo é timer-driven + entry manual (Q46). Se
+  um dia mudar, a decisão a revogar conscientemente é a Q5, não "adicionar uma tela".
+
+- **Q60 — Calendar e Dashboard = CORTADOS (abre o ramo TELAS). FECHADA.** O brief
+  (PDF) só os cita na lista da sidebar (TELA 04) — nunca ganharam bloco
+  MANTER/REMOVER próprio; entraram de carona no print do Clockify. **Dashboard**
+  duplica o Reports Summary (que já abre em "Este mês" com barras/donut/totais —
+  Q53/Q21). **Calendar** é a tela mais cara do catálogo (drag pra criar/redimensionar
+  blocos = JS pesado que briga com "Hotwire, não JS avulso") pra um fluxo que não
+  agenda entries. Diferente do Timesheet (Q59), NÃO há conflito de modelo — podem
+  voltar um dia como enriquecimento, sem revogar nada. **Sidebar final: Tracker
+  (home) · Reports · Projects · Clients · Tags** + Admin (só p/ admin) + Preferências
+  (Q23b). ⚠️ ATUALIZAR a CLAUDE.md (sidebar lista Calendar/Dashboard).
+
+- **Q61 — URLs: resources no topo, home = `time_entries#index`. FECHADA.** (Paga a
+  pendência da Q36 "subpath do app".)
+  - `/` = landing (anônimo) ou redirect pro tracker (logado). Home do logado =
+    **`/time_entries`** (o tracker: timer no topo + lista) — "Tracker" é rótulo de
+    UI na sidebar, não URL especial.
+  - **SEM namespace `/app`** e SEM rota-vaidade `/tracker`: o contrato Q9/Q13 já fixou
+    `/timer` e `resources :time_entries` sem prefixo (extensão usa as MESMAS rotas;
+    `time_entries#index` serve HTML pra web E JSON pra "lista recente" da extensão).
+  - Demais recursos no topo: `/reports`, `/clients`, `/projects` (tasks aninhadas),
+    `/tags`, `/preferences`. **Admin em namespace `/admin`** próprio (área realmente
+    separada — Q32).
+
+- **Q62 — CSS = custom properties ZERO-BUILD (estilo fizzy). FECHADA.** (Mata o
+  "a definir" da CLAUDE.md/brief.) CSS puro: tokens em `:root` (paleta Q52 vira
+  `--color-*`, cinzas retrô, espaçamentos), arquivos por componente, servido pelo
+  Propshaft — editar e dar refresh, sem build/binário/watch. Motivos: (1) retrô 90s
+  = bevels/bordas/fontes CUSTOM que utilities do Tailwind não cobrem — escreveríamos
+  CSS na mão de qualquer jeito; (2) Tailwind standalone não fere a regra do Node mas
+  reintroduz build step + binário versionado + purge; (3) fizzy (referência declarada)
+  usa exatamente esse padrão — o que estudarmos lá cola direto. ⚠️ ATUALIZAR CLAUDE.md.
+
+- **Q63 — Estética = MODERNA, minimal densa (estilo Linear). FECHADA.
+  ⚠️⚠️ REVOGA o "retrô anos 90" da CLAUDE.md/brief** (Alex: "não quero layout retro,
+  quero um layout moderno"). Decidida após pesquisa de práticas 2025/26 (Linear como
+  referência dominante em ferramenta de produtividade).
+  - **Direção:** base neutra quase-branca, UM acento, linhas densas escaneáveis SEM
+    cards/bordas por linha, sidebar quieta (texto puro), hierarquia feita por
+    tipografia/peso/espaço — não por chrome. **Personalidade = cores dos projetos
+    (Q52)** pontuando a UI; **elemento-assinatura = a barra do timer** (único ponto
+    visualmente forte da tela).
+  - **Práticas adotadas junto (valem pra TODA tela):** design tokens semânticos nas
+    custom properties (Q62); `font-variant-numeric: tabular-nums` em coluna de
+    duração/dinheiro; progressive disclosure (filtros/poderes recolhidos até
+    precisar); piso de acessibilidade (contraste, foco visível,
+    `prefers-reduced-motion`); responsivo até mobile (PWA).
+  - Rejeitadas: Win95/GeoCities/terminal (retrô), Toggl-arejado (menos denso),
+    dark-first. ⚠️ ATUALIZAR CLAUDE.md ("Estética alvo: retrô anos 90" → moderna
+    minimal densa).
+
+- **Q64 — Dark mode AUTOMÁTICO já na v1 (prefers-color-scheme). FECHADA.** (Alex
+  escolheu ir além da minha recomendação de "claro-somente dark-ready".)
+  - Claro + escuro desde o início, trocando pelo **OS** (`@media
+    (prefers-color-scheme: dark)`). **SEM toggle manual, SEM preferência por user**
+    (nada de coluna nova; se auto-detecção incomodar um dia, aí sim vira preferência).
+  - **Consequências aceitas:** (1) tokens da Q62 OBRIGATORIAMENTE semânticos
+    (`--surface`/`--text`/`--accent`…) com valores nos DOIS temas; (2) a **paleta Q52
+    precisa funcionar sobre fundo claro E escuro** (curadoria com contraste duplo —
+    donut, bolinhas, barra do timer); (3) QA visual de toda tela nos dois temas.
+
+- **Q65 — Mobile (PWA) = BOTTOM TAB BAR; desktop = sidebar (Q63). FECHADA.** (Alex
+  escolheu tabs; eu recomendei drawer.) Navegação mobile de 1 toque, ergonomia de
+  app nativo — aceito o custo de manter uma SEGUNDA estrutura de navegação em
+  paridade com a sidebar. **Barra do timer segue no TOPO também no mobile** (ação
+  principal + assinatura visual, nunca atrás de menu). Composição das tabs: ver Q65b.
+
+- **Q65b — Tabs = Tracker · Reports · Projects · Mais. FECHADA.** "Mais" abre lista
+  simples: Clients · Tags · Preferências · Admin (se admin). Critério: tab pro que é
+  DIÁRIO (Tracker/Reports/Projects); catálogo raro (Clients/Tags — configura uma vez,
+  Q39/Q50) e conta ficam a 2 toques. **No desktop:** sidebar com os 5 itens de
+  trabalho + **Preferências/Admin no RODAPÉ da sidebar** (não são navegação de
+  trabalho).
+
+- **Q66 — Preferências = 3 seções. FECHADA.** (`/preferences` — Q61.)
+  - **Perfil:** `name` editável · e-mail READ-ONLY (trocar e-mail = trocar identidade
+    de login no passwordless; fluxo sensível, fora do 1º corte) · `time_zone` select
+    (paga a pendência da Q23b).
+  - **Extensão/API:** AccessTokens — listar (label · read/write · último uso),
+    criar (label + permissão → mostra token pra copiar), revogar. Schema já suporta
+    (label/permission/last_used_at já existem).
+  - **Meus dados:** botão do export Q26 (zip da bolha). É a rota isenta do gate de
+    suspensão (Q34b).
+  - **Fora:** tema (Q64 é automático via OS), deletar a própria conta (admin faz —
+    Q33), gestão de sessões ativas (enriquecimento futuro).
+
+- **Q67 — Landing = UMA DOBRA. FECHADA.** (Paga o "copy/layout da landing" das
+  Q24/Q36/Q38.) Nome + uma frase honesta ("time tracker enxuto e self-hosted: timer,
+  projetos, relatório mensal") + form "pedir acesso" inline (email/name?/note? — Q35,
+  resposta genérica Q35d) + link discreto "já tenho conta → entrar" + rodapé com link
+  do GitHub (open source). Copy em PORTUGUÊS (padrão da UI). Estado Q38 (banco vazio
+  sem `ADMIN_EMAIL`) SUBSTITUI o form pelo aviso ao operador. SEM seções de
+  marketing/features/screenshots — o público real é fila de convite manual +
+  self-hoster (que avalia pelo README; "landing de produto" de verdade é o README).
+  Bônus: primeira tela a exercitar os tokens claro/escuro (Q62/Q63/Q64).
+
+- **Q68 — Admin = PÁGINA ÚNICA `/admin`. FECHADA.** (Paga o "layout do painel" da
+  Q32.) Duas seções: **fila de AccessRequests pendentes no TOPO** (só renderiza
+  quando há pendentes — é o que exige ação; aprovar/rejeitar via Turbo, a fila
+  atualiza inline) + **tabela de users** (email · name · admin? · status
+  convidado/ativo via sessions Q31 · suspenso Q34) com ações no menu ⋮ por linha
+  (reenviar convite, suspender/reativar, promover/rebaixar, deletar → confirmação
+  digitando o e-mail Q33b) + botão "convidar". Por baixo, DOIS resources REST
+  (`admin/users`, `admin/access_requests`) — só a view do index é compartilhada.
+  Racional: volume homelab (dezenas de users, fila quase sempre vazia) não justifica
+  área multi-página; otimizar pra "entrei, resolvi, saí".
+
+- **Q69 — PWA: SW COM PÁGINA OFFLINE ESTÁTICA. FECHADA.** (Alex escolheu um degrau
+  acima da minha rec de SW no-op.) Estado atual: manifest/SW são defaults do Rails 8
+  (`theme_color: "red"` placeholder, SW todo comentado).
+  - **Service worker:** cacheia UMA página offline estática ("você está offline",
+    com a cara do app/tokens) no install; fetch handler só pra NAVEGAÇÕES: network
+    primeiro, catch → página offline. NADA além disso em cache (dados/assets/shell
+    NÃO — online-only da CLAUDE.md intacto). Versionar o cache pelo nome (bump manual
+    ao mudar a página).
+  - **Implementação a fazer junto:** manifest com cores dos tokens (Q62/Q64 —
+    theme/background por tema), `start_url: "/"` (redirect Q61 resolve), ícone REAL
+    do Ponto (o atual é o genérico do Rails; desenhar na direção Q63).
+  - **Web Push = FORA** (anotado como enriquecimento futuro: lembrete "timer
+    rodando há 8h" — custaria VAPID + subscriptions + UI de permissão).
+
+- **Q70 — Tipografia = INTER VARIABLE self-hosted. FECHADA.** Um woff2 (~100 KB) em
+  `app/assets` (self-hosted = zero build, zero Node — restrição intacta), pesos
+  variáveis fazem a hierarquia (Q63: tipografia carrega tudo, sem cards/bordas),
+  `font-variant-numeric: tabular-nums` nas colunas de duração/dinheiro. É a fonte do
+  Linear — o acabamento da direção Q63; a personalidade fica com as cores de projeto
+  + barra do timer. Rejeitadas: system stack (voz varia por OS), dupla com display
+  (app denso tem pouca superfície de título — risco de enfeite).
+
+- **Q71 — Gráficos = SVG SERVER-RENDERED (partials ERB). FECHADA.
+  🏁 FECHA O RAMO TELAS.** Barras por dia e donut (Q21) são geometria trivial
+  (retângulos; arcos com `stroke-dasharray`); partials ERB recebem
+  `daily_series`/`groups` do `Report` (Q58) e cospem `<svg>`. **Zero JS**, estilo
+  100% nos tokens CSS (dark Q64 de graça, cores de projeto Q52 direto), atualiza via
+  Turbo como HTML qualquer. Hover simples via `<title>`/CSS. Rejeitados: Chart.js
+  (~200 KB pra 2 gráficos estáticos, tema em JS fora dos tokens, dança
+  Stimulus↔Turbo) e CSS puro (donut em conic-gradient é gambiarra). Interatividade
+  de clique-na-fatia NÃO está no escopo (filtro é a linha de filtros — Q54).
+
+- **Q72 — Importador = JSON único versionado + import SÓ em bolha vazia. FECHADA.
+  🏁 FECHA O RAMO IMPORTADOR — GRILLING COMPLETO.** (Resolve o "JSON ou CSVs num
+  zip" que a Q26b deixou em aberto.)
+  - **Formato do export:** UM arquivo `ponto-export-YYYY-MM-DD.json` com
+    `schema_version: 1` + um array por entidade (User + Clients/Projects/Tasks/Tags/
+    TimeEntries/Taggings), **IDs originais preservados como referências internas**.
+    Sem zip (alguns MB no pior caso). Dump é pra MÁQUINA — leitura humana já é o
+    export de relatório (Q20).
+  - **Import só em bolha VAZIA** (zero registros de domínio): o caso de uso é
+    MIGRAÇÃO de instância, não merge. Rejeitado merge-por-nome (matriz de conflitos
+    da Q44 por um cenário que não é o alvo).
+  - **Remapeamento:** destino cria IDs próprios, refaz FKs na ordem Client → Project
+    → Task → Tag → TimeEntry → Tagging. **Snapshots rate/currency entram COMO ESTÃO**
+    (Q10 — histórico congelado; o `before_save` de re-snapshot NÃO roda no import).
+  - **UI:** Preferências → "Meus dados" (Q66), botão de import ao lado do export,
+    visível só com bolha vazia.
+
+## Sessão 02/07/2026 (cont.) — Ramo CLI (Q73–), aberto pelo Alex após o fecho
+
+> Motivação: "usar o app por CLI, como o fizzy" — pra usar via Claude, ferramentas
+> GUI e clients desktop. Referência `~/Projetos/fizzy-cli`: binário Go, **MIT**
+> (pode copiar/adaptar!), envelope JSON {ok,data,summary,breadcrumbs}, --jq
+> embutido, profiles em ~/.config/fizzy/, skill/plugin pro Claude, doctor. Lado
+> Rails do fizzy: mesmas rotas + respond_to + views .json.jbuilder (= nosso Q9).
+
+- **Q73 — Superfície JSON TOTAL no app. FECHADA.** (Amplia a Q9, que pensava só na
+  extensão.) TODO resource de domínio responde JSON via `respond_to` + view
+  `.json.jbuilder` nas MESMAS rotas: **catálogo (Clients/Projects/Tasks/Tags) +
+  timer + time_entries + report + export**. Regras: escalares no JSON (`rate_cents`
+  int + `currency` string, NUNCA Money cru — Q11); invariantes idênticas (409 do
+  timer — Q14); **erros padronizados** (`{error:}` + status HTTP correto) em toda
+  rota JSON. **FORA da superfície:** auth de browser (magic-code é fluxo humano),
+  admin (operacional, só-web — rejeitada a opção "total + admin": expõe ação
+  sensível a token por um caso raro), import (upload raro, só-web). Export ENTRA
+  (baixar xlsx/CSV por CLI é útil). Implementar o `format.json` JUNTO com cada
+  controller ao construir (barato agora, retrofit caro).
+
+- **Q74 — CLI = GO, FORK ESTRUTURAL DO FIZZY-CLI, repo separado `ponto-cli`. FECHADA.**
+  Racional: fizzy-cli é **MIT** → adaptar (não só estudar): troca-se domínio e marca,
+  **herda-se a infraestrutura pronta** — single binary multi-plataforma (goreleaser +
+  installer), envelope JSON `{ok, data, summary, breadcrumbs}`, `--jq` embutido,
+  `--styled`/`--markdown`, precedência de config (flags > env > profile > local >
+  global), doctor, help agent-first (`--help --agent`, `commands --json`), skill/
+  plugin Claude. Aceito o custo da segunda linguagem (Go) — repo separado, padrões
+  prontos, manutenção Alex+Claude. Repo separado também isola licença (ponto-cli
+  pode ser MIT) e ciclo de release. Rejeitados: Ruby gem/Thor (exige runtime, sem
+  binário único, reescreve o pronto) e wrapper bash (aquém do padrão fizzy pedido).
+  Auth do CLI = o `AccessToken` que já existe (bearer read/write — Q73).
+
+- **Q75 — CLI nasce INCREMENTAL, logo após a fatia Timer/TimeEntry. FECHADA.**
+  Primeiro corte de comandos = o que a API já tem nesse ponto: `timer start/stop/
+  status` · `entry list/show/create/update/delete` · catálogo `client`/`project`/
+  `task`/`tag` (list/show/create/update/archive/unarchive). `report`/`export`
+  chegam quando o app os tiver (fim da ordem Q39). Infra (setup/doctor/commands/
+  skill) vem do fork em qualquer cenário. Racional: o valor pedido é "trackear pelo
+  Claude" — dogfood do Ponto via CLI durante o resto do build; a API core (timer/
+  invariantes) já estará estável. Rejeitados: big bang pós-export (benefício tarde
+  demais) e timer-only (sem catálogo não seleciona projeto direito).
+
+- **Q76 — Config/integração = HERDA o fizzy-cli com 4 adaptações self-hosted.
+  FECHADA. 🏁 FECHA O RAMO CLI — GRILLING COMPLETO DE NOVO (Q1–Q76).**
+  - **Herda:** precedência flags > env > profile > config local > global; token em
+    keyring com fallback em arquivo; `setup` interativo; `doctor`; help agent-first;
+    envelope/--jq (Q74).
+  - **Adaptações:** (1) **`api_url` OBRIGATÓRIA** no setup — self-hosted, sem URL
+    default (≠ fizzy.do); (2) **profiles** `prod` (homelab) / `dev` (localhost) +
+    env `PONTO_TOKEN`/`PONTO_API_URL`/`PONTO_PROFILE`; (3) **skill embarcada +
+    `ponto setup claude`** (o caminho do "usar no Claude"; plugin de marketplace
+    fica pra quando for público); (4) **default project OPCIONAL** no perfil
+    (`timer start` sem `--project` usa o default — conveniência, não pré-requisito,
+    igual Q15b/extensão).
+  - Token é o MESMO `AccessToken` da extensão, gerado na MESMA tela (Preferências →
+    Extensão/API — Q66; renomear a seção pra "Extensão & CLI" na implementação).
 
 ## DESCOBERTAS DO TOUR AO VIVO (Clockify, 30/06) — confirmam/abrem decisões
 - ✅ **Timer rodando É EDITÁVEL** (cliquei no projeto da barra ativa → abriu seletor).
@@ -414,24 +964,27 @@ Conversa em **português**.
 - Cortes confirmados nas telas: Project.Progress/Access/Forecast/Estimate/custom-fields;
   Client.Address; entry assignees; "Create invoice"; Status filter (provavelmente).
 
-## Frentes ainda não grilladas (próximos ramos da árvore) — escolher na Q27
+## Frentes (🏁 TODAS FECHADAS — 02/07/2026)
 - ✅ ~~Extensão de Chrome~~ — FECHADA 100% (Q9/Q12/Q13/Q14/Q15/Q17).
 - ✅ ~~Currency/rate histórica~~ — FECHADA (Q10/Q11/Q22).
 - ✅ ~~Privacidade/encryption~~ — FECHADA (Q25).
-- ✅ ~~Export/portabilidade~~ — FECHADA (Q26) [falta detalhar o IMPORTADOR].
+- ✅ ~~Export/portabilidade~~ — FECHADA (Q26).
 - ✅ ~~Edge cases editar-entry-rodando + fuso~~ — FECHADOS (Q23a/Q23b).
-- **Relatório/export** (entregável principal — PARCIAL, Q18–Q21 feitas): falta toggle
-  **Rounding** de tempo (bloco/direção/granularidade, adiado da Q11), **seletor de
-  período** (This month + setas ‹›), **filtros finos** (Client/Project/Task/Tag/
-  Description; Status?), view **Weekly**, e o **contrato exato das consultas** de
-  agrupamento (uma/duas dimensões aninhadas — Q21).
-- **Auth/convite/admin/landing** (RAMO NOVO, aberto pela Q24 — FRESCO): fluxo de
-  convite (admin cria user → e-mail → 1º login), tela de admin (lista users + fila
-  AccessRequest + aprovar/recusar), a landing (copy/form), e-mail de convite vs
-  magic-code, bootstrap do 1º-user-admin.
-- **Telas Hotwire/PWA**: Clients → Projects → Tasks → Timer → Tags → Relatórios →
-  Export; timer global no topo; sidebar; start/stop via Turbo/Stimulus; **edição
-  INLINE por linha** (Turbo Frame — descoberta do tour); Split/Duplicate (extras?).
-- **Importador** (par do export Q26) — contrato de importação entre instâncias.
-- **Timesheet** (grade semanal de entrada) — o ÚNICO "talvez" do tour; decidir se entra.
+- ✅ ~~Relatório/export~~ — FECHADO (Q18–Q21, Q43, Q53–Q58): período (Q53), filtros
+  (Q54), Weekly cortada (Q55), rounding (Q56), rodando fora (Q57), PORO `Report` (Q58).
+- ✅ ~~Auth/convite/admin/landing~~ — FECHADO (Q28–Q38). Falta só a IMPLEMENTAÇÃO:
+  login vira `find_by` (bug do `find_or_create_by`), coluna `User.suspended_at` +
+  `User.admin` + `User.time_zone`, gate de suspensão no `require_authentication`
+  (export isento), `AccessRequest` (email/name?/note?/status), landing na raiz
+  (Q67), bootstrap `ADMIN_EMAIL`, painel de admin (Q68), e-mails de convite.
+- ✅ ~~Telas Hotwire/PWA~~ — FECHADO (Q60–Q71): escopo de telas (Q59/Q60), URLs/home
+  (Q61), CSS (Q62), estética moderna (Q63), dark automático (Q64), nav mobile
+  (Q65/Q65b), Preferências (Q66), landing (Q67), admin (Q68), PWA/SW (Q69),
+  tipografia (Q70), gráficos SVG (Q71).
+- ✅ ~~Importador~~ — FECHADO (Q72): JSON único versionado, import só em bolha vazia.
+- ✅ ~~Timesheet~~ — CORTADO DE VEZ (Q59): duração-pura conflita com a Q5.
+- ✅ ~~Ramo CLI~~ — FECHADO (Q73–Q76): superfície JSON total (Q73), ponto-cli Go
+  fork do fizzy-cli MIT (Q74), incremental pós-Timer (Q75), config herdada com
+  adaptações self-hosted (Q76).
 - 💤 **Cobrança $1/mês** — ADIADA por decisão do Alex (esboço Stripe registrado acima).
+  ÚNICO tema não-grillado; retomar "quando houver gente pedindo acesso".

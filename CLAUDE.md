@@ -4,17 +4,20 @@ Time-tracker self-hosted **multi-usuário, sem colaboração/times** (cada usuá
 sua própria bolha isolada de dados), no espírito Clockify/Toggl mas enxuto, pra rodar
 no homelab e ser publicado **open source**. Rails 8 + Hotwire + SQLite.
 
-> ⚠️ **Esta CLAUDE.md foi reconciliada (30/06/2026) com as decisões de design do
-> grilling.** A fonte de verdade detalhada e o RACIONAL de cada decisão estão em
-> **`docs/grilling-progress.md`** (Q1–Q24+). Onde esta CLAUDE.md e o grilling-progress
-> divergirem, o grilling-progress vence (é mais novo e mais detalhado). Várias
-> premissas originais mudaram: o app NÃO é mais single-user no sentido de "um registro
-> de User" (ver Stack), `project_id` é nulável, a rate tem override por projeto, e há
-> admin/convite/landing.
+> ⚠️ **Esta CLAUDE.md foi reconciliada (02/07/2026) com as decisões de design do
+> grilling — que está COMPLETO (Q1–Q76, todos os ramos fechados).** A fonte de
+> verdade detalhada e o RACIONAL de cada decisão estão em
+> **`docs/grilling-progress.md`**. Onde esta CLAUDE.md e o grilling-progress
+> divergirem, o grilling-progress vence (é mais novo e mais detalhado). Premissas
+> originais que MUDARAM: o app NÃO é single-user no sentido de "um registro de User"
+> (ver Stack), `project_id` é nulável, a rate tem override por projeto, há
+> admin/convite/landing, a estética **NÃO é mais retrô** — é moderna minimal densa
+> (Q63) — e há um **CLI oficial** (`ponto-cli`, Q73–Q76). Único tema em aberto:
+> cobrança $1/mês (adiada).
 
 ## Documentos de referência (leia antes de decidir arquitetura/UI)
 
-- `docs/grilling-progress.md` — **decisões de design fechadas (Q1–Q24+) + racional.**
+- `docs/grilling-progress.md` — **decisões de design fechadas (Q1–Q76) + racional.**
   Leia PRIMEIRO; é a fonte de verdade mais recente.
 - `docs/time-tracker-decisoes.md` — racional original de arquitetura e escopo (parte
   superada pelo grilling — cruze com ele).
@@ -33,9 +36,17 @@ Referência de implementação: **`basecamp/fizzy`** (Rails+Hotwire), clonado em
 - **SQLite** (backup = um arquivo). Banco em UTC.
 - **importmap** — sem build de JS, sem Node no runtime.
 - **PWA** pra mobile (mesma UI responsiva + manifest + service worker), online-only,
-  sem offline sync. Rotas `manifest`/`service-worker` já existem; faltam as views.
-- **CSS**: custom properties zero-build (estilo fizzy) ou Tailwind via binário
-  standalone (sem Node). Estética alvo: **retrô anos 90**.
+  sem offline sync. SW cacheia SÓ uma página offline estática (Q69); manifest com
+  cores dos tokens + ícone real a fazer (hoje são defaults do Rails).
+- **CSS**: custom properties zero-build, estilo fizzy (Q62 — decidido; sem Tailwind).
+  Tokens SEMÂNTICOS (`--surface`/`--text`/`--accent`) com valores pros DOIS temas.
+- **Estética: MODERNA minimal densa, estilo Linear** (Q63 — revoga o "retrô anos 90"
+  do brief): base neutra, 1 acento, linhas densas sem cards/bordas, hierarquia por
+  tipografia/peso/espaço; personalidade = cores dos projetos; assinatura = barra do
+  timer. **Claro + dark AUTOMÁTICO** via `prefers-color-scheme`, sem toggle (Q64).
+  Fonte: **Inter variable self-hosted** (woff2 em assets, `tabular-nums` em colunas
+  numéricas — Q70). Gráficos do relatório = **SVG server-rendered** em partial ERB,
+  zero JS (Q71).
 - **Multi-usuário SEM times** (Q23): o app permite criação de contas; vários usuários
   independentes, cada um na própria bolha. **Isolamento total por `user_id`** em todas
   as tabelas de domínio — ZERO dado compartilhado entre contas. O que NÃO existe:
@@ -107,6 +118,24 @@ via_sign_in_code.rb`), `request_forgery_protection.rb`; models `User`, `Session`
 (sem coluna token — usa `signed_id`), `SignInCode` (+ `sign_in_code/code.rb`),
 `AccessToken`, `Current`.
 
+## API JSON + CLI `ponto-cli` (Q73–Q76)
+
+- **Superfície JSON TOTAL (Q73):** todo resource de domínio responde JSON
+  (`respond_to` + views `.json.jbuilder`, MESMAS rotas — padrão fizzy): catálogo
+  (Clients/Projects/Tasks/Tags) + timer + time_entries + report + export. **Só-web
+  (fora do JSON):** auth de browser, admin, import. Escalares no JSON (Q11), erros
+  padronizados (`{error:}` + status correto). Implementar o `format.json` JUNTO com
+  cada controller ao nascer.
+- **CLI oficial (Q74):** repo separado `ponto-cli`, **Go, fork estrutural do
+  `fizzy-cli`** (que é MIT — pode adaptar, não só estudar; clonado em
+  `~/Projetos/fizzy-cli`). Herda envelope `{ok,data,summary,breadcrumbs}`, `--jq`,
+  profiles, doctor, skill/plugin Claude. Auth = o mesmo `AccessToken` da extensão
+  (gerado em Preferências — Q66).
+- **Nasce incremental pós-fatia-Timer (Q75):** timer/entry/catálogo primeiro;
+  report/export quando o app os tiver. Config (Q76): `api_url` OBRIGATÓRIA no setup
+  (self-hosted), profiles prod/dev, env `PONTO_*`, default project opcional,
+  `ponto setup claude`.
+
 ### Acesso por CONVITE (a construir — Q24)
 
 Não há signup público auto-servido. Acesso é controlado:
@@ -169,23 +198,30 @@ Hierarquia **Client → Project → Task → TimeEntry**, com **Tags** por fora.
   agrupar convertendo pro fuso do user **antes** de extrair a data —
   `.in_time_zone(Current.user.time_zone).to_date`, feito **no Ruby** (SQLite não tem
   `AT TIME ZONE`). Entry pertence inteiro ao dia do `started_at`, sem fatiar (Q6).
-- UI de edição do fuso: pendente (campo + default agora; tela de preferências depois).
+- UI de edição do fuso: na tela de **Preferências** (`/preferences` — Q66).
 
 ## Telas (a construir — ordem do brief; ver PDF pro detalhe de cada uma)
 
 Auth (feito) → **Clients → Projects → Tasks → Timer/TimeEntry → Tags → Relatórios →
-Export**. Timer global no topo (start/stop sempre acessível). Sidebar: Calendar,
-Dashboard, Reports, Projects, Clients, Tags (**sem Team**).
+Export**. Timer global no topo em TODA tela (start/stop sempre acessível — é a
+assinatura visual, Q63). **URLs (Q61):** `/` = landing pública (Q36); home do logado
+= `/time_entries` (tracker); resources no topo, sem namespace (contrato da extensão
+Q9/Q13); só admin é namespaced (`/admin`).
 
-Telas NOVAS abertas pelo grilling (a grillar/detalhar): **landing page pública**
-(pedir acesso — Q24), **área de admin** (lista de users + fila `AccessRequest` +
-aprovar/recusar — Q24), **preferências do usuário** (fuso etc. — Q23b). Possível
-**cobrança** ($1/mês — ver grilling-progress, ainda a decidir).
+**Navegação (Q60/Q65):** desktop = sidebar **Tracker · Reports · Projects · Clients ·
+Tags** (+ Preferências/Admin no rodapé). Mobile (PWA) = **bottom tab bar** Tracker ·
+Reports · Projects · Mais (Mais → Clients/Tags/Preferências/Admin). **Calendar e
+Dashboard foram CORTADOS** (Q60 — Dashboard duplica o Summary; Calendar é caro).
 
-Relatórios (forma do Clockify, sem dimensões de equipe): barras por dia + total,
-donut por projeto, group by (Project/Description/Client/Tag/Task), views Summary /
-Detailed. **O export CSV/Excel mensal é o entregável principal.** Em dados: só
-consultas e agrupamentos sobre as tabelas existentes.
+Telas novas já DESENHADAS no grilling: **landing 1 dobra** (Q67), **admin em página
+única** com fila de pedidos + tabela de users (Q68), **Preferências em 3 seções**
+(perfil/fuso · tokens da extensão · export/import dos dados — Q66/Q72).
+
+Relatórios (fechado — Q53–Q58): views **Summary · Detailed** (Weekly cortada, Q55);
+período enxuto + setas ‹› default "Este mês" (Q53); 6 filtros OR/AND (Q54); rounding
+por entry opt-in (Q56); entry rodando FORA do report (Q57); tudo via **PORO `Report`**
+(1 query SQL + pipeline Ruby → Summary/Detailed/export da mesma matriz — Q58).
+**O export CSV/Excel mensal é o entregável principal.**
 
 ## Fora de escopo (não construir)
 
@@ -193,8 +229,11 @@ Invoicing/faturamento dos CLIENTES do usuário (export CSV é o entregável; o u
 fatura seus clientes por fora) · **equipe/colaboração/compartilhamento/papéis
 colaborativos** (multi-usuário SIM, mas sem times — Q23) · OAuth/senha/passkey ·
 custom fields · estimativas/forecast/budget de projeto · colunas Access/Progress das
-telas. (NOTA: a cobrança $1/mês do PRÓPRIO Ponto pelos seus usuários é outra coisa —
-está EM DISCUSSÃO, não confundir com invoicing dos clientes do usuário.)
+telas · **Timesheet** (grade semanal de entrada — Q59: duração-pura conflita com a
+Q5) · **Calendar e Dashboard** (Q60) · view **Weekly** do relatório (Q55) ·
+conversão de câmbio (Q43: nunca somar moedas; subtotais por moeda). (NOTA: a
+cobrança $1/mês do PRÓPRIO Ponto pelos seus usuários é outra coisa — está ADIADA,
+não confundir com invoicing dos clientes do usuário.)
 
 ## Convenções
 
@@ -202,6 +241,9 @@ está EM DISCUSSÃO, não confundir com invoicing dos clientes do usuário.)
   controllers (vale aqui: o projeto é Rails + Stimulus).
 - **Vanilla Rails**: controllers finos chamando model rico; sem camada de services
   por padrão (ver STYLE.md "Controller and model interactions").
+- **Autorização = Action Policy** (Q40/Q41): a gem carrega a camada INTEIRA de
+  "pode/não pode" — isolamento por tenant (`relation_scope`), `admin?`, suspensão.
+  Sem papéis colaborativos (Q23).
 - **Dinheiro = money-rails** (`monetize`, Ruby puro sem Node) — Q11/Q20. ⚠️ NUNCA
   serializar objeto `Money` cru em JSON (vira hash gigante); nas rotas da extensão
   expor escalares (`rate_cents` int + `currency` string).
