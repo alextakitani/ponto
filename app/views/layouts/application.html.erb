@@ -19,12 +19,14 @@
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%# Ordem de cascata explícita: tokens (custom properties) → base → forms. %>
-    <%= stylesheet_link_tag "tokens", "base", "forms", "landing", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "tokens", "base", "forms", "landing", "admin", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body>
-    <%= render "shared/flash" %>
+    <%# Container do flash com id fixo pra que respostas Turbo Stream possam
+        atualizá-lo (ex.: aprovar/recusar pedido no painel de admin). %>
+    <div id="flash"><%= render "shared/flash" %></div>
     <%= yield %>
   </body>
 </html>

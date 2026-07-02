@@ -1,0 +1,11 @@
+<%# Uma linha da fila de pedidos. dom_id -> o Turbo Stream remove a linha inline. %>
+<tr id="<%= dom_id(access_request) %>">
+  <td><%= access_request.email %></td>
+  <td><%= access_request.name %></td>
+  <td class="muted"><%= access_request.note %></td>
+  <td class="muted"><%= access_request.created_at.to_date.iso8601 %></td>
+  <td class="admin__actions">
+    <%= button_to "Aprovar", admin_access_request_approval_path(access_request), class: "btn btn--quiet" %>
+    <%= button_to "Rejeitar", admin_access_request_rejection_path(access_request), class: "btn btn--quiet" %>
+  </td>
+</tr>
