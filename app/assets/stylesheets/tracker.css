@@ -1,0 +1,228 @@
+/*
+ * Tracker UI (Fatia 3.2): barra do timer + lista diária + edição inline.
+ */
+
+.shell-timerbar {
+  min-height: auto;
+  padding: var(--space-3) var(--space-5);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 10%, transparent), transparent 42%),
+    var(--color-surface);
+}
+
+.shell-timerbar turbo-frame {
+  display: block;
+}
+
+.shell-timerbar__loading {
+  font-size: var(--text-sm);
+}
+
+.timer-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: end;
+}
+
+.timer-bar__fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(13rem, 1fr);
+  gap: var(--space-3);
+}
+
+.timer-bar__label,
+.timer-bar__eyebrow {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-subtle);
+}
+
+.timer-bar__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+}
+
+.timer-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.timer-bar__stopwatch {
+  font-size: 1.5rem;
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.02em;
+}
+
+.timer-bar__separator {
+  color: var(--color-text-subtle);
+}
+
+.timer-bar__project,
+.tracker-entry__project {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.timer-bar__error {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-danger);
+}
+
+.tracker-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.tracker-day {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.tracker-day__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tracker-day__header h2 {
+  font-size: var(--text-base);
+}
+
+.tracker-day__total {
+  font-size: var(--text-sm);
+  color: var(--color-text-subtle);
+}
+
+.tracker-day__entries {
+  display: flex;
+  flex-direction: column;
+}
+
+.tracker-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tracker-entry__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.tracker-entry__description {
+  font-weight: var(--weight-medium);
+}
+
+.tracker-entry__separator {
+  color: var(--color-text-subtle);
+}
+
+.tracker-entry__range {
+  white-space: nowrap;
+}
+
+.tracker-entry__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.tracker-entry__duration {
+  min-width: 6.5ch;
+  text-align: right;
+}
+
+.tracker-entry--running .tracker-entry__description,
+.tracker-entry--running .tracker-entry__duration {
+  color: var(--color-accent);
+}
+
+.tracker-entry--editing {
+  grid-template-columns: 1fr;
+  padding: var(--space-3);
+  margin: var(--space-2) 0;
+  background-color: color-mix(in srgb, var(--color-accent) 4%, var(--color-surface));
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.tracker-entry__edit-grid,
+.tracker-entry__readonly {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.tracker-entry__readonly {
+  margin: 0;
+}
+
+.tracker-entry__readonly dt {
+  margin-bottom: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+}
+
+.tracker-entry__readonly dd {
+  margin: 0;
+}
+
+.tracker-billable {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 1.65rem 0 0;
+}
+
+.tracker-billable input {
+  width: auto;
+}
+
+@media (max-width: 48rem) {
+  .shell-timerbar {
+    padding: var(--space-3);
+  }
+
+  .timer-bar,
+  .tracker-entry,
+  .tracker-entry__edit-grid,
+  .tracker-entry__readonly,
+  .timer-bar__fields {
+    grid-template-columns: 1fr;
+  }
+
+  .timer-bar__actions,
+  .tracker-entry__actions {
+    justify-content: space-between;
+  }
+
+  .timer-bar__stopwatch {
+    font-size: 1.25rem;
+  }
+
+  .tracker-billable {
+    margin-top: 0;
+  }
+}

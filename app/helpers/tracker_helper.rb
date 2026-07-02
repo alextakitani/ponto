@@ -1,0 +1,52 @@
+module TrackerHelper
+  def tracker_day_label(date)
+    date.strftime("%d/%m/%Y")
+  end
+
+  def tracker_duration(seconds)
+    total_seconds = seconds.to_i
+    hours = total_seconds / 3600
+    minutes = (total_seconds % 3600) / 60
+    remainder = total_seconds % 60
+
+    format("%02d:%02d:%02d", hours, minutes, remainder)
+  end
+
+  def tracker_entry_description(time_entry)
+    time_entry.description.presence || "Sem descrição"
+  end
+
+  def tracker_entry_project_name(time_entry)
+    time_entry.project&.name || "(sem projeto)"
+  end
+
+  def tracker_entry_time_range(time_entry)
+    started = tracker_local_time(time_entry.started_at)
+    ended = time_entry.ended_at? ? tracker_local_time(time_entry.ended_at) : "Rodando"
+
+    "#{started} - #{ended}"
+  end
+
+  def tracker_datetime_local_value(timestamp)
+    return if timestamp.blank?
+
+    timestamp.in_time_zone(tracker_time_zone).strftime("%Y-%m-%dT%H:%M")
+  end
+
+  def tracker_grouped_project_options
+    Current.user.projects.active.includes(:client).to_a
+      .sort_by { |project| [ project.client&.name.to_s.downcase, project.name.downcase ] }
+      .group_by { |project| project.client&.name || "(sem cliente)" }
+      .map do |client_name, projects|
+        [ client_name, projects.map { |project| [ project.name, project.id ] } ]
+      end
+  end
+
+  def tracker_local_time(timestamp)
+    timestamp.in_time_zone(tracker_time_zone).strftime("%H:%M")
+  end
+
+  def tracker_time_zone
+    ActiveSupport::TimeZone[Current.user.time_zone] || Time.zone
+  end
+end
