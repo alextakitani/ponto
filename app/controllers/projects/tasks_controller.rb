@@ -11,7 +11,7 @@ module Projects
     before_action :set_task, only: %i[show edit update destroy]
 
     def index
-      @tasks = @project.tasks.active.to_a.sort_by { |t| t.name.downcase }
+      @tasks = @project.active_tasks
 
       respond_to do |format|
         format.html { redirect_to edit_project_path(@project) }

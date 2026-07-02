@@ -98,13 +98,4 @@ class TasksTest < ActionDispatch::IntegrationTest
     assert_response :not_found
     assert_equal "Alheia", task_alheia.reload.name
   end
-
-  private
-    def sign_in_as(email)
-      user = User.create!(email: email)
-      perform_enqueued_jobs { post sign_in_path, params: { email: email } }
-      code = ActionMailer::Base.deliveries.last.subject[/\d{6}/]
-      post sign_in_session_path, params: { code: code }
-      user
-    end
 end

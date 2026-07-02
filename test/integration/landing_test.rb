@@ -53,12 +53,4 @@ class LandingTest < ActionDispatch::IntegrationTest
   ensure
     ENV["ADMIN_EMAIL"] = original
   end
-
-  # Login é convite-only (Q28): a conta precisa existir para o código ser emitido.
-  def sign_in_as(email)
-    User.find_or_create_by!(email: email)
-    perform_enqueued_jobs { post sign_in_path, params: { email: email } }
-    code = ActionMailer::Base.deliveries.last.subject[/\d{6}/]
-    post sign_in_session_path, params: { code: code }
-  end
 end

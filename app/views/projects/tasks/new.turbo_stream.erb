@@ -1,7 +1,3 @@
 <%# Create inválido: re-renderiza a seção com a task errada no form (reexibe os erros
-    inline — colisão de nome, arquivado etc.). %>
-<%= turbo_stream.replace "project_tasks" do %>
-  <%= turbo_frame_tag "project_tasks" do %>
-    <%= render "projects/tasks/section", project: @project, form_task: @task %>
-  <% end %>
-<% end %>
+    inline — colisão de nome, arquivado etc.). Ver `_section_stream`. %>
+<%= render "projects/tasks/section_stream", project: @project, form_task: @task %>

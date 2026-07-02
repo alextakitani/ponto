@@ -1,0 +1,24 @@
+<%# Turbo Stream ÚNICO das ações inline de task (create/new/update/destroy). Os 4
+    templates re-renderizam a MESMA seção inteira (lista + form) dentro do frame, em
+    vez de fazer targeting cirúrgico por linha. É PROPOSITAL:
+      • Idempotente — o cliente sempre recebe o estado completo da seção; não importa
+        se a task foi criada, renomeada, arquivada ou removida, o resultado é o mesmo
+        "aqui está a seção agora". Nenhuma ação depende do DOM anterior estar íntegro.
+      • Simples — um replace do frame, sem append/remove/update encadeados que teriam
+        de casar `dom_id` por linha e reconstruir o empty-state na mão.
+    ⚠️ REFERÊNCIA pro tracker da Fase 3: quando o Timer/TimeEntry ganhar streams inline,
+    seguir este padrão (replace da seção inteira) antes de otimizar por linha — só
+    trocar por targeting cirúrgico se o custo de re-render doer, medido.
+
+    Locals repassados a `_section` só quando presentes (senão `_section` resolve o
+    default via `local_assigns.fetch`, sem query dupla):
+      • `project` (obrigatório)
+      • `form_task` (opcional — task com erros a reexibir no form de criar)
+      • `tasks` (opcional — coleção já materializada pelo controller) %>
+<%= turbo_stream.replace "project_tasks" do %>
+  <%= turbo_frame_tag "project_tasks" do %>
+    <%= render "projects/tasks/section",
+          { project: project }
+            .merge(local_assigns.slice(:tasks, :form_task)) %>
+  <% end %>
+<% end %>

@@ -27,13 +27,14 @@ module Projects
         # Re-renderiza a seção de tasks do projeto (Turbo Frame) ou cai no redirect HTML.
         def respond_inline(notice:)
           @project = @task.project
-          @tasks = @project.tasks.active.to_a.sort_by { |t| t.name.downcase }
+          @tasks = @project.active_tasks
 
           respond_to do |format|
+            # Mesma seção que o CRUD inline re-renderiza — via o partial de stream
+            # compartilhado (ver `_section_stream`). `@tasks` já materializado → sem
+            # query dupla no `_section`.
             format.turbo_stream do
-              render turbo_stream: turbo_stream.replace(
-                "project_tasks", partial: "projects/tasks/section", locals: { project: @project }
-              )
+              render "projects/tasks/section_stream", project: @project, tasks: @tasks
             end
             format.html { redirect_to edit_project_path(@project), notice: notice }
           end

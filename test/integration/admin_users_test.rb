@@ -142,14 +142,4 @@ class AdminUsersTest < ActionDispatch::IntegrationTest
     end
     assert User.exists?(@admin.id)
   end
-
-  private
-    def sign_in_as(email, admin: false, user: nil)
-      user ||= User.create!(email: email, admin: admin)
-      perform_enqueued_jobs { post sign_in_path, params: { email: email } }
-      code = ActionMailer::Base.deliveries.last.subject[/\d{6}/]
-      post sign_in_session_path, params: { code: code }
-      ActionMailer::Base.deliveries.clear
-      user
-    end
 end

@@ -150,13 +150,4 @@ class ProjectsTest < ActionDispatch::IntegrationTest
     assert_select "body", text: /ProjetoAcme/
     assert_select "body", { text: /ProjetoGlobex/, count: 0 }
   end
-
-  private
-    def sign_in_as(email)
-      user = User.create!(email: email)
-      perform_enqueued_jobs { post sign_in_path, params: { email: email } }
-      code = ActionMailer::Base.deliveries.last.subject[/\d{6}/]
-      post sign_in_session_path, params: { code: code }
-      user
-    end
 end

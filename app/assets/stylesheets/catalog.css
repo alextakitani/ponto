@@ -1,7 +1,8 @@
 /*
- * Telas de domínio dentro do shell (Clientes é a 1ª — Fatia 2.2). Componentes
- * genéricos e reusáveis (page-header, data-table, empty-state, form-stack) que as
- * próximas telas (Projetos/Tags) herdam. Só tokens; denso; claro/escuro automático.
+ * Componentes GENÉRICOS e reusáveis das telas de catálogo dentro do shell (Clientes,
+ * Projetos, Tags…): page-header, page-toolbar, data-table, empty-state, row-menu,
+ * tag-badge e os form-* de domínio. Nada específico de uma tela mora aqui — o que for
+ * de Cliente/Projeto vai no CSS da tela. Só tokens; denso; claro/escuro automático.
  */
 
 /* --- Cabeçalho de página ---------------------------------------------------- */
@@ -162,6 +163,13 @@
   display: flex;
   gap: var(--space-2);
   align-items: center;
+}
+
+/* Dica curta abaixo de um campo (ex.: rate herdada do cliente — Q45). */
+.form-hint {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
 }
 
 .form-errors {

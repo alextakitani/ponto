@@ -153,3 +153,10 @@ button:disabled {
   color: var(--color-on-danger);
   background-color: color-mix(in srgb, var(--color-danger) 88%, black);
 }
+
+/* Botão pequeno (ações inline densas, ex.: linha de task). Classe dobrada pela mesma
+ * razão dos demais modificadores (vencer o seletor base button[type="submit"]). */
+.btn.btn--sm {
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-xs);
+}

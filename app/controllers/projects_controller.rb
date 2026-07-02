@@ -27,7 +27,7 @@ class ProjectsController < ApplicationController
   end
 
   def show
-    @tasks = @project.tasks.active.to_a.sort_by { |t| t.name.downcase }
+    @tasks = @project.active_tasks
 
     respond_to do |format|
       format.html
