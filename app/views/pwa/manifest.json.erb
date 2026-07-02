@@ -1,22 +1,34 @@
-{
+<%#
+  Manifest da PWA (Q69). theme_color/background_color = --color-surface do tema CLARO
+  (tokens.css: #ffffff) — o SO usa cor estática (não segue prefers-color-scheme), então
+  fixamos no claro. icons: SVG (any) + PNG 512 (any) + PNG 512 maskable (fundo creme
+  full-bleed, marca ~70% central). Comentário fica em ERB p/ o JSON de saída seguir válido.
+%>{
   "name": "Ponto",
+  "short_name": "Ponto",
+  "description": "Time tracker self-hosted, no espírito Clockify/Toggl mas enxuto — cada conta na própria bolha isolada.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
   "icons": [
     {
-      "src": "/icon.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "src": "/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
     },
     {
       "src": "/icon.png",
       "type": "image/png",
       "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable.png",
+      "type": "image/png",
+      "sizes": "512x512",
       "purpose": "maskable"
     }
   ],
-  "start_url": "/",
-  "display": "standalone",
-  "scope": "/",
-  "description": "Ponto.",
-  "theme_color": "red",
-  "background_color": "red"
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff"
 }

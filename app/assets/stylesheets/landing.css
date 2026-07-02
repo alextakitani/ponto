@@ -61,19 +61,11 @@
   max-width: 56ch;
 }
 
-/* Marca: um "ponto" quadrado no acento (não um logo genérico). */
+/* Marca: agora é a marca real (partial shared/_logo_mark, SVG inline). A classe
+   .lp-mark só ajusta o alinhamento vertical do wrapper .logo-mark ao lado do
+   wordmark; tamanho vem do local `size` do partial, cor/badge do .logo-mark. */
 .lp-mark {
-  display: inline-block;
-  width: 0.7em;
-  height: 0.7em;
-  border-radius: 2px;
-  background-color: var(--color-accent);
-  vertical-align: baseline;
-}
-
-.lp-mark--sm {
-  width: 0.6em;
-  height: 0.6em;
+  vertical-align: middle;
 }
 
 /* ─────────────────────────── Header ─────────────────────────── */

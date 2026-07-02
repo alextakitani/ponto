@@ -5,7 +5,7 @@
   <%# ── Cabeçalho: marca + acessos secundários (GitHub, entrar) + idioma ── %>
   <header class="lp-head">
     <a class="lp-head__brand" href="#topo">
-      <span class="lp-mark" aria-hidden="true"></span>Ponto
+<%= render "shared/logo_mark", size: 22, css_class: "lp-mark" %>Ponto
     </a>
     <nav class="lp-head__nav" aria-label="<%= t("landing.nav.links_label") %>">
       <%= render "shared/locale_switcher" %>
@@ -123,7 +123,7 @@
           <div class="lp-proof__art" aria-hidden="true">
             <div class="lp-popup">
               <div class="lp-popup__head">
-                <span class="lp-mark lp-mark--sm" aria-hidden="true"></span>
+                <%= render "shared/logo_mark", size: 16, css_class: "lp-mark lp-mark--sm" %>
                 <span class="lp-popup__title"><%= t("landing.mockups.extension.title") %></span>
               </div>
               <div class="lp-popup__timer">
@@ -285,7 +285,7 @@
   </main>
 
   <footer class="lp-foot">
-    <span class="lp-foot__brand"><span class="lp-mark lp-mark--sm" aria-hidden="true"></span>Ponto</span>
+    <span class="lp-foot__brand"><%= render "shared/logo_mark", size: 18, css_class: "lp-mark lp-mark--sm" %>Ponto</span>
     <nav class="lp-foot__nav" aria-label="<%= t("landing.footer.nav_label") %>">
       <%= render "shared/locale_switcher" %>
       <%= link_to t("landing.nav.github"), "https://github.com/alextakitani/ponto" %>
