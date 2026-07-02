@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_02_144813) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_02_162721) do
   create_table "access_requests", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -31,6 +31,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_02_144813) do
     t.integer "user_id", null: false
     t.index ["token"], name: "index_access_tokens_on_token", unique: true
     t.index ["user_id"], name: "index_access_tokens_on_user_id"
+  end
+
+  create_table "clients", force: :cascade do |t|
+    t.datetime "archived_at"
+    t.datetime "created_at", null: false
+    t.string "currency", default: "BRL", null: false
+    t.text "name", null: false
+    t.text "note"
+    t.integer "rate_cents"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id", "name"], name: "index_clients_on_user_id_and_name", unique: true
+    t.index ["user_id"], name: "index_clients_on_user_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -65,6 +78,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_02_144813) do
   end
 
   add_foreign_key "access_tokens", "users"
+  add_foreign_key "clients", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "sign_in_codes", "users"
 end

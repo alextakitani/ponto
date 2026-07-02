@@ -65,3 +65,7 @@ gem "action_policy", "~> 0.7.6"
 # Dinheiro em Ruby puro (sem Node) — rate/amount viram objetos Money via `monetize`
 # (Q11/Q20). Ver config/initializers/money.rb.
 gem "money-rails", "~> 3.0"
+
+# Superfície JSON de domínio (Q73): views .json.jbuilder declarativas, ESCALARES
+# (rate_cents int + currency string, nunca Money cru — Q11). Mesmas rotas do HTML.
+gem "jbuilder"

@@ -21,14 +21,22 @@ class ApplicationPolicy < ActionPolicy::Base
     relation.where(user: user)
   end
 
-  # Piso de ownership: só o dono manipula o próprio record. Policies de domínio
-  # herdam isto; as regras CRUD (index?/show?/create?/update?/destroy?) do Action
-  # Policy caem no default_rule, então aliasamos pra manage? aqui embaixo.
+  # Piso de ownership pra ações SOBRE UM RECORD (show/edit/update/destroy): só o dono
+  # manipula o próprio record — compara `user_id`. As ações de COLEÇÃO (index/new/
+  # create) não têm um record concreto (o "record" é a classe), então NÃO podem cair
+  # em manage? (que dereferencia record.user_id). Elas caem em collection? — que só
+  # exige um user autenticado; o isolamento real vem do relation_scope (index) e do
+  # escopo no set_record (member). Admin sobrescreve tudo isso na Admin::BasePolicy.
   default_rule :manage?
-  alias_rule :index?, :show?, :new?, :create?, :edit?, :update?, :destroy?, to: :manage?
+  alias_rule :show?, :edit?, :update?, :destroy?, to: :manage?
+  alias_rule :index?, :new?, :create?, to: :collection?
 
   def manage?
     record.user_id == user&.id
+  end
+
+  def collection?
+    user.present?
   end
 
   private

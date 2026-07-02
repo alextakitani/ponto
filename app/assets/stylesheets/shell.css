@@ -1,0 +1,227 @@
+/*
+ * Shell autenticado (Q63/Q65) — sidebar fixa no desktop, bottom tab bar no mobile.
+ * Só tokens (tokens.css), denso, claro/escuro automático. Estética Linear:
+ * hierarquia por tipografia/peso/espaço, chrome quieto, UM acento.
+ */
+
+/* Desktop: grid sidebar + conteúdo. */
+.app {
+  display: grid;
+  grid-template-columns: 15rem 1fr;
+  min-height: 100dvh;
+}
+
+/* --- Sidebar (desktop) ------------------------------------------------------ */
+.shell-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-3);
+  background-color: var(--color-surface-sunken);
+  border-right: 1px solid var(--color-border);
+}
+
+.shell-sidebar__brand {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+}
+
+.shell-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: var(--space-3);
+}
+
+/* Rodapé da sidebar empurrado pro fim (Preferências/Admin/Sair). */
+.shell-sidebar__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: auto;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.shell-nav__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+}
+
+a.shell-nav__item:hover {
+  color: var(--color-text);
+  background-color: color-mix(in srgb, var(--color-border) 45%, transparent);
+}
+
+/* Item atual: acento contido (o UM acento). */
+.shell-nav__item--current {
+  color: var(--color-accent);
+  background-color: color-mix(in srgb, var(--color-accent) 12%, transparent);
+}
+
+/* Desabilitado "em breve": apagado, sem interação, sem link morto. */
+.shell-nav__item--disabled {
+  color: var(--color-text-subtle);
+  cursor: default;
+}
+
+/*
+ * Sair é um button_to (form + <button type="submit">), então o seletor base
+ * `button[type="submit"]` (0,1,1) o pinta de acento. Escopamos com o pai
+ * (.shell-nav .shell-nav__item--button, 0,2,0) pra neutralizar sem !important e
+ * fazer o botão parecer um item de nav qualquer.
+ */
+.shell-nav__item--button,
+.shell-sidebar__footer .shell-nav__item--button,
+.shell-tabs__more-menu .shell-nav__item--button {
+  width: 100%;
+  justify-content: flex-start;
+  color: var(--color-text);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+
+.shell-sidebar__footer .shell-nav__item--button:hover,
+.shell-tabs__more-menu .shell-nav__item--button:hover {
+  color: var(--color-text);
+  background-color: color-mix(in srgb, var(--color-border) 45%, transparent);
+}
+
+/* button_to embrulha o botão num <form>; tira a margem pra alinhar como item. */
+.shell-sidebar__footer form,
+.shell-tabs__more-menu form {
+  margin: 0;
+}
+
+/* Badge "em breve" — legenda quieta. */
+.shell-badge {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-normal);
+  color: var(--color-text-subtle);
+  text-transform: lowercase;
+}
+
+/* --- Área principal --------------------------------------------------------- */
+.shell-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* deixa tabelas largas encolherem em vez de estourar o grid */
+}
+
+/* Barra fina reservada pra futura barra do timer (Fase 3) — placeholder discreto. */
+.shell-timerbar {
+  display: flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0 var(--space-5);
+  font-size: var(--text-xs);
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.shell-content {
+  flex: 1;
+  padding: var(--space-6) var(--space-5);
+  max-width: 64rem;
+  width: 100%;
+}
+
+/* --- Bottom tab bar (mobile) ------------------------------------------------ */
+.shell-tabs {
+  display: none;
+}
+
+/*
+ * Breakpoint: abaixo de 48rem (~768px) a sidebar some e a bottom tab bar aparece.
+ */
+@media (max-width: 48rem) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+
+  .shell-sidebar {
+    display: none;
+  }
+
+  .shell-content {
+    /* Espaço pra bottom bar não cobrir o fim do conteúdo. */
+    padding-bottom: calc(var(--space-8) + 3rem);
+  }
+
+  .shell-tabs {
+    display: flex;
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 10;
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .shell-tabs__item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: var(--space-2) var(--space-1);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-medium);
+    color: var(--color-text);
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+
+  .shell-tabs__item--current {
+    color: var(--color-accent);
+  }
+
+  .shell-tabs__item--disabled {
+    color: var(--color-text-subtle);
+  }
+
+  /* "Mais" = <details>; o menu abre ancorado acima da barra (zero JS). */
+  .shell-tabs__more {
+    flex: 1;
+    position: relative;
+  }
+
+  .shell-tabs__more > summary {
+    list-style: none;
+  }
+
+  .shell-tabs__more > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .shell-tabs__more-menu {
+    /* Ancorado ao canto direito da VIEWPORT (não do tab estreito) pra não cortar
+       os itens; abre acima da barra. */
+    position: fixed;
+    right: var(--space-2);
+    bottom: calc(2.75rem + var(--space-2));
+    min-width: 12rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--space-2);
+    background-color: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.12);
+  }
+}

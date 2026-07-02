@@ -1,0 +1,32 @@
+<%# Uma linha densa da lista de clientes. Colunas numéricas em tabular-nums.
+    Menu ⋮ (<details> zero-JS) com editar/arquivar/desarquivar/deletar. %>
+<tr id="<%= dom_id(client) %>">
+  <td>
+    <%= link_to client.name, edit_client_path(client) %>
+    <% if client.archived? %><span class="tag-badge">arquivado</span><% end %>
+  </td>
+  <td><%= client.currency %></td>
+  <td class="data-table__num tabular-nums">
+    <%= client_rate(client) %>
+  </td>
+  <td class="data-table__actions">
+    <details class="row-menu">
+      <summary class="btn btn--quiet">⋮</summary>
+      <div class="row-menu__items">
+        <%= link_to "Editar", edit_client_path(client), class: "btn btn--quiet" %>
+
+        <% if client.archived? %>
+          <%= button_to "Desarquivar", client_archival_path(client), method: :delete, class: "btn btn--quiet" %>
+        <% else %>
+          <%= button_to "Arquivar", client_archival_path(client), class: "btn btn--quiet" %>
+        <% end %>
+
+        <%# Hard-delete com confirmação (Q7). A Fatia 2.3 adiciona `restrict` quando
+            Project nascer — por ora não há dependentes, então deletar é seguro. %>
+        <%= button_to "Deletar", client_path(client), method: :delete,
+              class: "btn btn--danger",
+              data: { turbo_confirm: "Deletar “#{client.name}” definitivamente? Esta ação não pode ser desfeita." } %>
+      </div>
+    </details>
+  </td>
+</tr>

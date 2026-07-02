@@ -1,0 +1,184 @@
+/*
+ * Telas de domínio dentro do shell (Clientes é a 1ª — Fatia 2.2). Componentes
+ * genéricos e reusáveis (page-header, data-table, empty-state, form-stack) que as
+ * próximas telas (Projetos/Tags) herdam. Só tokens; denso; claro/escuro automático.
+ */
+
+/* --- Cabeçalho de página ---------------------------------------------------- */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.page-header h1 {
+  margin-bottom: var(--space-1);
+}
+
+/* --- Toolbar (busca + filtro) ----------------------------------------------- */
+.page-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.page-search {
+  flex: 1;
+  max-width: 22rem;
+}
+
+.page-search input {
+  margin: 0;
+}
+
+/* --- Tabela de dados densa (Q63: sem card por linha) ------------------------ */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.data-table th,
+.data-table td {
+  padding: var(--space-3);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.data-table th {
+  font-weight: var(--weight-medium);
+  color: var(--color-text-subtle);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.data-table__num {
+  text-align: right;
+}
+
+.data-table__actions {
+  width: 1%;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Badge "arquivado" na linha. */
+.tag-badge {
+  display: inline-block;
+  margin-left: var(--space-2);
+  padding: 1px var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+  background-color: var(--color-surface-sunken);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+/* --- Menu ⋮ por linha (<details> zero-JS, como no admin) -------------------- */
+.row-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.row-menu > summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.row-menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.row-menu__items {
+  position: absolute;
+  right: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+  padding: var(--space-2);
+  min-width: 11rem;
+  background-color: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.row-menu__items .btn {
+  justify-content: flex-start;
+}
+
+.row-menu__items form {
+  margin: 0;
+}
+
+.row-menu__items form .btn {
+  width: 100%;
+}
+
+/* --- Empty state convidativo ------------------------------------------------ */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  max-width: 34rem;
+  padding: var(--space-8) 0;
+}
+
+.empty-state h2 {
+  font-size: var(--text-xl);
+}
+
+/* --- Formulários de domínio ------------------------------------------------- */
+.form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 32rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-row {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.form-row .form-field {
+  flex: 1;
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.form-errors {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--color-danger);
+  background-color: color-mix(in srgb, var(--color-danger) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 35%, transparent);
+  border-radius: var(--radius);
+}
+
+.form-errors ul {
+  margin: 0;
+  padding-left: var(--space-4);
+}
+
+.form-errors a {
+  color: var(--color-danger);
+  font-weight: var(--weight-medium);
+}

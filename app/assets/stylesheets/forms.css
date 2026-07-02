@@ -123,24 +123,33 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.btn--quiet {
+/*
+ * Modificadores com a classe DOBRADA (.btn.btn--quiet) de propósito: um button_to
+ * gera <button type="submit">, e o seletor base `button[type="submit"]` (0,1,1)
+ * venceria um modificador de classe única (0,1,0) na cor de fundo — o Arquivar/
+ * Deletar/Sair sairiam com o acento sólido. Dobrar a classe (0,2,0) faz o
+ * modificador ganhar sem tocar no visual do .btn base. Vale p/ os menus <details>
+ * do admin e dos clientes.
+ */
+.btn.btn--quiet {
   color: var(--color-text);
   background-color: transparent;
   border-color: var(--color-border);
 }
 
-.btn--quiet:hover {
+.btn.btn--quiet:hover {
   color: var(--color-text);
   background-color: var(--color-surface-sunken);
   border-color: var(--color-border-strong);
 }
 
-.btn--danger {
+.btn.btn--danger {
   color: var(--color-on-danger);
   background-color: var(--color-danger);
+  border-color: transparent;
 }
 
-.btn--danger:hover {
+.btn.btn--danger:hover {
   color: var(--color-on-danger);
   background-color: color-mix(in srgb, var(--color-danger) 88%, black);
 }

@@ -1,0 +1,52 @@
+<%= form_with model: client, class: "form-stack" do |form| %>
+  <% if client.errors.any? %>
+    <div class="form-errors" role="alert">
+      <% if client.name_conflicts_with_archived? %>
+        <%# Q44: colisão com um cliente ARQUIVADO ganha mensagem específica em vez do
+            erro cru de unicidade — senão a regra rígida vira beco sem saída. %>
+        <p>
+          Já existe um cliente com esse nome (arquivado).
+          <%= link_to "Desarquive-o", clients_path(archived: "1") %> em vez de criar outro.
+        </p>
+      <% else %>
+        <ul>
+          <% client.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="form-field">
+    <%= form.label :name, "Nome" %>
+    <%= form.text_field :name, autofocus: true, autocomplete: "off" %>
+  </div>
+
+  <div class="form-row">
+    <div class="form-field">
+      <%= form.label :currency, "Moeda" %>
+      <%= form.select :currency, currency_options, {}, { "aria-label": "Moeda do cliente" } %>
+    </div>
+
+    <div class="form-field">
+      <%= form.label :rate, "Valor por hora" %>
+      <%# Campo money: usamos o accessor `rate` (Money) do money-rails, que parseia
+          "150,00"/"150.00" e grava rate_cents. O VALUE ao editar sai em pt-BR
+          ("150,00") pra casar com o input do usuário — o writer do model normaliza
+          na volta. Vazio = sem taxa (rate nil, legítimo — Q2/Q15). %>
+      <%= form.text_field :rate, value: rate_field_value(client),
+            placeholder: "ex.: 150,00", inputmode: "decimal", class: "tabular-nums" %>
+    </div>
+  </div>
+
+  <div class="form-field">
+    <%= form.label :note, "Observação" %>
+    <%= form.text_area :note, rows: 3 %>
+  </div>
+
+  <div class="form-actions">
+    <%= form.submit client.persisted? ? "Salvar" : "Criar cliente", class: "btn" %>
+    <%= link_to "Cancelar", clients_path, class: "btn btn--quiet" %>
+  </div>
+<% end %>
