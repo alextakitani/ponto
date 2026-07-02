@@ -1,0 +1,164 @@
+/*
+ * Telas de Projects/Tasks (Fatia 2.3). Reusa os componentes genéricos de clients.css
+ * (page-header, data-table, empty-state, form-stack). Aqui só o que é específico:
+ * bolinha de cor, grid de swatches, hint de rate herdada e a seção de tasks inline.
+ * Só tokens; denso; claro/escuro automático (Q64).
+ */
+
+/* --- Bolinha da cor do projeto na lista (Q52) ------------------------------- */
+.project-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: var(--space-2);
+  border-radius: 50%;
+  vertical-align: baseline;
+}
+
+/* Marca "do cliente" na rate herdada (Q22) — pequena e discreta. */
+.project-rate-source {
+  font-size: var(--text-xs);
+}
+
+/* --- Grid de swatches de cor (radio estilizados, zero JS — Q52) ------------- */
+.swatch-grid {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.swatch-grid legend {
+  padding: 0;
+  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-subtle);
+}
+
+.swatch-grid__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.swatch {
+  position: relative;
+  cursor: pointer;
+  line-height: 0;
+}
+
+/* O input radio real fica invisível mas acessível (foco via teclado no chip). */
+.swatch__input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.swatch__chip {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background-color: var(--swatch);
+  border: 2px solid transparent;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+
+/* Selecionado: anel de acento em volta do chip. */
+.swatch__input:checked + .swatch__chip {
+  border-color: var(--color-text);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15), var(--focus-ring);
+}
+
+/* Foco por teclado no radio → mesmo anel (acessibilidade). */
+.swatch__input:focus-visible + .swatch__chip {
+  border-color: var(--color-text);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15), var(--focus-ring);
+}
+
+/* --- Hint de rate herdada (Q45) --------------------------------------------- */
+.form-hint {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+}
+
+/* --- Seção de Tarefas aninhada no projeto (TELA 02) ------------------------- */
+.project-tasks {
+  margin-top: var(--space-8);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+  max-width: 32rem;
+}
+
+.project-tasks h2 {
+  font-size: var(--text-xl);
+  margin-bottom: var(--space-1);
+}
+
+.task-list__items {
+  list-style: none;
+  margin: var(--space-3) 0;
+  padding: 0;
+}
+
+.task-list__empty {
+  margin: var(--space-3) 0;
+}
+
+.task-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.task-row__name {
+  font-size: var(--text-sm);
+}
+
+.task-row__actions {
+  display: flex;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.task-row__actions form {
+  margin: 0;
+}
+
+/* Botão pequeno (ações inline de task) — modificador dobrado como .btn--quiet. */
+.btn.btn--sm {
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-xs);
+}
+
+/* Form de criar/renomear task inline. */
+.task-form {
+  margin-top: var(--space-3);
+}
+
+.task-form__row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.task-form__row input[type="text"] {
+  flex: 1;
+  margin: 0;
+}
+
+.task-form__error {
+  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-danger);
+}
+
+.task-row--editing {
+  flex-wrap: wrap;
+}

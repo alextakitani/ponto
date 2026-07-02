@@ -10,6 +10,12 @@ class Client < ApplicationRecord
   # atribuição rate×currency) moram no concern, compartilhados com Project.
   include MonetizableRate
 
+  # Projetos do cliente (Q22 — o Project herda a rate/moeda do Client). Q7:
+  # `restrict_with_error` bloqueia o HARD-delete do Client que ainda tem projetos
+  # (só arquivar). Sem projetos → hard-delete segue permitido. O controller traduz o
+  # erro do restrict numa mensagem amigável (não some silenciosamente).
+  has_many :projects, dependent: :restrict_with_error
+
   # Criptografia at rest (Q25c). `name` é deterministic PORQUE a unicidade/lookup por
   # igualdade precisam comparar ciphertext (o índice único bate no blob cifrado);
   # `note` é aleatório (mais forte, sem necessidade de igualdade).

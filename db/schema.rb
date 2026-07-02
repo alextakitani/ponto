@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_02_162721) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_02_171531) do
   create_table "access_requests", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -46,6 +46,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_02_162721) do
     t.index ["user_id"], name: "index_clients_on_user_id"
   end
 
+  create_table "projects", force: :cascade do |t|
+    t.datetime "archived_at"
+    t.integer "client_id"
+    t.string "color", null: false
+    t.datetime "created_at", null: false
+    t.text "name", null: false
+    t.integer "rate_cents"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["client_id"], name: "index_projects_on_client_id"
+    t.index ["user_id", "name"], name: "index_projects_on_user_id_and_name", unique: true
+    t.index ["user_id"], name: "index_projects_on_user_id"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"
@@ -66,6 +80,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_02_162721) do
     t.index ["user_id"], name: "index_sign_in_codes_on_user_id"
   end
 
+  create_table "tasks", force: :cascade do |t|
+    t.datetime "archived_at"
+    t.datetime "created_at", null: false
+    t.text "name", null: false
+    t.integer "project_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["project_id", "name"], name: "index_tasks_on_project_id_and_name", unique: true
+    t.index ["project_id"], name: "index_tasks_on_project_id"
+    t.index ["user_id"], name: "index_tasks_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.boolean "admin", default: false, null: false
     t.datetime "created_at", null: false
@@ -79,6 +105,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_02_162721) do
 
   add_foreign_key "access_tokens", "users"
   add_foreign_key "clients", "users"
+  add_foreign_key "projects", "clients"
+  add_foreign_key "projects", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "sign_in_codes", "users"
+  add_foreign_key "tasks", "projects"
+  add_foreign_key "tasks", "users"
 end

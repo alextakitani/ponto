@@ -73,14 +73,21 @@ class ClientsController < ApplicationController
     end
   end
 
-  # Hard-delete (Q7): permitido POR ORA — não existem Projects/TimeEntries ainda que
-  # apontem pro cliente. ⚠️ A Fatia 2.3 (nascimento de Project) adiciona `restrict`
-  # aqui: com dependentes, só arquivar; hard-delete fica pras entidades sem entries.
+  # Hard-delete (Q7): só é permitido SEM projetos — `dependent: :restrict_with_error`
+  # no Client bloqueia quando há dependentes (destroy devolve false + erro em :base).
+  # Aí a UX vira mensagem amigável ("arquive em vez de deletar"), não um 500 nem um
+  # sumiço silencioso. Sem projetos → deleta normalmente.
   def destroy
-    @client.destroy
-    respond_to do |format|
-      format.html { redirect_to clients_path, notice: "Cliente removido." }
-      format.json { head :no_content }
+    if @client.destroy
+      respond_to do |format|
+        format.html { redirect_to clients_path, notice: "Cliente removido." }
+        format.json { head :no_content }
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to clients_path, alert: @client.errors.full_messages.to_sentence }
+        format.json { render_errors(@client) }
+      end
     end
   end
 

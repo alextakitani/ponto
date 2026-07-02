@@ -1,0 +1,7 @@
+<%# Task criada: re-renderiza a seção inteira (lista + form vazio) no frame. Simples e
+    idempotente — evita targeting por linha. %>
+<%= turbo_stream.replace "project_tasks" do %>
+  <%= turbo_frame_tag "project_tasks" do %>
+    <%= render "projects/tasks/section", project: @project %>
+  <% end %>
+<% end %>

@@ -1,0 +1,20 @@
+<%# Uma tarefa na lista (TELA 02). Renomear = form inline de edição; arquivar/deletar
+    via botões. Cada linha é um <li> com id pra o Turbo Stream endereçar. %>
+<li id="<%= dom_id(task) %>" class="task-row">
+  <span class="task-row__name"><%= task.name %></span>
+
+  <div class="task-row__actions">
+    <%# Renomear: GET responde um Turbo Stream que troca esta linha por um form inline. %>
+    <%= link_to "Renomear", edit_task_path(task), class: "btn btn--quiet btn--sm",
+          data: { turbo_stream: true } %>
+
+    <% if task.archived? %>
+      <%= button_to "Desarquivar", task_archival_path(task), method: :delete, class: "btn btn--quiet btn--sm" %>
+    <% else %>
+      <%= button_to "Arquivar", task_archival_path(task), class: "btn btn--quiet btn--sm" %>
+    <% end %>
+
+    <%= button_to "Deletar", task_path(task), method: :delete, class: "btn btn--danger btn--sm",
+          data: { turbo_confirm: "Deletar a tarefa “#{task.name}”?" } %>
+  </div>
+</li>

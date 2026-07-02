@@ -9,7 +9,8 @@
   <td><%= "sim" if user.admin? %></td>
   <td><%= user_status_label(user) %></td>
   <td class="admin__actions">
-    <details class="admin__menu">
+    <%# menu_controller: fecha ao clicar fora / Escape (o <details> nativo não faz). %>
+    <details class="admin__menu" data-controller="menu">
       <summary class="btn btn--quiet">Ações</summary>
       <div class="admin__menu-items">
         <%# Reenviar convite: só pra convidado (nunca entrou). %>

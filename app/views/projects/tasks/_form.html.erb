@@ -1,0 +1,21 @@
+<%# Form de criar/renomear task inline. Persisted = renomear (PATCH na rota rasa);
+    novo = criar (POST aninhado no projeto). Erros aparecem inline (colisão-arquivado
+    ganha dica de desarquivar — Q44). %>
+<%= form_with model: task.persisted? ? task : [ project, task ],
+      class: "task-form", data: { turbo_frame: "_top" } do |form| %>
+  <% if task.errors.any? %>
+    <div class="task-form__error" role="alert">
+      <% if task.name_conflicts_with_archived? %>
+        Já existe uma tarefa arquivada com esse nome — desarquive-a em vez de criar outra.
+      <% else %>
+        <%= task.errors.full_messages.to_sentence %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="task-form__row">
+    <%= form.text_field :name, placeholder: task.persisted? ? nil : "Nova tarefa…",
+          autocomplete: "off", "aria-label": "Nome da tarefa" %>
+    <%= form.submit task.persisted? ? "Salvar" : "Adicionar", class: "btn btn--sm" %>
+  </div>
+<% end %>
