@@ -885,6 +885,38 @@ Conversa em **português**.
 > embutido, profiles em ~/.config/fizzy/, skill/plugin pro Claude, doctor. Lado
 > Rails do fizzy: mesmas rotas + respond_to + views .json.jbuilder (= nosso Q9).
 
+- **Q77 — Landing = DE PRODUTO (vender). ⚠️ REVOGA a Q67 ("uma dobra").** (Alex,
+  02/07, vendo a landing mínima no ar: "quero uma landing de produto, que mostre o
+  que o app faz, que convença alguém que não usa a usar. fale sobre a extension,
+  sobre a cli, screenshots, tem que vender".) Nova forma: hero com pitch + CTA →
+  seções de features (timer 1-clique · extensão Chrome · CLI/agents · relatórios ·
+  export xlsx/CSV · privacidade/encryption · open source/self-hosted multi-user
+  isolado) + "screenshots" como MOCKUPS HTML/CSS theme-aware (o app real mal existe;
+  mockups em HTML puro seguem os tokens claro/escuro e evoluem com as telas reais) +
+  form "pedir acesso" continua sendo o CTA + rodapé GitHub. SEM pricing (cobrança
+  $1/mês segue ADIADA — não prometer preço). Estado Q38 (aviso de operador) e o
+  contrato do form/AccessRequest (Q35) INTACTOS. Copy vendedora mas sem claim falso
+  ("disponível na Web Store" etc. — extensão/CLI são produto DESENHADO, sinalizar
+  "em breve" onde ainda não shipped). **+ Adendo do Alex na mesma hora:** a landing
+  também (a) FALA DA TECNOLOGIA (Rails 8 + Hotwire + SQLite, zero Node, backup = um
+  arquivo — a stack é argumento de venda pro público self-hoster) e (b) EXPLICA COMO
+  SELF-HOSTAR (seção passo-a-passo honesta: clone → deploy Docker/Kamal → `ADMIN_EMAIL`
+  + SMTP → primeiro login vira admin; apontando pro README como guia completo).
+
+- **Q78 — LICENÇA = O'Saasy (a mesma do fizzy). FECHADA.** (Alex, 02/07: "quero a
+  mesma licença do fizzy. a pessoa não pode fazer um SaaS com o Ponto".)
+  - **App Ponto**: licença **O'Saasy** — MIT-like + cláusula 2: proibido oferecer o
+    software (ou derivado) a terceiros como SaaS/hosted/managed onde o valor primário
+    é a funcionalidade do próprio software. Self-host pessoal/empresa interna: livre.
+    `LICENSE.md` na raiz, copyright © 2026 Alex Takitani (texto adaptado do
+    `~/Projetos/fizzy/LICENSE.md`).
+  - **ponto-cli continua MIT** (Q74 intacta — é fork do fizzy-cli, que é MIT; mesma
+    combinação do próprio fizzy: app O'Saasy + CLI MIT).
+  - **Consequência de copy**: "open source" nos textos (landing/CLAUDE.md/README)
+    vira "**código aberto (licença O'Saasy)**" — source-available, não OSI; a landing
+    diz honestamente "self-hoste à vontade; proibido revender como SaaS".
+  - Aplicar na INTEGRAÇÃO: LICENSE.md + ajuste de copy na landing + linha na CLAUDE.md.
+
 - **Q73 — Superfície JSON TOTAL no app. FECHADA.** (Amplia a Q9, que pensava só na
   extensão.) TODO resource de domínio responde JSON via `respond_to` + view
   `.json.jbuilder` nas MESMAS rotas: **catálogo (Clients/Projects/Tasks/Tags) +
