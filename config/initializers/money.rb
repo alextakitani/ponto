@@ -14,5 +14,8 @@ MoneyRails.configure do |config|
 end
 
 # Formatação segue o locale da UI (pt-BR): "R$ 1.234,56". A UI é pt-BR, então o
-# backend de locale é o do i18n (não o embutido da gem money).
+# backend de locale é o do i18n (não o embutido da gem money). As chaves Rails de
+# número/moeda que fazem esse "R$ 1.234,56" acontecer vivem em
+# `config/locales/numbers.pt-BR.yml` — sem elas o gem cairia no fallback
+# ("R$1234.56").
 Money.locale_backend = :i18n
