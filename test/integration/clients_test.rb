@@ -49,6 +49,40 @@ class ClientsTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
+  # --- Rate pt-BR pelo fluxo real (regressão do 500 — locale default pt-BR) ----
+  # SEM Accept-Language → locale default :pt-BR. O usuário digita "150,00" (o formato
+  # que o placeholder anuncia). Antes: money-rails rejeitava e o render estourava
+  # I18n::MissingTranslationData → 500. Agora: 302 e cliente com 15000 cents.
+  test "create com rate '150,00' (pt-BR default) cria e não dá 500" do
+    assert_difference -> { @user.clients.count }, +1 do
+      post clients_path, params: { client: { name: "PtBr", currency: "BRL", rate: "150,00" } }
+    end
+    assert_redirected_to clients_path
+    assert_equal 15000, @user.clients.find_by!(name: "PtBr").rate_cents
+  end
+
+  # Ciclo display -> submit idempotente: o valor re-exibido no form (pt-BR "150,00")
+  # reenviado num PATCH não corrompe a rate.
+  test "edit reexibe a rate em pt-BR e o resubmit é idempotente" do
+    client = @user.clients.create!(name: "Idem", currency: "BRL", rate_cents: 15000)
+
+    get edit_client_path(client)
+    assert_response :success
+    assert_match(/150,00/, response.body)
+
+    patch client_path(client), params: { client: { name: "Idem", currency: "BRL", rate: "150,00" } }
+    assert_redirected_to clients_path
+    assert_equal 15000, client.reload.rate_cents
+  end
+
+  test "create com rate não-parseável re-renderiza 422 com a mensagem PT" do
+    assert_no_difference -> { @user.clients.count } do
+      post clients_path, params: { client: { name: "Ruim", currency: "BRL", rate: "abc" } }
+    end
+    assert_response :unprocessable_entity
+    assert_match(/não é um valor válido/, response.body)
+  end
+
   test "update edita o cliente" do
     client = @user.clients.create!(name: "Velho")
 
