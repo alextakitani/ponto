@@ -133,6 +133,35 @@ svg {
   border-bottom-color: transparent;
 }
 
+/*
+ * Marca do Ponto (partial shared/_logo_mark). O SVG tem fundo transparente;
+ * o wrapper só reserva o quadrado e centraliza.
+ */
+.logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.logo-mark svg {
+  display: block;
+}
+
+/*
+ * Tema escuro: o gabinete (#1f2829) quase some sobre a --color-surface escura.
+ * Pinta um badge creme arredondado atrás da marca p/ ela continuar legível.
+ * padding + margem negativa mantêm o SVG no mesmo tamanho visual, só com respiro.
+ */
+@media (prefers-color-scheme: dark) {
+  .logo-mark {
+    background-color: #f4ead2;
+    border-radius: 22%;
+    padding: 10%;
+    margin: -10%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -1,4 +1,7 @@
-<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ponto">
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Logo de relógio de ponto vintage com cartão perfurado e alavanca</title>
+  <desc id="desc">Símbolo vetorial minimalista inspirado em relógio de ponto antigo, com mostrador analógico, cartão perfurado e alavanca lateral com esfera perfeitamente alinhada.</desc>
+
   <defs>
     <style>
       .dark { fill: #1f2829; }
@@ -8,6 +11,8 @@
       .slot { stroke: #f4ead2; stroke-width: 18; stroke-linecap: round; stroke-linejoin: round; fill: none; }
     </style>
   </defs>
+
+  <!-- Transparent background by design -->
 
   <!-- Main punch-clock body -->
   <rect class="dark" x="248" y="122" width="528" height="620" rx="72"/>
@@ -25,16 +30,20 @@
 
   <!-- Lever mount on right side -->
   <g id="lever">
+    <!-- body connector -->
     <rect class="dark" x="770" y="498" width="44" height="146" rx="18"/>
     <rect class="cream" x="782" y="510" width="16" height="122" rx="8"/>
 
+    <!-- lower hinge bracket -->
     <path class="dark" d="M798 554 L872 554 Q906 554 906 588 L906 632 Q906 666 872 666 L798 666 Z"/>
     <path class="cream" d="M812 570 L856 570 Q884 570 884 598 L884 620 Q884 648 856 648 L812 648 Z"/>
     <circle class="dark" cx="858" cy="610" r="18"/>
 
+    <!-- perfectly straight lever shaft: knob center and shaft center are aligned at x=876 -->
     <rect class="cream" x="862" y="332" width="28" height="260" rx="14"/>
     <path class="dark" d="M862 592 L862 332 Q862 320 876 320 Q890 320 890 332 L890 592 Z" fill="none" stroke="#1f2829" stroke-width="12" stroke-linejoin="round"/>
 
+    <!-- perfectly round knob, centered on the shaft -->
     <circle class="dark" cx="876" cy="304" r="44"/>
   </g>
 

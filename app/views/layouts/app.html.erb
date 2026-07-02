@@ -10,7 +10,9 @@
         fatia; os demais renderizam DESABILITADOS com badge "em breve" (sem link
         morto; aria-disabled). %>
     <aside class="shell-sidebar">
-      <div class="shell-sidebar__brand">Ponto</div>
+      <div class="shell-sidebar__brand">
+        <%= render "shared/logo_mark", size: 22 %>Ponto
+      </div>
 
       <nav class="shell-nav" aria-label="Navegação principal">
         <%= render "layouts/shell/nav_item", label: "Tracker",    active: false, current: false %>
