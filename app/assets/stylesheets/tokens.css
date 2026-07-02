@@ -1,0 +1,92 @@
+/*
+ * Design tokens do Ponto (Q62) — custom properties, zero-build.
+ * Direção visual (Q63): moderna, minimal densa, estilo Linear — base neutra,
+ * UM acento, hierarquia por tipografia/espaço, chrome quieto.
+ * Dark mode automático (Q64): mesmos tokens com valores no @media escuro.
+ * NÃO colocar regras de layout aqui — só tokens.
+ */
+
+/*
+ * Inter variable self-hosted (Q70). font-display: swap p/ não bloquear render.
+ * O arquivo mora em app/assets/fonts/, mas o Propshaft achata cada subdir de
+ * app/assets num root do load path — o caminho lógico é a bare "InterVariable.woff2"
+ * (NÃO "../fonts/..."), e é assim que o url() precisa referenciar p/ ganhar o digest.
+ */
+@font-face {
+  font-family: "InterVariable";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("InterVariable.woff2") format("woff2");
+}
+
+:root {
+  /* Tipografia */
+  --font-sans: "InterVariable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* Escala de tamanhos — poucos passos, densa */
+  --text-xs: 0.75rem;    /* 12px — legendas, metadados */
+  --text-sm: 0.8125rem;  /* 13px — texto denso, labels */
+  --text-base: 0.875rem; /* 14px — corpo padrão */
+  --text-lg: 1rem;       /* 16px — destaques */
+  --text-xl: 1.25rem;    /* 20px — títulos de seção */
+  --text-2xl: 1.75rem;   /* 28px — título de página */
+
+  --leading: 1.5;
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* Espaçamento — escala curta (base 4px) */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.5rem;   /* 24px */
+  --space-6: 2rem;     /* 32px */
+  --space-8: 3rem;     /* 48px */
+
+  /* Raio — cantos discretos */
+  --radius: 6px;
+  --radius-sm: 4px;
+
+  /*
+   * Cores SEMÂNTICAS (tema claro). Base quase-branca, acento índigo contido.
+   * Contraste AA sobre a surface garantido nos dois temas.
+   */
+  --color-surface: #ffffff;         /* fundo base */
+  --color-surface-sunken: #f6f7f9;  /* fundo recuado (app shell, listras) */
+  --color-surface-raised: #ffffff;  /* cartões/painéis elevados */
+  --color-text: #16181d;            /* texto principal (~15:1 sobre surface) */
+  --color-text-subtle: #5c626e;     /* texto secundário (~5.6:1, AA) */
+  --color-border: #e3e5e9;          /* bordas/divisórias sutis */
+  --color-border-strong: #c7cad1;   /* borda de foco de campo, hover */
+  --color-accent: #4f46e5;          /* índigo — único acento (AA sobre branco) */
+  --color-accent-hover: #4338ca;    /* estado hover do acento */
+  --color-on-accent: #ffffff;       /* texto sobre o acento */
+  --color-danger: #c22b2b;          /* erro/destrutivo (AA sobre branco) */
+  --color-on-danger: #ffffff;
+
+  /* Anel de foco (acento translúcido) */
+  --focus-ring: 0 0 0 3px rgba(79, 70, 229, 0.35);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Base quase-preta; acento índigo mais claro p/ manter AA sobre escuro. */
+    --color-surface: #16181d;
+    --color-surface-sunken: #0f1115;
+    --color-surface-raised: #1d2027;
+    --color-text: #e7e9ee;            /* ~13:1 sobre surface */
+    --color-text-subtle: #9aa0ac;     /* ~5.4:1, AA */
+    --color-border: #2a2e37;
+    --color-border-strong: #3c414d;
+    --color-accent: #8b8cf0;          /* índigo claro — AA sobre surface escura */
+    --color-accent-hover: #a1a2f4;
+    --color-on-accent: #16181d;       /* texto escuro sobre acento claro */
+    --color-danger: #f0716f;
+    --color-on-danger: #16181d;
+
+    --focus-ring: 0 0 0 3px rgba(139, 140, 240, 0.4);
+  }
+}
