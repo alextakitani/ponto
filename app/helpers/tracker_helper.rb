@@ -1,6 +1,19 @@
 module TrackerHelper
+  # pt-BR abreviado, indexado por Date#wday (0 = domingo). O app não carrega
+  # rails-i18n e o pt-BR.yml não define date.formats — então formatamos data à mão
+  # (como o resto do helper), sem I18n.l (que levantaria MissingTranslationData).
+  TRACKER_WEEKDAYS = %w[dom seg ter qua qui sex sáb].freeze
+
+  # Rótulo do cabeçalho de dia. "Hoje"/"Ontem" pros dois grupos mais acessados
+  # (evita o usuário calcular a data toda sessão); data completa pros demais. O
+  # "hoje" é relativo ao fuso do USER (Q6/Q23b), não ao do servidor — o próprio
+  # agrupamento já corta o dia nesse fuso, então comparamos na mesma régua.
   def tracker_day_label(date)
-    date.strftime("%d/%m/%Y")
+    case date
+    when tracker_today       then "Hoje"
+    when tracker_today - 1   then "Ontem"
+    else "#{TRACKER_WEEKDAYS[date.wday]}, #{date.strftime('%d/%m/%Y')}"
+    end
   end
 
   def tracker_duration(seconds)
@@ -67,5 +80,10 @@ module TrackerHelper
 
   def tracker_time_zone
     ActiveSupport::TimeZone[Current.user.time_zone] || Time.zone
+  end
+
+  # "Hoje" no fuso do user — a mesma régua que o agrupamento por dia usa (Q6/Q23b).
+  def tracker_today
+    Time.current.in_time_zone(tracker_time_zone).to_date
   end
 end
