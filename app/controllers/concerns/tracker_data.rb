@@ -3,7 +3,7 @@ module TrackerData
 
   private
     def tracker_relation
-      authorized_scope(TimeEntry.all).includes(project: :client)
+      authorized_scope(TimeEntry.all).includes(:tags, project: :client)
     end
 
     def load_tracker_day_groups

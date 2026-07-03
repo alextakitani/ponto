@@ -12,6 +12,7 @@ class ManualTimeEntriesTest < ActionDispatch::IntegrationTest
 
   test "cria entry manual finalizado interpretando início/fim no fuso do user e re-renderiza a lista" do
     project = @user.projects.create!(name: "Projeto manual", rate_cents: 12000)
+    existing = @user.tags.create!(name: "Reunião")
 
     assert_difference -> { @user.time_entries.count }, +1 do
       post time_entries_path,
@@ -20,7 +21,9 @@ class ManualTimeEntriesTest < ActionDispatch::IntegrationTest
             project_id: project.id,
             description: "Reunião de ontem",
             started_at: "2026-07-01T09:00",
-            ended_at: "2026-07-01T10:30"
+            ended_at: "2026-07-01T10:30",
+            tag_ids: [ existing.id.to_s ],
+            new_tag_names: [ "Cliente" ]
           }
         },
         headers: turbo_headers("tracker_entries")
@@ -37,6 +40,7 @@ class ManualTimeEntriesTest < ActionDispatch::IntegrationTest
     assert_equal 5400, entry.duration_seconds
     # Snapshot congela a rate efetiva do projeto no create.
     assert_equal 12000, entry.rate_cents
+    assert_equal [ "Cliente", "Reunião" ], entry.tags.map(&:name).sort
   end
 
   test "entry manual com fim <= início não cria nada e devolve 422" do

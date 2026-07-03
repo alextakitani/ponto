@@ -241,6 +241,40 @@ class ReportTest < ActiveSupport::TestCase
     assert_equal [ hit.id ], report.rows.map { |r| r.entry.id }
   end
 
+  test "filtro por tag usa OR dentro da dimensão e balde sem tag" do
+    bug = @user.tags.create!(name: "Bug")
+    ops = @user.tags.create!(name: "Ops")
+    tagged = entry(started: Time.utc(2026, 7, 10, 12, 0), ended: Time.utc(2026, 7, 10, 13, 0))
+    also_tagged = entry(started: Time.utc(2026, 7, 11, 12, 0), ended: Time.utc(2026, 7, 11, 13, 0))
+    untagged = entry(started: Time.utc(2026, 7, 12, 12, 0), ended: Time.utc(2026, 7, 12, 13, 0))
+    tagged.tags << bug
+    also_tagged.tags << ops
+
+    by_tag = Report.new(user: @user, period: month_period,
+      filters: Report::Filters.new(tag_ids: [ bug.id, ops.id ]))
+    assert_equal [ tagged.id, also_tagged.id ].sort, by_tag.rows.map { |r| r.entry.id }.sort
+
+    with_none = Report.new(user: @user, period: month_period,
+      filters: Report::Filters.new(tag_ids: [ bug.id, Report::Filters::NONE ]))
+    assert_equal [ tagged.id, untagged.id ].sort, with_none.rows.map { |r| r.entry.id }.sort
+  end
+
+  test "opções de filtro de tag vêm do período e incluem balde sem tag" do
+    in_period = @user.tags.create!(name: "Bug")
+    out_of_period = @user.tags.create!(name: "Fora")
+    tagged = entry(started: Time.utc(2026, 7, 10, 12, 0), ended: Time.utc(2026, 7, 10, 13, 0))
+    untagged = entry(started: Time.utc(2026, 7, 11, 12, 0), ended: Time.utc(2026, 7, 11, 13, 0))
+    july = Report.new(user: @user, period: month_period)
+    tagged.tags << in_period
+
+    june_entry = @user.time_entries.create!(started_at: Time.utc(2026, 6, 10, 12, 0), ended_at: Time.utc(2026, 6, 10, 13, 0))
+    june_entry.tags << out_of_period
+
+    options = Report::FilterOptions.new(july).tags
+
+    assert_equal [ in_period.name, "(sem tag)" ], options.map(&:label)
+  end
+
   test "group_by chega ao Grouping via Report (wiring)" do
     a = @user.projects.create!(name: "Alfa")
     entry(started: Time.utc(2026, 7, 10, 12, 0), ended: Time.utc(2026, 7, 10, 13, 0), project: a)

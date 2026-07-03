@@ -1,0 +1,36 @@
+<tr id="<%= dom_id(tag) %>">
+  <td>
+    <%= link_to tag.name, edit_tag_path(tag) %>
+    <% if tag.archived? %><span class="tag-badge">arquivada</span><% end %>
+  </td>
+  <td class="data-table__actions">
+    <details class="row-menu" data-controller="menu">
+      <summary class="btn btn--quiet" aria-label="Ações de <%= tag.name %>"><%= icon("ellipsis-vertical") %></summary>
+      <div class="row-menu__items">
+        <%= link_to edit_tag_path(tag), class: "btn btn--quiet" do %>
+          <%= icon("pencil") %>
+          Editar
+        <% end %>
+
+        <% if tag.archived? %>
+          <%= button_to tag_archival_path(tag), method: :delete, class: "btn btn--quiet" do %>
+            <%= icon("archive-restore") %>
+            Desarquivar
+          <% end %>
+        <% else %>
+          <%= button_to tag_archival_path(tag), class: "btn btn--quiet" do %>
+            <%= icon("archive") %>
+            Arquivar
+          <% end %>
+        <% end %>
+
+        <%= button_to tag_path(tag), method: :delete,
+              class: "btn btn--danger",
+              data: { turbo_confirm: "Deletar “#{tag.name}” definitivamente? Esta ação não pode ser desfeita." } do %>
+          <%= icon("trash-2") %>
+          Deletar
+        <% end %>
+      </div>
+    </details>
+  </td>
+</tr>

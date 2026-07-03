@@ -46,6 +46,7 @@ class TimeEntriesJsonTest < ActionDispatch::IntegrationTest
   test "POST create cria entry manual com snapshot do projeto" do
     started_at = Time.utc(2026, 7, 2, 8, 0, 0)
     ended_at = Time.utc(2026, 7, 2, 10, 0, 0)
+    tag = @user.tags.create!(name: "API")
 
     assert_difference -> { @user.time_entries.count }, +1 do
       post time_entries_path, headers: bearer(@write),
@@ -55,7 +56,9 @@ class TimeEntriesJsonTest < ActionDispatch::IntegrationTest
             task_id: @task.id,
             description: "Manual",
             started_at: started_at,
-            ended_at: ended_at
+            ended_at: ended_at,
+            tag_ids: [ tag.id ],
+            new_tag_names: [ "Urgente" ]
           }
         },
         as: :json
@@ -66,6 +69,7 @@ class TimeEntriesJsonTest < ActionDispatch::IntegrationTest
     assert_equal 15000, body["rate_cents"]
     assert_equal "BRL", body["currency"]
     assert_equal 7200, body["duration_seconds"]
+    assert_equal [ "API", "Urgente" ], @user.time_entries.order(:created_at).last.tags.map(&:name).sort
   end
 
   test "POST create inválido devolve 422 com errors" do

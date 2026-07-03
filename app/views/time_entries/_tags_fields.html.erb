@@ -1,0 +1,56 @@
+<div class="tags-field" data-controller="tags-select">
+  <details class="tags-field__details" data-controller="menu">
+    <summary class="btn btn--quiet btn--sm">
+      <%= icon("tags") %>
+      Tags
+      <% if tracker_entry_tags(time_entry).any? %>
+        <span class="muted">(<%= tracker_entry_tags(time_entry).size %>)</span>
+      <% end %>
+    </summary>
+
+    <div class="tags-field__panel">
+      <% if tracker_entry_tags(time_entry).any? %>
+        <div class="tags-field__chips">
+          <% tracker_entry_tags(time_entry).each do |tag| %>
+            <span class="tag-badge">
+              <%= tag.name %>
+              <% if tag.archived? %><span class="muted">· arquivada</span><% end %>
+            </span>
+          <% end %>
+        </div>
+      <% end %>
+
+      <div class="tags-field__options">
+        <% tracker_available_tags_for(time_entry).each do |tag| %>
+          <label class="tags-field__option">
+            <%= check_box_tag "time_entry[tag_ids][]", tag.id, time_entry.tag_ids.include?(tag.id), id: nil %>
+            <span><%= tag.name %></span>
+            <% if tag.archived? %><span class="muted">arquivada</span><% end %>
+          </label>
+        <% end %>
+      </div>
+
+      <div class="tags-field__new">
+        <label for="<%= "#{form.field_id(:description)}_new_tag" %>">Nova tag</label>
+        <div class="tags-field__new-row">
+          <input type="text"
+                 id="<%= "#{form.field_id(:description)}_new_tag" %>"
+                 name="time_entry[new_tag_names][]"
+                 list="tag-suggestions"
+                 placeholder="Criar tag inline"
+                 data-tags-select-target="input"
+                 data-action="keydown.enter->tags-select#add">
+          <button type="button" class="btn btn--quiet btn--sm" data-action="tags-select#add">
+            Adicionar
+          </button>
+        </div>
+        <div class="tags-field__chips" data-tags-select-target="pending"></div>
+        <datalist id="tag-suggestions">
+          <% Current.user.tags.active.order(:created_at).each do |tag| %>
+            <option value="<%= tag.name %>">
+          <% end %>
+        </datalist>
+      </div>
+    </div>
+  </details>
+</div>

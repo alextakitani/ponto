@@ -1,0 +1,62 @@
+<% content_for :title, "Tags" %>
+
+<header class="page-header">
+  <div>
+    <h1>Tags</h1>
+    <p class="muted">Classifique entradas com etiquetas livres para filtrar e agrupar depois.</p>
+  </div>
+  <%= link_to new_tag_path, class: "btn" do %>
+    <%= icon("plus") %>
+    Nova tag
+  <% end %>
+</header>
+
+<div class="page-toolbar">
+  <%= form_with url: tags_path, method: :get, class: "page-search" do |form| %>
+    <%= icon("search") %>
+    <% if @showing_archived %><%= form.hidden_field :archived, value: "1" %><% end %>
+    <%= form.search_field :q, value: params[:q], placeholder: "Buscar por nome…",
+          autocomplete: "off", "aria-label": "Buscar tags por nome" %>
+  <% end %>
+
+  <% if @showing_archived %>
+    <%= link_to "← Ver ativas", tags_path, class: "muted" %>
+  <% else %>
+    <%= link_to "Ver arquivadas", tags_path(archived: "1"), class: "muted" %>
+  <% end %>
+</div>
+
+<% if @tags.any? %>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= render partial: "tags/tag", collection: @tags, as: :tag %>
+    </tbody>
+  </table>
+<% elsif params[:q].present? %>
+  <div class="empty-state">
+    <p>Nenhuma tag encontrada para “<%= params[:q] %>”.</p>
+  </div>
+<% elsif @showing_archived %>
+  <div class="empty-state">
+    <p>Nenhuma tag arquivada por aqui.</p>
+  </div>
+<% else %>
+  <div class="empty-state">
+    <%= icon("tags", class: "icon--lg") %>
+    <h2>Comece criando uma tag</h2>
+    <p class="muted">
+      Tags ajudam a cortar o histórico por assunto, contexto ou prioridade sem mexer
+      na estrutura de clientes, projetos e tarefas.
+    </p>
+    <%= link_to new_tag_path, class: "btn" do %>
+      <%= icon("plus") %>
+      Criar primeira tag
+    <% end %>
+  </div>
+<% end %>

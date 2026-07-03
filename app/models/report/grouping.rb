@@ -1,8 +1,8 @@
 class Report
   # Agrupamento 1-2 níveis ANINHADOS do Summary (Q21). Dimensões: Project/Client/Task/
-  # Description (Tag depois — fase Tags). Cada Group carrega seus totais (duração,
-  # tempo faturável, subtotais por moeda — Q43) e, se houver 2º nível, seus subgroups.
-  # Baldes "(sem X)" explícitos. Ordenação por duração desc (maior primeiro).
+  # Tag/Description. Cada Group carrega seus totais (duração, tempo faturável,
+  # subtotais por moeda — Q43) e, se houver 2º nível, seus subgroups. Baldes "(sem X)"
+  # explícitos. Ordenação por duração desc (maior primeiro).
   #
   # Roda em Ruby sobre Rows já decriptadas/arredondadas (Q58) — GROUP BY no banco não
   # serve (nomes/description criptografados — Q25).
@@ -13,6 +13,7 @@ class Report
       "project"     => ->(row) { row.project&.name },
       "client"      => ->(row) { row.client&.name },
       "task"        => ->(row) { row.task&.name },
+      "tag"         => ->(row) { row.tags.map(&:name) },
       "description" => ->(row) { row.description.presence }
     }.freeze
 
@@ -20,6 +21,7 @@ class Report
       "project"     => "(sem projeto)",
       "client"      => "(sem cliente)",
       "task"        => "(sem tarefa)",
+      "tag"         => "(sem tag)",
       "description" => "(sem descrição)"
     }.freeze
 
@@ -41,14 +43,21 @@ class Report
         dimension, *rest = dims
         label = EMPTY_LABELS.fetch(dimension)
         extractor = DIMENSIONS.fetch(dimension)
-
-        rows
-          .group_by { |row| extractor.call(row) || label }
+        groups_for(rows, extractor:, empty_label: label)
           .map do |title, group_rows|
             subgroups = rest.any? ? build(group_rows, rest) : []
             Group.new(title: title, rows: group_rows, subgroups: subgroups)
           end
           .sort_by { |group| -group.duration_seconds }
+      end
+
+      # Tag é MULTI-VALORADA: um mesmo entry pode cair em N grupos, então a soma do
+      # group-by tag pode passar do total do relatório. Isso é esperado, não bug.
+      def groups_for(rows, extractor:, empty_label:)
+        rows.each_with_object(Hash.new { |hash, key| hash[key] = [] }) do |row, acc|
+          values = Array(extractor.call(row)).presence || [ empty_label ]
+          values.each { |value| acc[value] << row }
+        end
       end
 
     # Um nó da árvore de agrupamento. Soma seus Rows (ou herda dos subgroups — dá no

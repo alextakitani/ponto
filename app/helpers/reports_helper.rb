@@ -60,7 +60,7 @@ module ReportsHelper
 
   # Rótulo humano de uma dimensão de agrupamento (pro cabeçalho da tabela do Summary).
   def report_group_dimension_label(dimension)
-    { "project" => "Projeto", "client" => "Cliente", "task" => "Tarefa", "description" => "Descrição" }
+    { "project" => "Projeto", "client" => "Cliente", "task" => "Tarefa", "tag" => "Tag", "description" => "Descrição" }
       .fetch(dimension.to_s, "Grupo")
   end
 

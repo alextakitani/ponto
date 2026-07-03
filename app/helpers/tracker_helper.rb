@@ -27,6 +27,10 @@ module TrackerHelper
     "#{started} - #{ended}"
   end
 
+  def tracker_entry_tags(time_entry)
+    time_entry.tags.to_a.sort_by { |tag| [ tag.archived? ? 1 : 0, tag.name.downcase ] }
+  end
+
   def tracker_datetime_local_value(timestamp)
     return if timestamp.blank?
 
@@ -49,6 +53,12 @@ module TrackerHelper
       .map do |client_name, projects|
         [ client_name, projects.map { |project| [ project.name, project.id ] } ]
       end
+  end
+
+  def tracker_available_tags_for(time_entry)
+    tags = Current.user.tags.active.to_a
+    tags += time_entry.tags.archived.to_a if time_entry.persisted?
+    tags.uniq.sort_by(&:name)
   end
 
   def tracker_local_time(timestamp)

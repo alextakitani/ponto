@@ -104,4 +104,17 @@ class Report::GroupingTest < ActiveSupport::TestCase
 
     assert_equal [ "Grande", "Pequeno" ], grouping.groups.map(&:title)
   end
+
+  test "group_by tag duplica o mesmo entry em grupos diferentes e pode somar mais que o total" do
+    first = @user.tags.create!(name: "Bug")
+    second = @user.tags.create!(name: "Ops")
+    entry = @user.time_entries.create!(started_at: Time.utc(2026, 7, 10, 12, 0), ended_at: Time.utc(2026, 7, 10, 13, 0))
+    entry.tags << [ first, second ]
+    row = Report::Row.new(entry, rounding: Report::Rounding.off, time_zone: @zone)
+
+    grouping = Report::Grouping.new(rows: [ row ], group_by: [ "tag" ])
+
+    assert_equal [ "Bug", "Ops" ], grouping.groups.map(&:title).sort
+    assert_equal 2.hours.to_i, grouping.groups.sum(&:duration_seconds), "esperado: group-by tag conta o mesmo entry em N grupos"
+  end
 end

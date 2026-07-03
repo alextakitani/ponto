@@ -66,11 +66,14 @@ class Report::ExportTest < ActiveSupport::TestCase
     client = @user.clients.create!(name: "ACME", rate: 120, currency: "BRL") # 120/h
     project = @user.projects.create!(name: "Site", client: client)
     task = project.tasks.create!(name: "Backend", user: @user)
+    bug = @user.tags.create!(name: "Bug")
+    ops = @user.tags.create!(name: "Ops")
     # 12:00–13:30 UTC = 09:00–10:30 em São Paulo. 1h30 → 1.5h × 120 = 180.
-    entry(
+    record = entry(
       started: Time.utc(2026, 7, 10, 12, 0), ended: Time.utc(2026, 7, 10, 13, 30),
       project: project, task: task, description: "Ajuste no login"
     )
+    record.tags << [ bug, ops ]
 
     row = export_for.rows_matrix.first
 
@@ -78,7 +81,7 @@ class Report::ExportTest < ActiveSupport::TestCase
     assert_equal "ACME", row[1]          # Cliente
     assert_equal "Ajuste no login", row[2] # Descrição
     assert_equal "Backend", row[3]       # Tarefa
-    assert_equal "", row[4]              # Tags (TODO fase futura)
+    assert_equal "Bug, Ops", row[4]      # Tags
     assert_equal "Sim", row[5]           # Faturável
     assert_equal Date.new(2026, 7, 10), row[6]  # Data início (local)
     assert_equal "09:00", row[7]         # Hora início (local)

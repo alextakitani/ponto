@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_02_190000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_03_120100) do
   create_table "access_requests", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -80,6 +80,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_02_190000) do
     t.index ["user_id"], name: "index_sign_in_codes_on_user_id"
   end
 
+  create_table "taggings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "tag_id", null: false
+    t.integer "time_entry_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tag_id", "time_entry_id"], name: "index_taggings_on_tag_id_and_time_entry_id", unique: true
+    t.index ["tag_id"], name: "index_taggings_on_tag_id"
+    t.index ["time_entry_id"], name: "index_taggings_on_time_entry_id"
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.datetime "archived_at"
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id", "name"], name: "index_tags_on_user_id_and_name", unique: true
+    t.index ["user_id"], name: "index_tags_on_user_id"
+  end
+
   create_table "tasks", force: :cascade do |t|
     t.datetime "archived_at"
     t.datetime "created_at", null: false
@@ -127,6 +147,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_02_190000) do
   add_foreign_key "projects", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "sign_in_codes", "users"
+  add_foreign_key "taggings", "tags"
+  add_foreign_key "taggings", "time_entries"
+  add_foreign_key "tags", "users"
   add_foreign_key "tasks", "projects"
   add_foreign_key "tasks", "users"
   add_foreign_key "time_entries", "projects"

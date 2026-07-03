@@ -37,6 +37,14 @@ class Report
       )
     end
 
+    def tags
+      options_for(
+        real: @rows.flat_map(&:tags).uniq(&:id).map { |tag| Option.new(id: tag.id, label: tag.name) },
+        none_when: @rows.any? { |row| row.tags.empty? },
+        none_label: "(sem tag)"
+      )
+    end
+
     private
       def options_for(real:, none_when:, none_label:)
         sorted = real.sort_by { |option| option.label.to_s.downcase }

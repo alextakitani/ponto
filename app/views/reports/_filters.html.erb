@@ -1,7 +1,6 @@
 <%# Filtros finos (Q54): dimensões multi-select (só o que existe no período) + billable
     + description contains + dimensão de agrupamento (Summary). GET → viaja na URL.
-    OR dentro da dimensão (multi-select), AND entre. TODO(Tags): quando a fase Tags
-    existir, adicionar aqui o multi-select de Tag (filtro Report::Filters#tag_ids). %>
+    OR dentro da dimensão (multi-select), AND entre. %>
 <%= form_with url: reports_path, method: :get, class: "report-filters" do |form| %>
   <%= form.hidden_field :view, value: view %>
 
@@ -29,6 +28,13 @@
               {}, multiple: true, size: 4 %>
       </label>
 
+      <label class="report-filters__field">
+        <span class="muted">Tag</span>
+        <%= form.select :tag_ids,
+              options_for_select(filter_options.tags.map { |o| [ o.label, o.id ] }, report.filters.tag_ids),
+              {}, multiple: true, size: 4 %>
+      </label>
+
       <fieldset class="report-filters__field report-filters__billable">
         <legend class="muted">Faturável</legend>
         <% billable_value = report.filters.billable %>
@@ -46,7 +52,7 @@
         <span class="muted">Agrupar por</span>
         <%= form.select :group_by,
               options_for_select(
-                [ [ "—", "" ], [ "Projeto", "project" ], [ "Cliente", "client" ], [ "Tarefa", "task" ], [ "Descrição", "description" ] ],
+                [ [ "—", "" ], [ "Projeto", "project" ], [ "Cliente", "client" ], [ "Tarefa", "task" ], [ "Tag", "tag" ], [ "Descrição", "description" ] ],
                 report.group_by&.first
               ) %>
       </label>
@@ -55,7 +61,7 @@
         <span class="muted">Depois por</span>
         <%= form.select :group_by_2,
               options_for_select(
-                [ [ "—", "" ], [ "Projeto", "project" ], [ "Cliente", "client" ], [ "Tarefa", "task" ], [ "Descrição", "description" ] ],
+                [ [ "—", "" ], [ "Projeto", "project" ], [ "Cliente", "client" ], [ "Tarefa", "task" ], [ "Tag", "tag" ], [ "Descrição", "description" ] ],
                 report.group_by&.second
               ) %>
       </label>

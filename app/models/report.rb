@@ -54,7 +54,7 @@ class Report
       relation = user.time_entries
         .where.not(ended_at: nil)
         .where(started_at: period.range)
-        .includes(:task, project: :client)
+        .includes(:tags, :task, project: :client)
       filters.apply_sql(relation)
     end
 
