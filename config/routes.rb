@@ -30,6 +30,10 @@ Rails.application.routes.draw do
   # o logado pra cá.
   get "home" => "home#show", as: :home
 
+  resource :preferences, only: %i[show update] do
+    resources :access_tokens, only: %i[create destroy], shallow: true
+  end
+
   # Relatórios (Fatia 5.1) — o entregável principal. PÁGINA ÚNICA com abas
   # Summary/Detailed via param `view`; período/filtros/group_by/rounding viajam na
   # URL (pra 5.2 herdar no export e pro compartilhamento de link). Só :index (é uma
