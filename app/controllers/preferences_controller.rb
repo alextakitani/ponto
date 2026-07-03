@@ -36,6 +36,10 @@ class PreferencesController < ApplicationController
     end
 
     def invalid_time_zone?(time_zone)
+      # blank = chave omitida no PATCH parcial → não é "inválido", só não muda o fuso.
+      # ⚠️ TimeZone[nil] LEVANTA ArgumentError no Rails 8.1 (não retorna nil).
+      return false if time_zone.blank?
+
       ActiveSupport::TimeZone[time_zone].nil?
     end
 end

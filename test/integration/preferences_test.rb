@@ -49,6 +49,16 @@ class PreferencesTest < ActionDispatch::IntegrationTest
     assert_match(/Fuso horário inválido/, response.body)
   end
 
+  test "update sem time_zone no payload NÃO estoura 500 (só edita o name)" do
+    # PATCH parcial (curl/CLI) sem a chave time_zone: TimeZone[nil] levanta
+    # ArgumentError no Rails 8.1 — tem que degradar pra sucesso (mantém o fuso).
+    patch preferences_path, params: { user: { name: "Só o nome" } }
+
+    assert_response :redirect
+    assert_equal "Só o nome", @user.reload.name
+    assert_equal "America/Sao_Paulo", @user.time_zone
+  end
+
   test "update NÃO permite escalar privilégio (admin/suspended_at) via mass-assignment" do
     # Segurança: o perfil só edita name/time_zone. Se admin/suspended_at fossem
     # mass-assignable aqui, um user comum viraria admin ou se des-suspenderia sozinho.
@@ -95,6 +105,18 @@ class PreferencesTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "body", text: /CLI/
     assert_select "body", text: token.token, count: 0
+  end
+
+  test "create token com permission fora do enum NÃO estoura 500 (422)" do
+    # Request forjado (curl) com permission inválida: o enum levantaria ArgumentError
+    # antes do save → 500. Tem que virar 422 sem criar token.
+    assert_no_difference -> { @user.access_tokens.count } do
+      post preferences_access_tokens_path, params: {
+        access_token: { label: "Hack", permission: "root" }
+      }
+    end
+
+    assert_response :unprocessable_entity
   end
 
   test "destroy revoga token próprio" do
