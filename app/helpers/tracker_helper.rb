@@ -44,6 +44,15 @@ module TrackerHelper
     time_entry.tags.to_a.sort_by { |tag| [ tag.archived? ? 1 : 0, tag.name.downcase ] }
   end
 
+  def tracker_billable_amount(time_entry)
+    amount = time_entry.billable_amount
+    if amount
+      I18n.with_locale(:"pt-BR") { amount.format }
+    else
+      "—"
+    end
+  end
+
   def tracker_datetime_local_value(timestamp)
     return if timestamp.blank?
 

@@ -39,13 +39,27 @@ module TrackerData
         end
     end
 
-    def tracker_next_page_params
+    def tracker_next_page_params(day_group = @tracker_day_groups.last)
       return {} unless @tracker_pagy&.next
 
       params.permit(:page).to_h.merge(
         page: @tracker_pagy.next,
-        last_date: @tracker_day_groups.last&.fetch(:date)
+        last_date: day_group&.fetch(:date)
       ).compact
+    end
+
+    def tracker_day_total_seconds(date, now: Time.current)
+      return unless date
+
+      time_zone = ActiveSupport::TimeZone[Current.user.time_zone] || Time.zone
+
+      authorized_scope(TimeEntry.all).where(user: Current.user).sum do |entry|
+        if tracker_group_date(entry, time_zone, now:) == date
+          tracker_elapsed_seconds(entry, now:)
+        else
+          0
+        end
+      end
     end
 
     def tracker_page_param

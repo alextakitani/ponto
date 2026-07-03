@@ -80,10 +80,6 @@
   color: var(--color-danger);
 }
 
-.timer-bar__external-form {
-  display: none;
-}
-
 .tracker-list {
   display: flex;
   flex-direction: column;
@@ -176,6 +172,11 @@
 
 .tracker-entry__duration {
   min-width: 6.5ch;
+  text-align: right;
+}
+
+.tracker-entry__amount {
+  min-width: 7.5ch;
   text-align: right;
 }
 

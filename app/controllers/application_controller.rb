@@ -18,7 +18,25 @@ class ApplicationController < ActionController::Base
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
+  helper_method :command_palette_current_timer, :command_palette_recent_time_entries
+
   private
+    def command_palette_current_timer
+      return unless Current.user
+
+      @command_palette_current_timer ||= authorized_scope(TimeEntry.all).find_by(ended_at: nil)
+    end
+
+    def command_palette_recent_time_entries
+      return TimeEntry.none unless Current.user
+
+      @command_palette_recent_time_entries ||= authorized_scope(TimeEntry.all)
+        .where.not(ended_at: nil)
+        .includes(:project)
+        .order(ended_at: :desc, id: :desc)
+        .limit(5)
+    end
+
     def deny_access
       respond_to do |format|
         format.html { render "shared/forbidden", status: :forbidden }

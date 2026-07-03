@@ -1,13 +1,20 @@
 <% groups_to_append = @tracker_day_groups %>
+<% continuing_group = nil %>
+<% continuing_total_seconds = nil %>
 
 <% if @last_rendered_date && groups_to_append.first&.fetch(:date) == @last_rendered_date %>
   <% continuing_group = groups_to_append.first %>
   <% groups_to_append = groups_to_append.drop(1) %>
+  <% continuing_total_seconds = @continuing_day_total_seconds %>
 
   <%= turbo_stream.append "day-#{continuing_group[:date]}-entries" do %>
     <% continuing_group[:entries].each do |time_entry| %>
       <%= render "time_entries/time_entry", time_entry: time_entry %>
     <% end %>
+  <% end %>
+
+  <%= turbo_stream.update "day-#{continuing_group[:date]}-total" do %>
+    <%= tracker_duration(continuing_total_seconds) %>
   <% end %>
 <% end %>
 
@@ -22,7 +29,8 @@
 <%= turbo_stream.replace "tracker_entries_load_more" do %>
   <div id="tracker_entries_load_more" class="tracker-load-more">
     <% if @tracker_has_more %>
-      <%= link_to tracker_entries_path(tracker_next_page_params),
+      <% last_visible_group = groups_to_append.last || continuing_group || @tracker_day_groups.last %>
+      <%= link_to tracker_entries_path(tracker_next_page_params(last_visible_group)),
             class: "btn btn--quiet",
             data: { turbo_stream: true } do %>
         Carregar mais

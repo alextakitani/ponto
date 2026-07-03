@@ -43,6 +43,7 @@ export default class extends Controller {
     if (!this.dialogTarget.open) {
       this.dialogTarget.showModal()
     }
+    this.inputTarget.setAttribute("aria-expanded", "true")
     this.inputTarget.value = ""
     this.filter()
     this.inputTarget.focus()
@@ -54,6 +55,10 @@ export default class extends Controller {
 
     if (this.hasDialogTarget && this.dialogTarget.open) {
       this.dialogTarget.close()
+    }
+    if (this.hasInputTarget) {
+      this.inputTarget.setAttribute("aria-expanded", "false")
+      this.inputTarget.removeAttribute("aria-activedescendant")
     }
 
     const focusTarget = this.previouslyFocused?.isConnected ? this.previouslyFocused : this.hasTriggerTarget ? this.triggerTarget : null
@@ -120,17 +125,24 @@ export default class extends Controller {
 
     if (items.length === 0) {
       this.statusTarget.textContent = "Nenhuma ação encontrada."
+      this.inputTarget.removeAttribute("aria-activedescendant")
       return
     }
 
     this.selectedIndex = Math.min(this.selectedIndex, items.length - 1)
-    items[this.selectedIndex].classList.add("command-palette__item--selected")
-    items[this.selectedIndex].scrollIntoView({ block: "nearest" })
+    const selected = items[this.selectedIndex]
+    selected.classList.add("command-palette__item--selected")
+    selected.setAttribute("aria-selected", "true")
+    this.inputTarget.setAttribute("aria-activedescendant", selected.id)
+    selected.scrollIntoView({ block: "nearest" })
     this.statusTarget.textContent = ""
   }
 
   clearSelection() {
-    this.itemTargets.forEach((item) => item.classList.remove("command-palette__item--selected"))
+    this.itemTargets.forEach((item) => {
+      item.classList.remove("command-palette__item--selected")
+      item.setAttribute("aria-selected", "false")
+    })
   }
 
   visibleItems() {
