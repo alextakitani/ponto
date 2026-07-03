@@ -104,6 +104,20 @@ class ReportTest < ActiveSupport::TestCase
     assert_equal({ "BRL" => 20000 }, report.totals.amounts)   # 2h × 100 = 200,00
   end
 
+  test "amount NÃO revaloriza quando a rate muda depois — usa o snapshot, não a rate atual (Q10)" do
+    # A invariante de faturamento: mudar a rate do cliente/projeto NÃO reescreve o
+    # histórico. Se o Report usasse project.effective_rate_cents (rate ATUAL) em vez
+    # do snapshot congelado no entry, o total de um mês fechado mudaria — fatura errada.
+    client = @user.clients.create!(name: "Acme", currency: "BRL", rate_cents: 10000) # R$100/h no lançamento
+    project = @user.projects.create!(name: "Site", client: client)
+    entry(started: Time.utc(2026, 7, 10, 12, 0), ended: Time.utc(2026, 7, 10, 14, 0), project: project) # 2h → snapshot 100/h
+
+    client.update!(rate_cents: 99999) # reajuste POSTERIOR
+
+    report = Report.new(user: @user, period: month_period)
+    assert_equal({ "BRL" => 20000 }, report.totals.amounts) # 2h × 100 (snapshot), NÃO × 999,99
+  end
+
   test "mix de moedas vira SUBTOTAIS por moeda — NUNCA soma (Q43)" do
     brl = @user.clients.create!(name: "BR Co", currency: "BRL", rate_cents: 10000)
     eur = @user.clients.create!(name: "EU Co", currency: "EUR", rate_cents: 5000)
