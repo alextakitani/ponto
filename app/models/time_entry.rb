@@ -48,6 +48,36 @@ class TimeEntry < ApplicationRecord
     end
   end
 
+  # Quebra este entry FINALIZADO em dois no `cut` (Q48). A metade A (self) fica
+  # started_at..cut; a metade B nasce cópia FIEL (descrição/projeto/task/billable)
+  # cobrindo cut..ended_at original. Cada metade re-resolve/congela SEU snapshot: B é
+  # um record novo, então o `before_validation :snapshot_project_rate` recalcula a rate
+  # a partir do project (não copia cru de A). Corte estritamente ENTRE started_at e
+  # ended_at (Q15c: nada de duração-zero); só entry finalizado (rodando não pode).
+  # Atômico: encurta A + cria B numa transação (rollback total se algo falhar).
+  # Retorna a metade B.
+  def split_at(cut)
+    raise ArgumentError, "só é possível dividir entradas finalizadas" unless ended_at?
+    unless cut > started_at && cut < ended_at
+      raise ArgumentError, "o corte deve ficar entre o início e o fim"
+    end
+
+    original_ended_at = ended_at
+    transaction do
+      second = user.time_entries.build(
+        project_id: project_id,
+        task_id: task_id,
+        description: description,
+        billable: billable,
+        started_at: cut,
+        ended_at: original_ended_at
+      )
+      update!(ended_at: cut)
+      second.save!
+      second
+    end
+  end
+
   private
     def ended_at_after_started_at
       if ended_at.present? && started_at.present? && ended_at <= started_at

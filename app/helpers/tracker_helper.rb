@@ -33,6 +33,15 @@ module TrackerHelper
     timestamp.in_time_zone(tracker_time_zone).strftime("%Y-%m-%dT%H:%M")
   end
 
+  # Ponto de corte DEFAULT do split (Q48): o meio do intervalo, já no fuso do user e no
+  # formato do datetime-local. Só faz sentido pra entry finalizado.
+  def tracker_split_default(time_entry)
+    return unless time_entry.ended_at?
+
+    midpoint = time_entry.started_at + (time_entry.ended_at - time_entry.started_at) / 2
+    tracker_datetime_local_value(midpoint)
+  end
+
   def tracker_grouped_project_options
     Current.user.projects.active.includes(:client).to_a
       .sort_by { |project| [ project.client&.name.to_s.downcase, project.name.downcase ] }

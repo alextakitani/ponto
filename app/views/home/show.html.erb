@@ -7,4 +7,6 @@
   </div>
 </header>
 
+<%= render "time_entries/manual_form", time_entry: @manual_entry || TimeEntry.new %>
+
 <%= render "home/tracker_entries", day_groups: @tracker_day_groups %>

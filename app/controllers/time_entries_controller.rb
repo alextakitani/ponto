@@ -36,13 +36,19 @@ class TimeEntriesController < ApplicationController
     @time_entry = authorized_scope(TimeEntry.all).new(time_entry_create_params)
 
     if @time_entry.save
+      load_tracker_day_groups
+      @manual_entry = TimeEntry.new
       respond_to do |format|
-        format.html { redirect_to time_entry_path(@time_entry), notice: "Entrada criada." }
+        format.turbo_stream { render :create, status: :created }
+        format.html { redirect_to home_path, notice: "Entrada criada." }
         format.json { render :show, status: :created }
       end
     else
+      @manual_entry = @time_entry
+      load_tracker_day_groups
       respond_to do |format|
-        format.html { render :index, status: :unprocessable_entity }
+        format.turbo_stream { render :create, status: :unprocessable_entity }
+        format.html { redirect_to home_path, alert: @time_entry.errors.full_messages.to_sentence }
         format.json { render_errors(@time_entry) }
       end
     end
@@ -87,7 +93,12 @@ class TimeEntriesController < ApplicationController
     end
 
     def time_entry_create_params
-      params.require(:time_entry).permit(:project_id, :task_id, :description, :started_at, :ended_at, :billable)
+      attrs = params.require(:time_entry).permit(:project_id, :task_id, :description, :started_at, :ended_at, :billable)
+      # Início/fim vêm do datetime-local no FUSO do user (Q23b); convertê-los pra UTC
+      # antes de gravar (o banco é UTC). Mesmo parse do update.
+      attrs[:started_at] = parse_user_datetime(attrs[:started_at]) if attrs[:started_at].present?
+      attrs[:ended_at] = parse_user_datetime(attrs[:ended_at]) if attrs[:ended_at].present?
+      attrs
     end
 
     def time_entry_update_params
