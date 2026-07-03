@@ -5,6 +5,28 @@
     <h1>Relatórios</h1>
     <p class="muted">O resumo consolidado do seu tempo. Entradas em andamento ficam de fora.</p>
   </div>
+
+  <%# Exportar (Fatia 5.2): menu ⋮-style com .xlsx / .csv, herdando o recorte atual da
+      URL (período/filtros/rounding — Q58). O <details> funciona sem JS; o menu_controller
+      só faz o light-dismiss. Datas reais e números somáveis moram no arquivo (Q19/Q20). %>
+  <details class="row-menu" data-controller="menu">
+    <summary class="btn">
+      <%= icon("download") %>
+      Exportar
+    </summary>
+    <div class="row-menu__items">
+      <%# turbo: false — download de arquivo é navegação real, não visita Turbo Drive
+          (senão o Turbo tentaria renderizar os bytes do xlsx/csv como HTML). %>
+      <%= link_to report_export_url(format: :xlsx), class: "btn btn--quiet", data: { turbo: false } do %>
+        <%= icon("download") %>
+        Excel (.xlsx)
+      <% end %>
+      <%= link_to report_export_url(format: :csv), class: "btn btn--quiet", data: { turbo: false } do %>
+        <%= icon("download") %>
+        CSV
+      <% end %>
+    </div>
+  </details>
 </header>
 
 <%# Barra de período: setas ‹ › + presets + custom (Q53). GET pra que tudo viaje na URL. %>

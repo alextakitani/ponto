@@ -34,7 +34,11 @@ Rails.application.routes.draw do
   # Summary/Detailed via param `view`; período/filtros/group_by/rounding viajam na
   # URL (pra 5.2 herdar no export e pro compartilhamento de link). Só :index (é uma
   # consulta sem estado no servidor — o PORO Report monta tudo dos params).
-  resources :reports, only: :index
+  resources :reports, only: :index do
+    # Export .xlsx/.csv (Fatia 5.2) — o entregável principal. Mesmo recorte da tela
+    # (período/filtros viajam na URL); o formato vem da extensão (.xlsx/.csv).
+    get :export, on: :collection
+  end
 
   # Clientes (Fatia 2.2) — 1ª tabela de domínio. Arquivar/desarquivar seguem a
   # disciplina REST do projeto (STYLE.md): ação sem verbo padrão vira sub-resource

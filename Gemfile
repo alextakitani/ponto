@@ -69,3 +69,7 @@ gem "money-rails", "~> 3.0"
 # Superfície JSON de domínio (Q73): views .json.jbuilder declarativas, ESCALARES
 # (rate_cents int + currency string, nunca Money cru — Q11). Mesmas rotas do HTML.
 gem "jbuilder"
+
+gem "caxlsx", "~> 4.5"
+
+gem "csv", "~> 3.3"

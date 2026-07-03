@@ -33,6 +33,13 @@ module ReportsHelper
     reports_path(request.query_parameters.deep_symbolize_keys.merge(overrides))
   end
 
+  # URL do export no MESMO recorte da tela (Q58/Q20): herda período/filtros/rounding da
+  # URL atual, só troca a extensão (:xlsx/:csv). O botão "Exportar" aponta pra cá.
+  def report_export_url(format:)
+    params = request.query_parameters.deep_symbolize_keys.merge(format: format)
+    export_reports_path(params)
+  end
+
   # Geometria de UMA fatia do donut SVG (Q71): num círculo r=15.9155 a circunferência
   # é ~100, então stroke-dasharray = [fração*100, resto] e o offset acumula. Devolve
   # [dash, gap, offset] já em unidades de 0–100. Padrão idêntico ao donut da landing.
