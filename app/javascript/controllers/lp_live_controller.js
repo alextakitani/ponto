@@ -9,9 +9,9 @@ export default class extends Controller {
   static values = { start: String } // "01:47:12" — base do cronômetro
 
   connect() {
-    this.reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    if (this.reduced) return // SSR já mostra os valores finais; não anima nada.
-
+    // NOTA (decisão explícita do dono, contra WCAG/impeccable): o guard de
+    // prefers-reduced-motion foi REMOVIDO — os efeitos rodam mesmo pra quem pediu
+    // menos movimento. Mantido intencionalmente; ver o commit que introduziu isto.
     this.observer = new IntersectionObserver(
       (entries) => {
         if (entries.some((e) => e.isIntersecting)) {

@@ -19,13 +19,13 @@ pt-BR:
       en: "English"
     hero:
       eyebrow: "Time tracker self-hosted"
-      title_html: "Marque o ponto.<br>O relatório vira fatura."
+      title_html: "Cronometre o trabalho.<br>O relatório vira fatura."
       lede: "Feito para quem cobra por hora: timer de um clique, valor-hora por cliente e uma exportação mensal pronta para virar fatura. Roda no seu servidor — seus dados ficam com você."
     cloud:
-      pitch_html: "Não quer hospedar? Use o <strong>Ponto Cloud</strong> — esta instância, por apenas <strong>US$ 1/mês</strong>. O acesso é por convite: peça o seu."
+      pitch_html: "Não quer hospedar? Use o <strong>Ponto Cloud</strong> — esta instância, por apenas <strong>US$ 1/mês</strong><sup>*</sup>. O acesso é por convite: peça o seu."
     proofs:
       heading: "Do timer à fatura, sem sair do app"
-      sub_html: "O timer fica no topo de todas as telas. Organize o trabalho em Cliente&nbsp;→&nbsp;Projeto&nbsp;→&nbsp;Tarefa, defina o valor-hora de cada cliente (em real, euro…) e, no fim do mês, exporte o relatório."
+      sub_html: "O timer fica no topo de todas as telas. Organize o trabalho em Cliente&nbsp;→&nbsp;Projeto&nbsp;→&nbsp;Tarefa.<br>Defina o valor-hora de cada cliente (em&nbsp;real, euro…) e, no fim do mês, exporte o relatório."
       reports:
         title: "Relatórios que fecham o mês"
         text_html: "Horas por dia, distribuição por projeto e agrupamentos em dois níveis — do resumo ao detalhe. Exporte em <strong>.xlsx ou CSV</strong> e anexe direto à fatura."
@@ -38,13 +38,13 @@ pt-BR:
         badge: "em breve"
         text: "Comandos no terminal e saída JSON para agentes de IA, como o Claude. Usa o mesmo token da extensão."
     frozen:
-      heading: "O número de janeiro não muda em junho"
+      heading: "Histórico sempre mantido"
       sub: "Cada lançamento guarda o valor-hora do dia em que foi registrado. Reajustou um cliente? O novo valor vale só daqui para a frente — o histórico permanece intacto e as faturas antigas continuam corretas."
       now: "rate atual"
       lock_title: "congelado"
     host:
       heading: "Self-host em 4 passos"
-      sub_html: "Uma única aplicação Rails com SQLite, sem Node. O repositório já traz o Dockerfile e a configuração do Kamal — e o %{readme_link} é o guia completo."
+      sub_html: "Uma única aplicação Rails com SQLite. O repositório já traz o Dockerfile e a configuração do Kamal — e o %{readme_link} é o guia completo."
       readme: "README"
       steps:
         clone:
@@ -82,11 +82,12 @@ pt-BR:
         value: "Cada conta vive isolada das demais; o acesso é por convite."
     final:
       heading: "Peça acesso ao Ponto Cloud"
-      sub_html: "Não quer hospedar? Use esta instância por <strong>US$ 1/mês</strong>. Deixe seu e-mail — pedidos aprovados recebem o convite na caixa de entrada. Prefere hospedar você mesmo? O código está no %{github_link}."
+      sub_html: "Não quer hospedar? Use esta instância por <strong>US$ 1/mês</strong><sup>*</sup>. Deixe seu e-mail — os pedidos aprovados recebem o convite na caixa de entrada.<br>Prefere hospedar você mesmo? O código está no %{github_link}."
       github_link: "GitHub"
       signin_prompt: "Já tem conta?"
     footer:
       nav_label: "Rodapé"
+      promo_note: "* US$ 1/mês é um preço promocional. Se um dia mudar, você é avisado antes."
     mockups:
       tracker:
         project_a: "Kubernetes homelab"
