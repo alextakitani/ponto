@@ -1052,3 +1052,47 @@ Conversa em **português**.
   adaptações self-hosted (Q76).
 - 💤 **Cobrança $1/mês** — ADIADA por decisão do Alex (esboço Stripe registrado acima).
   ÚNICO tema não-grillado; retomar "quando houver gente pedindo acesso".
+
+---
+
+## Refinamentos de design pós-grilling (`/impeccable`, 03/07/2026)
+
+> NÃO são grilling (entrevista pré-build) — são refinamentos das telas JÁ construídas,
+> conduzidos com o skill `/impeccable` (init → critique → craft/layout/typeset/
+> overdrive) e implementados via Codex sob orquestração. Registrados aqui pra o
+> histórico de decisão ficar num lugar só. Racional completo no git (commits
+> `441e356`..`273e37d`) e em `PRODUCT.md`/`DESIGN.md`.
+
+### Tracker (`/home`) — critique 24→30/40 em 2 rodadas
+- **Mobile:** barra do timer STICKY no topo (Stop nunca some ao rolar/abrir form
+  manual); alvos de toque ≥44px (WCAG 2.5.5) no `.btn`/`.btn--sm`/tab bar.
+- **Rótulo de dia:** "Hoje"/"Ontem" relativos ao FUSO DO USER (Q6) + dia da semana
+  pt-BR nas datas antigas. Sem `I18n.l` (o app não carrega rails-i18n → levantaria).
+- **Command palette ⌘K:** feature nova (não estava no grilling). `<dialog>` nativo
+  inline no shell, busca substring, ações Timer/Navegação/Recentes, start/stop pelas
+  rotas do timer (respeita o 409 da Q3/Q4/Q14). Gatilho de busca só no mobile.
+- **Paginação (gem Pagy):** o tracker carregava TODAS as entries; agora pagina no SQL
+  (50/página) e reagrupa em dias no fuso do user. "Carregar mais" funde o cabeçalho de
+  dia na borda de página; total do dia recalculado SERVER-SIDE (não via param — era
+  forjável). Fecha a lacuna de performance implícita da Q6.
+- **Valor faturado na linha:** o `billable_amount` (Q18) agora aparece à direita da
+  duração (tabular-nums, "—" quando não-faturável). Coluna direita em trilhas fixas
+  pra colunar entre linhas ("o número parece certo", DESIGN.md).
+- **a11y da palette:** navegação por setas com `aria-activedescendant`/`role=option`;
+  Esc no `<details>` do split fecha só o interno.
+
+### Landing (`/`) — overdrive
+- O mockup do herói ganha VIDA: cronômetro ticando (rAF), count-up dos valores,
+  donut/barras scroll-driven (`animation-timeline: view()`), marcador "agora" na régua.
+- **⚠️ Decisão do dono que CONTRARIA a regra de reduced-motion:** os efeitos rodam
+  MESMO sob `prefers-reduced-motion: reduce` (guards removidos + override do reset
+  global do `base.css`, escopado à landing). É a ÚNICA exceção à acessibilidade de
+  movimento no app; o resto honra a preferência. Reverter é um diff pequeno.
+- **Copy (pt-BR + en em sincronia):** hero "Marque o ponto" → "Cronometre o trabalho"
+  / "Track your time" (a ação real é cronometrar, não bater ponto); frozen "O número
+  de janeiro..." → "Histórico sempre mantido"; removido "sem Node"; preço promocional
+  US$1/mês vira asterisco + nota de rodapé ("se mudar, você é avisado antes").
+
+### Tipografia (typeset)
+- `font-optical-sizing: auto` + `font-kerning: normal` no `body` (InterVariable tem
+  eixo opsz). Corpo mantido em 14px (densidade Linear é decisão de produto, não descuido).

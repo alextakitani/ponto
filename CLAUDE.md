@@ -17,8 +17,12 @@ no homelab e ser publicado com **código aberto (licença O'Saasy — proibido r
 
 ## Documentos de referência (leia antes de decidir arquitetura/UI)
 
-- `docs/grilling-progress.md` — **decisões de design fechadas (Q1–Q76) + racional.**
+- `docs/grilling-progress.md` — **decisões de design fechadas (Q1–Q80) + racional.**
   Leia PRIMEIRO; é a fonte de verdade mais recente.
+- `PRODUCT.md` / `DESIGN.md` (raiz) — contexto de design do `/impeccable` (03/07):
+  PRODUCT = quem/o quê/porquê + register `product` + anti-refs + princípios + AA;
+  DESIGN = sistema visual capturado do código (tokens dual-theme, tipografia, shell,
+  componentes). Consulte antes de mexer em UI; são o "porquê" por trás dos tokens.
 - `docs/time-tracker-decisoes.md` — racional original de arquitetura e escopo (parte
   superada pelo grilling — cruze com ele).
 - `docs/time-tracker-spec.pdf` — brief funcional/UI (telas do Clockify com o que
@@ -210,22 +214,51 @@ Hierarquia **Client → Project → Task → TimeEntry**, com **Tags** por fora.
   `AT TIME ZONE`). Entry pertence inteiro ao dia do `started_at`, sem fatiar (Q6).
 - UI de edição do fuso: na tela de **Preferências** (`/preferences` — Q66).
 
-## Telas (a construir — ordem do brief; ver PDF pro detalhe de cada uma)
+## Telas (a maioria FEITA; ver PDF pro detalhe de cada uma)
 
-Auth (feito) → **Clients → Projects → Tasks → Timer/TimeEntry → Tags → Relatórios →
-Export**. Timer global no topo em TODA tela (start/stop sempre acessível — é a
-assinatura visual, Q63). **URLs (Q61):** `/` = landing pública (Q36); home do logado
-= `/time_entries` (tracker); resources no topo, sem namespace (contrato da extensão
-Q9/Q13); só admin é namespaced (`/admin`).
+Auth → Clients → Projects → Tasks → Timer/TimeEntry → Tags → Relatórios → Export →
+Preferências → landing/admin: **todas construídas.** Timer global no topo em TODA
+tela (start/stop sempre acessível — é a assinatura visual, Q63). **URLs (Q61):** `/`
+= landing pública (Q36); **home do logado = `/home` (`home#show`) — é o tracker**
+(⚠️ NÃO `/time_entries`: a index HTML redireciona pra `/home` e a view-stub foi
+deletada; `/time_entries` serve só JSON + as ações show/edit/create/update/destroy).
+Resources no topo, sem namespace (contrato da extensão Q9/Q13); só admin é
+namespaced (`/admin`).
 
 **Navegação (Q60/Q65):** desktop = sidebar **Tracker · Reports · Projects · Clients ·
 Tags** (+ Preferências/Admin no rodapé). Mobile (PWA) = **bottom tab bar** Tracker ·
 Reports · Projects · Mais (Mais → Clients/Tags/Preferências/Admin). **Calendar e
 Dashboard foram CORTADOS** (Q60 — Dashboard duplica o Summary; Calendar é caro).
 
-Telas novas já DESENHADAS no grilling: **landing 1 dobra** (Q67), **admin em página
-única** com fila de pedidos + tabela de users (Q68), **Preferências em 3 seções**
-(perfil/fuso · tokens da extensão · export/import dos dados — Q66/Q72).
+**Tracker (`/home`) — refinado pós-critique `/impeccable` (03/07):**
+- **Command palette ⌘K** (`<dialog>` nativo, inline no shell `app.html.erb`, dados
+  via `helper_method` escopado por user no `ApplicationController`): busca por
+  substring, setas/Enter/Esc, ações Timer/Navegação/Recentes. Start/stop pelas rotas
+  EXISTENTES (respeita o 409). Gatilho de busca só no mobile. Controller
+  `command_palette_controller.js`.
+- **Paginação real (gem Pagy)** no `TrackerData`: `pagy(relation, limit: 50)` com
+  LIMIT/OFFSET no SQL — NÃO carrega o histórico todo. Entries reagrupam em dias no
+  fuso do user (Q6); "Carregar mais" (`tracker_entries#index`) anexa a próxima página
+  via Turbo e FUNDE o cabeçalho de dia na borda; o total do dia é recalculado
+  SERVER-SIDE (nunca via param do cliente).
+- **Valor faturado na linha** (`billable_amount` do model, tabular-nums, "—" quando
+  não-faturável); coluna direita em grade de trilhas fixas pra colunar entre linhas.
+- "Retomar última" foi CONSOLIDADO na palette (Recentes) — o botão da barra ociosa e
+  o resource `latest_time_entry_restart` foram removidos.
+
+**Landing (`/`) — overdrive `/impeccable` (03/07):** o mockup do herói ganha VIDA
+(cronômetro ticando via rAF, count-up dos valores, donut/barras scroll-driven,
+marcador "agora" na régua) — `lp_live_controller.js`. ⚠️ **Decisão do dono: os
+efeitos rodam MESMO sob `prefers-reduced-motion`** (guards removidos + override do
+reset global, escopado à landing) — contra WCAG, documentado no código/commit
+`273e37d`. É a ÚNICA exceção à regra de reduced-motion do app. Copy afinada nos dois
+locales (pt-BR/en em sincronia): hero "Cronometre o trabalho / Track your time",
+"Histórico sempre mantido", asterisco do preço promocional US$1/mês com nota de
+rodapé.
+
+Outras telas DESENHADAS no grilling: **admin em página única** com fila de pedidos +
+tabela de users (Q68), **Preferências em 3 seções** (perfil/fuso · tokens da extensão
+· export/import dos dados — Q66/Q72).
 
 Relatórios (fechado — Q53–Q58): views **Summary · Detailed** (Weekly cortada, Q55);
 período enxuto + setas ‹› default "Este mês" (Q53); 6 filtros OR/AND (Q54); rounding
@@ -258,6 +291,10 @@ não confundir com invoicing dos clientes do usuário.)
   serializar objeto `Money` cru em JSON (vira hash gigante); nas rotas da extensão
   expor escalares (`rate_cents` int + `currency` string).
 - **Export = .xlsx (caxlsx) + CSV** da mesma matriz de dados (Q20).
+- **Paginação = Pagy** (Ruby puro, zero-build) no tracker (`Pagy::Backend` no
+  ApplicationController, `Pagy::Frontend` no helper). Pagina ENTRIES no SQL; a view
+  reagrupa em dias no fuso do user. O total do dia é sempre calculado no servidor,
+  nunca vindo de param do cliente (é forjável).
 - **REST/CRUD**: ação que não mapeia num verbo padrão vira um novo resource (ex.:
   `start`/`stop` do timer → resource próprio), não custom action.
 - Português nos comentários/textos de UI; código (nomes, API) em inglês.
