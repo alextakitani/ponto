@@ -1,7 +1,6 @@
 .shell-command {
+  display: none;
   position: fixed;
-  right: var(--space-4);
-  top: var(--space-4);
   z-index: 20;
 }
 
@@ -157,7 +156,13 @@
 
 @media (max-width: 48rem) {
   .shell-command {
-    top: var(--space-3);
+    display: block;
     right: var(--space-3);
+    bottom: calc(4.75rem + env(safe-area-inset-bottom));
+  }
+
+  .shell-command__trigger {
+    width: 2.75rem;
+    height: 2.75rem;
   }
 }

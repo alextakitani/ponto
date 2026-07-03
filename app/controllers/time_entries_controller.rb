@@ -78,7 +78,6 @@ class TimeEntriesController < ApplicationController
     @time_entry.destroy
     load_tracker_day_groups
     @current_timer = authorized_scope(TimeEntry.all).find_by(ended_at: nil)
-    @latest_restart_entry = authorized_scope(TimeEntry.all).where.not(ended_at: nil).order(ended_at: :desc, id: :desc).first
 
     respond_to do |format|
       format.turbo_stream

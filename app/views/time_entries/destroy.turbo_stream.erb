@@ -7,6 +7,5 @@
 <% end %>
 
 <%= turbo_stream.replace "command_palette" do %>
-  <%= turbo_frame_tag "command_palette", src: command_palette_path(page: params[:page]) do %>
-  <% end %>
+  <%= render "layouts/command_palette" %>
 <% end %>

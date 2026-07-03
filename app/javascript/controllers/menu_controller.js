@@ -31,6 +31,17 @@ export default class extends Controller {
   // pro gatilho, não perde o lugar).
   closeOnEscape(event) {
     if (event.key === "Escape" && this.element.open) {
+      const nestedOpen = Array.from(this.element.querySelectorAll("details[open]"))
+        .find((details) => details !== this.element && details.contains(event.target))
+
+      if (nestedOpen) {
+        event.preventDefault()
+        event.stopPropagation()
+        nestedOpen.open = false
+        nestedOpen.querySelector("summary")?.focus()
+        return
+      }
+
       this.element.open = false
       this.element.querySelector("summary")?.focus()
     }

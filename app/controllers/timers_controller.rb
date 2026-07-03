@@ -7,7 +7,6 @@ class TimersController < ApplicationController
   def show
     @time_entry = current_timer
     @form_time_entry = TimeEntry.new
-    @latest_restart_entry = latest_restart_entry
 
     respond_to do |format|
       format.html do
@@ -27,7 +26,6 @@ class TimersController < ApplicationController
     if current_timer
       @time_entry = current_timer
       @form_time_entry = nil
-      @latest_restart_entry = latest_restart_entry
       render_timer_conflict
     else
       @time_entry = authorized_scope(TimeEntry.all).new(timer_params.merge(started_at: Time.current))
@@ -35,7 +33,6 @@ class TimersController < ApplicationController
       if @time_entry.save
         load_tracker_day_groups
         @form_time_entry = nil
-        @latest_restart_entry = latest_restart_entry
         respond_to do |format|
           format.turbo_stream { render :update, status: :created }
           format.html { redirect_to home_path(page: tracker_page_param), notice: "Timer iniciado." }
@@ -44,7 +41,6 @@ class TimersController < ApplicationController
       else
         load_tracker_day_groups
         @form_time_entry = @time_entry
-        @latest_restart_entry = latest_restart_entry
         invalid_entry = @time_entry
         @time_entry = nil
         respond_to do |format|
@@ -57,7 +53,6 @@ class TimersController < ApplicationController
   rescue ActiveRecord::RecordNotUnique
     @time_entry = current_timer
     @form_time_entry = nil
-    @latest_restart_entry = latest_restart_entry
     render_timer_conflict
   end
 
@@ -70,7 +65,6 @@ class TimersController < ApplicationController
       load_tracker_day_groups
       @current_timer = current_timer
       @form_time_entry = nil
-      @latest_restart_entry = latest_restart_entry
 
       respond_to do |format|
         format.turbo_stream { render :update }
@@ -102,10 +96,6 @@ class TimersController < ApplicationController
 
     def timer_params
       params.fetch(:timer, {}).permit(:project_id, :task_id, :description)
-    end
-
-    def latest_restart_entry
-      authorized_scope(TimeEntry.all).where.not(ended_at: nil).order(ended_at: :desc, id: :desc).first
     end
 
     def render_timer_conflict

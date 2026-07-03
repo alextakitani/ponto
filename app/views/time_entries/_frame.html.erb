@@ -33,6 +33,7 @@
           </span>
         <% end %>
       </span>
+      <span class="tracker-entry__amount muted tabular-nums"><%= tracker_billable_amount(time_entry) %></span>
 
       <details class="row-menu" data-controller="menu">
         <summary class="btn btn--quiet btn--sm" aria-label="Ações de <%= tracker_entry_description(time_entry) %>">

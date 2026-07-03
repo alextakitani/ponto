@@ -1,6 +1,5 @@
 <%= turbo_frame_tag "timer_bar" do %>
   <%= render "timers/bar",
         time_entry: time_entry,
-        form_time_entry: form_time_entry,
-        latest_time_entry: defined?(@latest_restart_entry) ? @latest_restart_entry : nil %>
+        form_time_entry: form_time_entry %>
 <% end %>

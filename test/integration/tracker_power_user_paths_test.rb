@@ -56,6 +56,39 @@ class TrackerPowerUserPathsTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "load more updates the accumulated total when a day crosses the page boundary" do
+    49.times do |index|
+      create_entry_at("Dia novo #{index}", Time.utc(2026, 7, 3, 12, index, 0))
+    end
+    create_entry_at("Dia cruzado 0", Time.utc(2026, 7, 2, 12, 2, 0))
+    2.times do |index|
+      create_entry_at("Dia cruzado #{index + 1}", Time.utc(2026, 7, 2, 12, index, 0))
+    end
+
+    get tracker_entries_path(page: 2, last_date: "2026-07-02"), headers: turbo_stream_headers
+
+    assert_response :success
+    assert_includes response.body, %(action="update" target="day-2026-07-02-total")
+    assert_includes response.body, "01:30:00"
+  end
+
+  test "load more ignores forged last_total when updating the continued day total" do
+    49.times do |index|
+      create_entry_at("Dia novo #{index}", Time.utc(2026, 7, 3, 12, index, 0))
+    end
+    3.times do |index|
+      create_entry_at("Dia cruzado #{index}", Time.utc(2026, 7, 2, 12, index, 0))
+    end
+
+    get tracker_entries_path(page: 2, last_date: "2026-07-02", last_total: 999_999),
+      headers: turbo_stream_headers
+
+    assert_response :success
+    assert_includes response.body, %(action="update" target="day-2026-07-02-total")
+    assert_includes response.body, "01:30:00"
+    assert_not_includes response.body, "277:46:39"
+  end
+
   test "running timer is included on the first tracker page" do
     60.times do |index|
       create_entry_at("Finalizada #{index}", Time.utc(2026, 7, 1, 8, index % 60, 0))
@@ -69,51 +102,6 @@ class TrackerPowerUserPathsTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "[data-entry-id='#{running.id}'][data-running='true']", count: 1
-  end
-
-  test "retomar ultima copies the latest finished description and project into a new running timer" do
-    project = @user.projects.create!(name: "Projeto retomado")
-    old_project = @user.projects.create!(name: "Projeto antigo")
-    @user.time_entries.create!(
-      project: old_project,
-      description: "Entrada antiga",
-      started_at: Time.utc(2026, 7, 1, 9, 0, 0),
-      ended_at: Time.utc(2026, 7, 1, 10, 0, 0)
-    )
-    latest = @user.time_entries.create!(
-      project: project,
-      description: "Entrada recente",
-      started_at: Time.utc(2026, 7, 2, 9, 0, 0),
-      ended_at: Time.utc(2026, 7, 2, 10, 0, 0)
-    )
-
-    assert_difference -> { @user.time_entries.count }, +1 do
-      post latest_time_entry_restart_path, headers: turbo_headers("timer_bar")
-    end
-
-    assert_response :success
-    running = @user.time_entries.find_by!(ended_at: nil)
-    assert_not_equal latest.id, running.id
-    assert_equal "Entrada recente", running.description
-    assert_equal project.id, running.project_id
-  end
-
-  test "retomar ultima with a running timer returns 409 and does not create another entry" do
-    @user.time_entries.create!(
-      description: "Finalizada",
-      started_at: Time.utc(2026, 7, 1, 9, 0, 0),
-      ended_at: Time.utc(2026, 7, 1, 10, 0, 0)
-    )
-    running = @user.time_entries.create!(description: "Já está rodando", started_at: Time.current - 5.minutes)
-
-    assert_no_difference -> { @user.time_entries.count } do
-      post latest_time_entry_restart_path, headers: turbo_headers("timer_bar")
-    end
-
-    assert_response :conflict
-    assert_equal running.id, @user.time_entries.find_by!(ended_at: nil).id
-    assert_includes response.body, "Timer já está rodando."
-    assert_includes response.body, "Já está rodando"
   end
 
   test "command palette recent entries are scoped to the current user and ordered by most recent" do
@@ -131,41 +119,63 @@ class TrackerPowerUserPathsTest < ActionDispatch::IntegrationTest
       ended_at: Time.utc(2026, 7, 3, 9, 0, 0)
     )
 
-    get command_palette_path
+    get home_path
 
     assert_response :success
     assert_select "h2", text: "Recentes"
     assert_not_includes response.body, "Alheia muito recente"
-    assert_not_includes response.body, "Própria 0"
 
     expected = own_entries.last(5).reverse.map { |entry| "Própria #{own_entries.index(entry)}" }
-    positions = expected.map { |description| response.body.index(description) }
+    palette_labels = Nokogiri::HTML(response.body)
+      .css("#command_palette [data-command-palette-label]")
+      .map { |node| node["data-command-palette-label"] }
+
+    assert palette_labels.none? { |label| label.include?("Própria 0") }
+
+    positions = expected.map do |description|
+      palette_labels.index { |label| label.include?(description) }
+    end
     assert positions.all?
     assert_equal positions.sort, positions
   end
 
+  test "tracker row shows billable amount only when the entry has billable money" do
+    project = @user.projects.create!(name: "Faturável", rate_cents: 10000)
+    billable = @user.time_entries.create!(
+      project: project,
+      description: "Com valor",
+      billable: true,
+      started_at: Time.utc(2026, 7, 2, 12, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 13, 0, 0)
+    )
+    non_billable = @user.time_entries.create!(
+      project: project,
+      description: "Sem valor",
+      billable: false,
+      started_at: Time.utc(2026, 7, 2, 10, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 11, 0, 0)
+    )
+    no_rate = @user.time_entries.create!(
+      description: "Sem taxa",
+      started_at: Time.utc(2026, 7, 2, 8, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 9, 0, 0)
+    )
+
+    get home_path
+
+    assert_response :success
+    assert_select "[data-entry-id='#{billable.id}'] .tracker-entry__amount", text: /R\$\s?100,00/
+    assert_select "[data-entry-id='#{non_billable.id}'] .tracker-entry__amount", text: "—"
+    assert_select "[data-entry-id='#{no_rate.id}'] .tracker-entry__amount", text: "—"
+  end
+
   private
-    def create_entry_on_local_date(description, date)
-      zone = ActiveSupport::TimeZone[@user.time_zone]
-      started_at = zone.local(date.year, date.month, date.day, 9, 0, 0)
-
-      @user.time_entries.create!(
-        description: description,
-        started_at: started_at,
-        ended_at: started_at + 1.hour
-      )
-    end
-
     def create_entry_at(description, started_at)
       @user.time_entries.create!(
         description: description,
         started_at: started_at,
         ended_at: started_at + 30.minutes
       )
-    end
-
-    def turbo_headers(frame_id)
-      turbo_stream_headers.merge("Turbo-Frame" => frame_id)
     end
 
     def turbo_stream_headers
