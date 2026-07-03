@@ -309,10 +309,44 @@ class TimeEntryTest < ActiveSupport::TestCase
   test "split de entry RODANDO levanta erro (só finalizado divide)" do
     running = @user.time_entries.create!(started_at: Time.utc(2026, 7, 2, 9, 0, 0))
 
-    assert_no_difference -> { TimeEntry.count } do
-      assert_raises(ArgumentError) { running.split_at(Time.utc(2026, 7, 2, 9, 30, 0)) }
+    err = assert_raises(ArgumentError) do
+      running.split_at(Time.utc(2026, 7, 2, 9, 30, 0))
     end
+    # Afere a MENSAGEM (não só a classe): sem a guarda explícita, o cut < nil
+    # levantaria "comparison of Time with nil failed" — mesma classe, mensagem
+    # críptica que vazaria pro usuário (o controller repassa e.message).
+    assert_equal "só é possível dividir entradas finalizadas", err.message
     assert_nil running.reload.ended_at
+  end
+
+  test "split é ATÔMICO: se B falha ao salvar, A faz rollback pro ended_at original" do
+    project = @user.projects.create!(name: "Atômico")
+    original_ended_at = Time.utc(2026, 7, 2, 11, 0, 0)
+    entry = @user.time_entries.create!(
+      project: project,
+      started_at: Time.utc(2026, 7, 2, 9, 0, 0),
+      ended_at: original_ended_at
+    )
+    cut = Time.utc(2026, 7, 2, 10, 0, 0)
+    count_before = TimeEntry.count
+
+    # Faz a metade B (nasce no corte) falhar ao salvar, DEPOIS de A ser encurtado
+    # dentro do split_at. Sem a transação, A ficaria corrompido e B some (perda de
+    # dados); com a transação, tudo faz rollback. O método é definido/removido no
+    # ensure pra não vazar entre testes.
+    TimeEntry.define_method(:__probe_fail_split_b) do
+      errors.add(:base, "probe") if new_record? && started_at == Time.utc(2026, 7, 2, 10, 0, 0)
+    end
+    TimeEntry.set_callback(:validate, :before, :__probe_fail_split_b)
+    begin
+      assert_raises(ActiveRecord::RecordInvalid) { entry.split_at(cut) }
+    ensure
+      TimeEntry.skip_callback(:validate, :before, :__probe_fail_split_b)
+      TimeEntry.remove_method(:__probe_fail_split_b)
+    end
+
+    assert_equal original_ended_at, entry.reload.ended_at, "A deveria ter feito rollback"
+    assert_equal count_before, TimeEntry.count
   end
 
   test "split cruza a meia-noite: cada metade cai no dia do seu started_at" do

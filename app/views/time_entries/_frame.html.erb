@@ -46,10 +46,9 @@
             <% end %>
 
             <%# Dividir (Q48): quebra o entry em dois no ponto de corte (default = meio). %>
-            <%# TODO(ícone): trocar "circle-stop" por "scissors" (Lucide) quando eu baixar o SVG. %>
             <details class="row-menu__split">
               <summary class="btn btn--quiet">
-                <%= icon("circle-stop") %>
+                <%= icon("scissors") %>
                 Dividir
               </summary>
               <%= form_with url: time_entry_split_path(time_entry), data: { turbo_frame: "tracker_entries" },
