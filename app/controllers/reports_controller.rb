@@ -11,19 +11,61 @@ class ReportsController < ApplicationController
 
     @view = params[:view] == "detailed" ? "detailed" : "summary"
     @period = build_period
-    @report = Report.new(
-      user: Current.user,
-      period: @period,
-      filters: build_filters,
-      group_by: group_by_params,
-      rounding: build_rounding
-    )
+    @report = build_report
     # Opções de filtro/dimensão = o que EXISTE no período (Q54) — derivadas do próprio
     # relatório (rows já materializadas) pra não abrir query nova.
     @filter_options = report_filter_options
   end
 
+  # Export (Fatia 5.2) — o ENTREGÁVEL PRINCIPAL. Mesmo recorte da tela (período/filtros
+  # herdados da URL — Q58); o formato (.xlsx/.csv) vem da extensão. Uma matriz alimenta
+  # os dois (Report::Export — Q20). send_data com o período no filename pra virar anexo.
+  def export
+    authorize! Report, to: :index?
+
+    @period = build_period
+    exporter = Report::Export.new(build_report)
+
+    respond_to do |format|
+      format.xlsx do
+        send_data exporter.to_xlsx,
+          type: Mime[:xlsx], filename: export_filename("xlsx")
+      end
+      format.csv do
+        send_data exporter.to_csv,
+          type: "text/csv", filename: export_filename("csv")
+      end
+    end
+  end
+
   private
+    # Monta o PORO Report dos params (compartilhado por index e export — mesmo recorte).
+    def build_report
+      Report.new(
+        user: Current.user,
+        period: @period,
+        filters: build_filters,
+        group_by: group_by_params,
+        rounding: build_rounding
+      )
+    end
+
+    # Nome do anexo com o período (ex.: ponto-relatorio-2026-07.xlsx). Mês → AAAA-MM;
+    # qualquer outra janela → intervalo AAAA-MM-DD_AAAA-MM-DD (legível na fatura).
+    def export_filename(extension)
+      "ponto-relatorio-#{export_period_slug}.#{extension}"
+    end
+
+    def export_period_slug
+      if @period.preset == "month" && !@period.custom?
+        @period.first_date.strftime("%Y-%m")
+      elsif @period.first_date == @period.last_date
+        @period.first_date.iso8601
+      else
+        "#{@period.first_date.iso8601}_#{@period.last_date.iso8601}"
+      end
+    end
+
     # Período (Q53): preset + navegação por setas. A seta manda `nav=prev|next` sobre o
     # período corrente; o controller resolve o passo (o Period sabe o tamanho). Custom
     # carrega `from`/`to`. Bordas SEMPRE no fuso do user (Q23b) — passado ao Period.
