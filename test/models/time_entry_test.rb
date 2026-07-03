@@ -225,4 +225,107 @@ class TimeEntryTest < ActiveSupport::TestCase
     assert_not_nil raw
     assert_not_includes raw, "Segredo do timer"
   end
+
+  # --- Split (Q48): quebra um entry finalizado em dois no ponto de corte. ---
+
+  test "split_at no meio encurta A e cria B como cópia fiel (descrição/projeto/task/billable)" do
+    project = @user.projects.create!(name: "Split", rate_cents: 12000)
+    task = project.tasks.create!(name: "Design", user: @user)
+    started_at = Time.utc(2026, 7, 2, 9, 0, 0)
+    ended_at = Time.utc(2026, 7, 2, 11, 0, 0)
+    entry = @user.time_entries.create!(
+      project: project,
+      task: task,
+      description: "Trabalho longo",
+      billable: true,
+      started_at: started_at,
+      ended_at: ended_at
+    )
+    cut = Time.utc(2026, 7, 2, 10, 0, 0)
+
+    second = entry.split_at(cut)
+
+    entry.reload
+    assert_equal started_at, entry.started_at
+    assert_equal cut, entry.ended_at
+
+    assert_equal cut, second.started_at
+    assert_equal ended_at, second.ended_at
+    assert_equal "Trabalho longo", second.description
+    assert_equal project.id, second.project_id
+    assert_equal task.id, second.task_id
+    assert_equal true, second.billable
+    assert_equal @user.id, second.user_id
+  end
+
+  test "split re-resolve o snapshot de cada metade (B vem do project.effective_rate, não copia A)" do
+    client = @user.clients.create!(name: "Acme", currency: "USD", rate_cents: 10000)
+    project = @user.projects.create!(name: "Site", client: client)
+    entry = @user.time_entries.create!(
+      project: project,
+      started_at: Time.utc(2026, 7, 2, 9, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 11, 0, 0)
+    )
+    assert_equal 10000, entry.rate_cents
+
+    # Reajuste ENTRE o create de A e o split: A congelou 10000; B, como record novo,
+    # re-resolve do project (agora 25000). Prova que B NÃO copia rate_cents de A cru.
+    client.update!(rate_cents: 25000)
+
+    second = entry.split_at(Time.utc(2026, 7, 2, 10, 0, 0))
+
+    assert_equal 10000, entry.reload.rate_cents, "A permanece congelada (Q10)"
+    assert_equal 25000, second.rate_cents, "B re-resolve do project.effective_rate"
+    assert_equal "USD", second.currency
+  end
+
+  test "split preserva a duração total: A + B somam a duração original" do
+    project = @user.projects.create!(name: "Split")
+    started_at = Time.utc(2026, 7, 2, 9, 0, 0)
+    ended_at = Time.utc(2026, 7, 2, 11, 0, 0)
+    entry = @user.time_entries.create!(project: project, started_at: started_at, ended_at: ended_at)
+    original_duration = entry.duration_seconds
+
+    second = entry.split_at(Time.utc(2026, 7, 2, 9, 37, 13))
+
+    assert_equal original_duration, entry.reload.duration_seconds + second.duration_seconds
+  end
+
+  test "split fora do intervalo (bordas ou além) levanta erro e não cria nada" do
+    project = @user.projects.create!(name: "Split")
+    started_at = Time.utc(2026, 7, 2, 9, 0, 0)
+    ended_at = Time.utc(2026, 7, 2, 11, 0, 0)
+    entry = @user.time_entries.create!(project: project, started_at: started_at, ended_at: ended_at)
+
+    [ started_at, ended_at, started_at - 1.minute, ended_at + 1.minute ].each do |bad_cut|
+      assert_no_difference -> { TimeEntry.count } do
+        assert_raises(ArgumentError) { entry.split_at(bad_cut) }
+      end
+      # A intacta: o rollback preserva o ended_at original mesmo se o update rodou.
+      assert_equal ended_at, entry.reload.ended_at
+    end
+  end
+
+  test "split de entry RODANDO levanta erro (só finalizado divide)" do
+    running = @user.time_entries.create!(started_at: Time.utc(2026, 7, 2, 9, 0, 0))
+
+    assert_no_difference -> { TimeEntry.count } do
+      assert_raises(ArgumentError) { running.split_at(Time.utc(2026, 7, 2, 9, 30, 0)) }
+    end
+    assert_nil running.reload.ended_at
+  end
+
+  test "split cruza a meia-noite: cada metade cai no dia do seu started_at" do
+    project = @user.projects.create!(name: "Vira o dia")
+    entry = @user.time_entries.create!(
+      project: project,
+      started_at: Time.utc(2026, 7, 1, 23, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 1, 0, 0)
+    )
+
+    second = entry.split_at(Time.utc(2026, 7, 2, 0, 0, 0))
+
+    assert_equal Date.new(2026, 7, 1), entry.reload.started_at.utc.to_date
+    assert_equal Date.new(2026, 7, 2), second.started_at.utc.to_date
+  end
 end

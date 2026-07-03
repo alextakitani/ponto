@@ -1,0 +1,71 @@
+<%# Form de ENTRY MANUAL (Q46/Q5). Fica num <details> que expande inline no topo da %>
+<%# lista — não é tela separada. Três campos LIGADOS por Stimulus (início·fim·duração): %>
+<%# o controller `duration-fields` recalcula o terceiro client-side. O campo `duration` %>
+<%# NÃO vai pro servidor (name em branco) — só alimenta o cálculo do `ended_at`. %>
+<%= turbo_frame_tag "manual_entry_form" do %>
+  <details class="manual-entry" <%= "open" if time_entry.errors.any? %>>
+    <summary class="btn btn--quiet btn--sm">
+      <%= icon("plus") %>
+      Adicionar manualmente
+    </summary>
+
+    <%= form_with model: time_entry, url: time_entries_path,
+          data: { controller: "duration-fields" },
+          class: "manual-entry__form" do |form| %>
+      <% if time_entry.errors.any? %>
+        <div class="form-errors" role="alert">
+          <ul>
+            <% time_entry.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="manual-entry__grid">
+        <div class="form-field">
+          <%= form.label :description, "Descrição" %>
+          <%= form.text_field :description, placeholder: "No que você trabalhou?" %>
+        </div>
+
+        <div class="form-field">
+          <%= form.label :project_id, "Projeto" %>
+          <%= form.select :project_id, grouped_options_for_select(tracker_grouped_project_options, time_entry.project_id),
+                { include_blank: "(sem projeto)" } %>
+        </div>
+
+        <div class="form-field">
+          <%= form.label :started_at, "Início" %>
+          <%= form.datetime_local_field :started_at,
+                value: tracker_datetime_local_value(time_entry.started_at),
+                data: { duration_fields_target: "start" } %>
+        </div>
+
+        <div class="form-field">
+          <%= form.label :ended_at, "Fim" %>
+          <%= form.datetime_local_field :ended_at,
+                value: tracker_datetime_local_value(time_entry.ended_at),
+                data: { duration_fields_target: "end" } %>
+        </div>
+
+        <div class="form-field">
+          <%# Duração é auxiliar: aceita "2:30" ou "2h30" e calcula o fim. NÃO tem name %>
+          <%# → não é enviada ao servidor (o servidor recebe início+fim reais — Q5). %>
+          <label for="manual_duration">Duração</label>
+          <input id="manual_duration" type="text" inputmode="text"
+                 placeholder="2:30 ou 2h30"
+                 data-duration-fields-target="duration">
+        </div>
+
+        <label class="tracker-billable">
+          <%= form.check_box :billable %>
+          Faturável
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <%= form.submit "Adicionar", class: "btn btn--sm" %>
+      </div>
+    <% end %>
+  </details>
+<% end %>

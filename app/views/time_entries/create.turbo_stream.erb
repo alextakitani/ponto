@@ -1,0 +1,7 @@
+<%= turbo_stream.replace "tracker_entries" do %>
+  <%= render "home/tracker_entries", day_groups: @tracker_day_groups %>
+<% end %>
+
+<%= turbo_stream.replace "manual_entry_form" do %>
+  <%= render "time_entries/manual_form", time_entry: @manual_entry %>
+<% end %>

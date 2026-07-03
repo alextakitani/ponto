@@ -37,6 +37,31 @@
             Editar
           <% end %>
 
+          <% if time_entry.ended_at? %>
+            <%# Duplicar (Q47): re-dispara este entry num timer novo rodando AGORA. %>
+            <%= button_to time_entry_duplicate_path(time_entry), class: "btn btn--quiet",
+                  data: { turbo_frame: "timer_bar" } do %>
+              <%= icon("play") %>
+              Duplicar
+            <% end %>
+
+            <%# Dividir (Q48): quebra o entry em dois no ponto de corte (default = meio). %>
+            <%# TODO(ícone): trocar "circle-stop" por "scissors" (Lucide) quando eu baixar o SVG. %>
+            <details class="row-menu__split">
+              <summary class="btn btn--quiet">
+                <%= icon("circle-stop") %>
+                Dividir
+              </summary>
+              <%= form_with url: time_entry_split_path(time_entry), data: { turbo_frame: "tracker_entries" },
+                    class: "row-menu__split-form" do %>
+                <label for="split_cut_<%= time_entry.id %>" class="muted">Cortar em</label>
+                <input type="datetime-local" id="split_cut_<%= time_entry.id %>"
+                       name="split[cut]" value="<%= tracker_split_default(time_entry) %>">
+                <%= submit_tag "Dividir", class: "btn btn--sm" %>
+              <% end %>
+            </details>
+          <% end %>
+
           <%= button_to time_entry_path(time_entry), method: :delete, class: "btn btn--danger",
                 data: { turbo_confirm: "Excluir esta entrada?" } do %>
             <%= icon("trash-2") %>

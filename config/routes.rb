@@ -56,7 +56,14 @@ Rails.application.routes.draw do
   # Tracker (Fatia 3.1): o timer atual é um resource SINGULAR (Q13/Q14); as
   # entradas de tempo são CRUD normal, sempre escopadas ao Current.user.
   resource :timer, only: %i[show create destroy]
-  resources :time_entries, only: %i[index show edit create update destroy]
+  # Split (Q48): dividir um entry em dois é ação SEM verbo padrão → sub-resource
+  # singular aninhado (STYLE.md), não custom action: POST /time_entries/:id/split.
+  resources :time_entries, only: %i[index show edit create update destroy] do
+    resource :split, only: :create, module: :time_entries
+    # Duplicate (Q47/Q13): re-disparar copiando os campos pra um timer novo. Também
+    # é ação sem verbo padrão → sub-resource singular: POST /time_entries/:id/duplicate.
+    resource :duplicate, only: :create, module: :time_entries
+  end
 
   # Painel de admin (Q68) — PÁGINA ÚNICA em /admin (dashboard#show) com dois
   # resources REST por baixo. Regra do projeto (STYLE.md): ação sem verbo padrão
