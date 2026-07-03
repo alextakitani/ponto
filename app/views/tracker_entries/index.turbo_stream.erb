@@ -1,0 +1,32 @@
+<% groups_to_append = @tracker_day_groups %>
+
+<% if @last_rendered_date && groups_to_append.first&.fetch(:date) == @last_rendered_date %>
+  <% continuing_group = groups_to_append.first %>
+  <% groups_to_append = groups_to_append.drop(1) %>
+
+  <%= turbo_stream.append "day-#{continuing_group[:date]}-entries" do %>
+    <% continuing_group[:entries].each do |time_entry| %>
+      <%= render "time_entries/time_entry", time_entry: time_entry %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<% if groups_to_append.any? %>
+  <%= turbo_stream.append "tracker_entries" do %>
+    <% groups_to_append.each do |day_group| %>
+      <%= render "home/day_group", day_group: day_group %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.replace "tracker_entries_load_more" do %>
+  <div id="tracker_entries_load_more" class="tracker-load-more">
+    <% if @tracker_has_more %>
+      <%= link_to tracker_entries_path(tracker_next_page_params),
+            class: "btn btn--quiet",
+            data: { turbo_stream: true } do %>
+        Carregar mais
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

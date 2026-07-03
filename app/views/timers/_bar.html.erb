@@ -28,7 +28,16 @@
 <% else %>
   <% form_time_entry ||= TimeEntry.new %>
 
+  <% if latest_time_entry %>
+    <%= form_with url: latest_time_entry_restart_path,
+          html: { id: "latest_time_entry_restart_form", class: "timer-bar__external-form" } do %>
+      <%= hidden_field_tag :page, params[:page] if params[:page].present? %>
+    <% end %>
+  <% end %>
+
   <%= form_with url: timer_path, scope: :timer, class: "timer-bar timer-bar--idle" do |form| %>
+    <%= hidden_field_tag :page, params[:page] if params[:page].present? %>
+
     <div class="timer-bar__fields">
       <div class="timer-bar__input">
         <%= form.label :description, "Descrição", class: "timer-bar__label" %>
@@ -44,6 +53,13 @@
     </div>
 
     <div class="timer-bar__actions">
+      <% if latest_time_entry %>
+        <button type="submit" form="latest_time_entry_restart_form" class="btn btn--quiet">
+          <%= icon("rotate-ccw") %>
+          Retomar última
+        </button>
+      <% end %>
+
       <%= form.button type: :submit, class: "btn" do %>
         <%= icon("play") %>
         Iniciar

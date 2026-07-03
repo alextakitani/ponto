@@ -50,6 +50,10 @@ class TimeEntry < ApplicationRecord
     end
   end
 
+  def attributes_for_restart
+    slice(:project_id, :task_id, :description, :billable)
+  end
+
   # Quebra este entry FINALIZADO em dois no `cut` (Q48). A metade A (self) fica
   # started_at..cut; a metade B nasce cópia FIEL (descrição/projeto/task/billable)
   # cobrindo cut..ended_at original. Cada metade re-resolve/congela SEU snapshot: B é

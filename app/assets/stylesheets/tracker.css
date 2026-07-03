@@ -80,6 +80,10 @@
   color: var(--color-danger);
 }
 
+.timer-bar__external-form {
+  display: none;
+}
+
 .tracker-list {
   display: flex;
   flex-direction: column;

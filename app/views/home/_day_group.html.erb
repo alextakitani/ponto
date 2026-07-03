@@ -1,10 +1,10 @@
-<section class="tracker-day" data-day="<%= day_group[:date] %>">
+<section id="day-<%= day_group[:date] %>" class="tracker-day" data-day="<%= day_group[:date] %>">
   <header class="tracker-day__header">
     <h2><%= tracker_day_label(day_group[:date]) %></h2>
     <span class="tracker-day__total tabular-nums"><%= tracker_duration(day_group[:total_seconds]) %></span>
   </header>
 
-  <div class="tracker-day__entries">
+  <div id="day-<%= day_group[:date] %>-entries" class="tracker-day__entries">
     <% day_group[:entries].each do |time_entry| %>
       <%= render "time_entries/time_entry", time_entry: time_entry %>
     <% end %>

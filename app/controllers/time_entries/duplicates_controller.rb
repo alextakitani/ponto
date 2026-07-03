@@ -16,16 +16,18 @@ module TimeEntries
       if current_timer
         @time_entry = current_timer
         @form_time_entry = nil
+        @latest_restart_entry = latest_restart_entry
         render_timer_conflict
       else
-        @time_entry = authorized_scope(TimeEntry.all).new(duplicated_attributes.merge(started_at: Time.current))
+        @time_entry = authorized_scope(TimeEntry.all).new(@source.attributes_for_restart.merge(started_at: Time.current))
 
         if @time_entry.save
           load_tracker_day_groups
           @form_time_entry = nil
+          @latest_restart_entry = latest_restart_entry
           respond_to do |format|
             format.turbo_stream { render "timers/update", status: :created }
-            format.html { redirect_to home_path, notice: "Timer iniciado." }
+            format.html { redirect_to home_path(page: tracker_page_param), notice: "Timer iniciado." }
             format.json { render "time_entries/show", status: :created }
           end
         else
@@ -33,9 +35,10 @@ module TimeEntries
           invalid_entry = @time_entry
           @time_entry = nil
           load_tracker_day_groups
+          @latest_restart_entry = latest_restart_entry
           respond_to do |format|
             format.turbo_stream { render "timers/update", status: :unprocessable_entity }
-            format.html { redirect_to home_path, alert: invalid_entry.errors.full_messages.to_sentence }
+            format.html { redirect_to home_path(page: tracker_page_param), alert: invalid_entry.errors.full_messages.to_sentence }
             format.json { render json: { errors: invalid_entry.errors.full_messages }, status: :unprocessable_entity }
           end
         end
@@ -43,6 +46,7 @@ module TimeEntries
     rescue ActiveRecord::RecordNotUnique
       @time_entry = current_timer
       @form_time_entry = nil
+      @latest_restart_entry = latest_restart_entry
       render_timer_conflict
     end
 
@@ -52,19 +56,20 @@ module TimeEntries
         authorize! @source, to: :show?
       end
 
-      def duplicated_attributes
-        @source.slice(:project_id, :task_id, :description, :billable)
-      end
-
       def current_timer
         authorized_scope(TimeEntry.all).find_by(ended_at: nil)
       end
 
+      def latest_restart_entry
+        authorized_scope(TimeEntry.all).where.not(ended_at: nil).order(ended_at: :desc, id: :desc).first
+      end
+
       def render_timer_conflict
+        flash.now[:alert] = "Timer já está rodando."
         load_tracker_day_groups
         respond_to do |format|
           format.turbo_stream { render "timers/update", status: :conflict }
-          format.html { redirect_to home_path, alert: "Timer já está rodando." }
+          format.html { redirect_to home_path(page: tracker_page_param), alert: "Timer já está rodando." }
           format.json { render json: { error: "timer já está rodando" }, status: :conflict }
         end
       end
