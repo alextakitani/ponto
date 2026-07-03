@@ -266,4 +266,34 @@ class Report::ExportTest < ActiveSupport::TestCase
     assert_equal 1, export.rows_matrix.size
     assert_not export.to_csv.include?("Alheio")
   end
+
+  # --- Gaps do review (5.2): data no fuso cruzando meia-noite + CSV==matriz ---
+
+  test "Data início/fim sai no FUSO DO USER, não em UTC (cruzando a meia-noite)" do
+    # 01:00 UTC de 11/07 = 22:00 de 10/07 em São Paulo (UTC-3). A coluna Data (7 e 9)
+    # tem que dar 10/07 (dia LOCAL), não 11/07 (UTC). Se o export usasse .utc.to_date,
+    # a fatura mostraria o dia errado.
+    entry(
+      started: Time.utc(2026, 7, 11, 1, 0),  # 10/07 22:00 SP
+      ended:   Time.utc(2026, 7, 11, 2, 0)   # 10/07 23:00 SP
+    )
+
+    row = export_for.rows_matrix.first
+    assert_equal Date.new(2026, 7, 10), row[6], "Data início deve ser o dia LOCAL (10/07), não UTC"
+    assert_equal Date.new(2026, 7, 10), row[8], "Data fim deve ser o dia LOCAL (10/07), não UTC"
+  end
+
+  test "CSV e xlsx saem da MESMA matriz: a coluna Valor bate célula-a-célula" do
+    client = @user.clients.create!(name: "ACME", rate: 100, currency: "BRL")
+    project = @user.projects.create!(name: "Site", client: client)
+    entry(started: Time.utc(2026, 7, 10, 12, 0), ended: Time.utc(2026, 7, 10, 14, 0), project: project) # 2h × 100
+
+    export = export_for
+    matrix = export.rows_matrix
+    parsed = CSV.parse(export.to_csv)
+
+    # linha 1 do CSV (após o header) == matriz[0], comparando o campo Valor (col 14, índice 13)
+    assert_equal matrix[0][13].to_s, parsed[1][13], "coluna Valor do CSV deve bater com a matriz"
+    assert_equal "200.0", parsed[1][13], "2h × 100 = 200,00 (snapshot)"
+  end
 end
