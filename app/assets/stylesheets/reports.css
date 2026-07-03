@@ -1,0 +1,297 @@
+/*
+ * Tela de Relatórios (Fatia 5.1) — Summary/Detailed. Só tokens; denso; claro/escuro
+ * automático. O entregável principal: números legíveis, tabular-nums nas colunas de
+ * tempo/dinheiro, gráficos SVG server-rendered theme-aware (Q71).
+ */
+
+/* --- Barra de período (Q53) ------------------------------------------------- */
+.report-period {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.report-period__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.report-period__label {
+  min-width: 12rem;
+  text-align: center;
+  font-weight: var(--weight-medium);
+}
+
+.report-period__presets {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.report-preset {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--color-text-subtle);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+}
+
+.report-preset:hover {
+  color: var(--color-text);
+  background-color: var(--color-surface-sunken);
+}
+
+.report-preset--active {
+  color: var(--color-text);
+  border-color: var(--color-border);
+  background-color: var(--color-surface-sunken);
+}
+
+.report-period__custom {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.report-period__custom input {
+  margin: 0;
+  width: auto;
+}
+
+/* --- Filtros finos (Q54) ---------------------------------------------------- */
+.report-filters {
+  margin-bottom: var(--space-4);
+}
+
+.report-filters__summary {
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  display: inline-block;
+}
+
+.report-filters__body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--space-4);
+  padding: var(--space-4);
+  margin-top: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background-color: var(--color-surface-raised);
+}
+
+.report-filters__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+}
+
+.report-filters__field select,
+.report-filters__field input {
+  margin: 0;
+}
+
+.report-filters__billable {
+  border: none;
+  padding: 0;
+}
+
+.report-filters__billable label {
+  display: block;
+  font-weight: var(--weight-normal);
+}
+
+.report-filters__actions {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+
+/* --- Métricas do topo (Q21) ------------------------------------------------- */
+.report-metrics {
+  display: flex;
+  gap: var(--space-6);
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-4);
+}
+
+.report-metric {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.report-metric__label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.report-metric__value {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+}
+
+/* --- Abas Summary/Detailed -------------------------------------------------- */
+.report-tabs {
+  display: flex;
+  gap: var(--space-1);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-4);
+}
+
+.report-tab {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--color-text-subtle);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.report-tab:hover {
+  color: var(--color-text);
+}
+
+.report-tab--active {
+  color: var(--color-text);
+  border-bottom-color: var(--color-accent);
+  font-weight: var(--weight-medium);
+}
+
+/* --- Gráficos (Q71) --------------------------------------------------------- */
+.report-charts {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  padding: var(--space-4) 0 var(--space-5);
+  flex-wrap: wrap;
+}
+
+.report-donut {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin: 0;
+}
+
+.report-donut__svg {
+  width: 7rem;
+  height: 7rem;
+  flex: none;
+  transform: rotate(-90deg);
+}
+
+.report-donut__track {
+  fill: none;
+  stroke: var(--color-border);
+  stroke-width: 4;
+}
+
+.report-donut__seg {
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: butt;
+}
+
+.report-donut__legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+}
+
+.report-donut__legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.report-donut__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex: none;
+}
+
+.report-donut__legend-label {
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.report-bars {
+  flex: 1;
+  min-width: 12rem;
+  margin: 0;
+}
+
+.report-bars__track {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 6rem;
+}
+
+.report-bars__col {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.report-bars__bar {
+  width: 100%;
+  min-height: 1px;
+  background-color: var(--color-accent);
+  border-radius: 2px 2px 0 0;
+  opacity: 0.85;
+}
+
+/* --- Tabelas Summary/Detailed ----------------------------------------------- */
+.report-summary__num,
+.report-detailed__num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.report-group__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.report-group--level2 .report-group__title {
+  padding-left: var(--space-5);
+  font-weight: var(--weight-normal);
+}
+
+.report-group--level2 .report-group__name {
+  color: var(--color-text-subtle);
+}
+
+.report-summary__total td {
+  border-top: 2px solid var(--color-border-strong);
+  font-weight: var(--weight-semibold);
+}
+
+.report-summary__hint {
+  padding: var(--space-4) 0;
+}
+
+.report-detailed .project-dot,
+.report-detailed__num {
+  vertical-align: middle;
+}

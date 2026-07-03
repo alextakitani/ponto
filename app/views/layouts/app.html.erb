@@ -16,7 +16,7 @@
 
       <nav class="shell-nav" aria-label="Navegação principal">
         <%= render "layouts/shell/nav_item", label: "Tracker",    icon_name: "timer",        active: true,  current: current_page?(home_path), href: home_path %>
-        <%= render "layouts/shell/nav_item", label: "Relatórios", icon_name: "chart-column", active: false, current: false %>
+        <%= render "layouts/shell/nav_item", label: "Relatórios", icon_name: "chart-column", active: true,  current: current_page?(reports_path), href: reports_path %>
         <%= render "layouts/shell/nav_item", label: "Projetos",   icon_name: "folder",       active: true,  current: current_page?(projects_path), href: projects_path %>
         <%= render "layouts/shell/nav_item", label: "Clientes",   icon_name: "users",        active: true,  current: current_page?(clients_path), href: clients_path %>
         <%= render "layouts/shell/nav_item", label: "Tags",       icon_name: "tags",         active: false, current: false %>
@@ -56,7 +56,7 @@
         Tags · Preferências · Admin(se admin) · Sair. Os sem tela = "em breve". %>
     <nav class="shell-tabs" aria-label="Navegação mobile">
       <%= render "layouts/shell/tab_item", label: "Tracker",    icon_name: "timer",        active: true,  current: current_page?(home_path), href: home_path %>
-      <%= render "layouts/shell/tab_item", label: "Relatórios", icon_name: "chart-column", active: false, current: false %>
+      <%= render "layouts/shell/tab_item", label: "Relatórios", icon_name: "chart-column", active: true,  current: current_page?(reports_path), href: reports_path %>
       <%= render "layouts/shell/tab_item", label: "Projetos",   icon_name: "folder",       active: true,  current: current_page?(projects_path), href: projects_path %>
 
       <details class="shell-tabs__more">

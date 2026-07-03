@@ -1,0 +1,53 @@
+<%# Detailed (Q19/E): uma linha por entry, started_at DESC. As 14 "colunas" da Q19
+    em forma de linha densa (a matriz completa vai pro export na 5.2). %>
+<% if report.rows.any? %>
+  <table class="data-table report-detailed">
+    <thead>
+      <tr>
+        <th>Descrição</th>
+        <th>Projeto</th>
+        <th>Cliente</th>
+        <th>Tarefa</th>
+        <th class="report-detailed__num">Início</th>
+        <th class="report-detailed__num">Fim</th>
+        <th class="report-detailed__num">Faturável</th>
+        <th class="report-detailed__num">Duração</th>
+        <th class="report-detailed__num">Valor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% report.rows.each do |row| %>
+        <tr data-entry-id="<%= row.entry.id %>">
+          <td><%= row.description.presence || content_tag(:span, "Sem descrição", class: "muted") %></td>
+          <td>
+            <% if row.project %>
+              <span class="project-dot" style="background-color: <%= row.project.color %>" aria-hidden="true"></span>
+              <%= row.project.name %>
+            <% else %>
+              <span class="muted">(sem projeto)</span>
+            <% end %>
+          </td>
+          <td><%= row.client&.name || content_tag(:span, "(sem cliente)", class: "muted") %></td>
+          <td><%= row.task&.name || content_tag(:span, "—", class: "muted") %></td>
+          <td class="report-detailed__num tabular-nums"><%= report_datetime(row.started_at) %></td>
+          <td class="report-detailed__num tabular-nums"><%= report_datetime(row.ended_at) %></td>
+          <td class="report-detailed__num"><%= row.billable? ? "Sim" : "Não" %></td>
+          <td class="report-detailed__num tabular-nums"><%= report_duration(row.duration_seconds) %></td>
+          <td class="report-detailed__num tabular-nums">
+            <% if row.amount_cents.positive? %>
+              <%= humanized_money_with_symbol(Money.new(row.amount_cents, row.currency)) %>
+            <% else %>
+              <span class="muted">—</span>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <div class="empty-state">
+    <%= icon("chart-column", size: 40) %>
+    <h2>Nada neste período</h2>
+    <p class="muted">Ajuste o período ou os filtros para ver suas entradas.</p>
+  </div>
+<% end %>

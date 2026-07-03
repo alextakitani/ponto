@@ -1,0 +1,28 @@
+<%# Donut por projeto (Q71): SVG server-rendered, inline, theme-aware pelos tokens.
+    Mesma técnica do donut da landing (círculo r=15.9155 → circunferência ~100, cada
+    fatia é um stroke-dasharray). Zero JS. Cores = a cor curada de cada projeto (Q52). %>
+<% slices = report_donut_slices(report) %>
+<figure class="report-donut" aria-label="Distribuição do tempo por projeto">
+  <svg class="report-donut__svg" viewBox="0 0 42 42" role="img">
+    <circle class="report-donut__track" cx="21" cy="21" r="15.9155"></circle>
+    <% slices.each do |slice| %>
+      <% dash, gap, offset = report_donut_segment(slice.fraction, slice.cumulative) %>
+      <circle class="report-donut__seg" cx="21" cy="21" r="15.9155"
+              stroke="<%= slice.color %>"
+              stroke-dasharray="<%= dash %> <%= gap %>"
+              stroke-dashoffset="<%= offset %>">
+        <title><%= slice.label %> — <%= number_to_percentage(slice.fraction * 100, precision: 0) %></title>
+      </circle>
+    <% end %>
+  </svg>
+
+  <figcaption class="report-donut__legend">
+    <% slices.first(6).each do |slice| %>
+      <span class="report-donut__legend-item">
+        <span class="report-donut__swatch" style="background-color: <%= slice.color %>" aria-hidden="true"></span>
+        <span class="report-donut__legend-label"><%= slice.label %></span>
+        <span class="muted tabular-nums"><%= number_to_percentage(slice.fraction * 100, precision: 0) %></span>
+      </span>
+    <% end %>
+  </figcaption>
+</figure>

@@ -1,0 +1,17 @@
+<%# Uma linha de grupo do Summary (Q21). Nível 1 mostra título + contador + duração +
+    valor por moeda; se houver subgroups (nível 2), rendem-se logo abaixo, indentados.
+    Árvore "expansível" por linha (Turbo Frame por linha) fica pra enriquecimento — no
+    1º corte a árvore vem ABERTA (subgrupos sempre visíveis), que é o essencial pro
+    entregável (o export 5.2 já é plano). Ver relato: 1 vs 2 níveis. %>
+<tr class="report-group report-group--level<%= level %>" data-group="<%= group.title %>">
+  <td class="report-group__title">
+    <span class="report-group__name"><%= group.title %></span>
+    <span class="report-group__count muted">(<%= group.count %>)</span>
+  </td>
+  <td class="report-summary__num tabular-nums"><%= report_duration(group.duration_seconds) %></td>
+  <td class="report-summary__num tabular-nums"><%= report_amounts(group.amounts) %></td>
+</tr>
+
+<% group.subgroups.each do |subgroup| %>
+  <%= render "reports/group_row", group: subgroup, level: level + 1 %>
+<% end %>

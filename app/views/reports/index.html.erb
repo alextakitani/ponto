@@ -1,0 +1,46 @@
+<% content_for :title, "Relatórios" %>
+
+<header class="page-header">
+  <div>
+    <h1>Relatórios</h1>
+    <p class="muted">O resumo consolidado do seu tempo. Entradas em andamento ficam de fora.</p>
+  </div>
+</header>
+
+<%# Barra de período: setas ‹ › + presets + custom (Q53). GET pra que tudo viaje na URL. %>
+<%= render "reports/period_bar", period: @period, view: @view %>
+
+<%# Filtros finos (Q54): dimensões multi-select + billable + description. %>
+<%= render "reports/filters", report: @report, filter_options: @filter_options, view: @view %>
+
+<%# Métricas do topo (Q21): Total · Faturável · Amount por moeda (Q43). %>
+<section class="report-metrics" aria-label="Totais do período">
+  <div class="report-metric">
+    <span class="report-metric__label muted">Total</span>
+    <span class="report-metric__value tabular-nums" data-total="duration"><%= report_duration(@report.totals.duration_seconds) %></span>
+  </div>
+  <div class="report-metric">
+    <span class="report-metric__label muted">Faturável</span>
+    <span class="report-metric__value tabular-nums" data-total="billable"><%= report_duration(@report.totals.billable_seconds) %></span>
+  </div>
+  <div class="report-metric">
+    <span class="report-metric__label muted">Valor</span>
+    <span class="report-metric__value tabular-nums" data-total="amount"><%= report_amounts(@report.totals.amounts) %></span>
+  </div>
+</section>
+
+<%# Abas Summary/Detailed (Q55): trocam via param `view`, preservando o resto da URL. %>
+<nav class="report-tabs" aria-label="Visões do relatório">
+  <%= link_to "Resumo", report_url(view: "summary"),
+        class: class_names("report-tab", "report-tab--active": @view == "summary"),
+        data: { report_tab: "summary" } %>
+  <%= link_to "Detalhado", report_url(view: "detailed"),
+        class: class_names("report-tab", "report-tab--active": @view == "detailed"),
+        data: { report_tab: "detailed" } %>
+</nav>
+
+<% if @view == "detailed" %>
+  <%= render "reports/detailed", report: @report %>
+<% else %>
+  <%= render "reports/summary", report: @report, group_by: @report.group_by %>
+<% end %>

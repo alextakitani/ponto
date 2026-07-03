@@ -1,0 +1,76 @@
+<%# Filtros finos (Q54): dimensões multi-select (só o que existe no período) + billable
+    + description contains + dimensão de agrupamento (Summary). GET → viaja na URL.
+    OR dentro da dimensão (multi-select), AND entre. TODO(Tags): quando a fase Tags
+    existir, adicionar aqui o multi-select de Tag (filtro Report::Filters#tag_ids). %>
+<%= form_with url: reports_path, method: :get, class: "report-filters" do |form| %>
+  <%= form.hidden_field :view, value: view %>
+
+  <details class="report-filters__group">
+    <summary class="report-filters__summary">Filtros</summary>
+    <div class="report-filters__body">
+      <label class="report-filters__field">
+        <span class="muted">Cliente</span>
+        <%= form.select :client_ids,
+              options_for_select(filter_options.clients.map { |o| [ o.label, o.id ] }, report.filters.client_ids),
+              {}, multiple: true, size: 4 %>
+      </label>
+
+      <label class="report-filters__field">
+        <span class="muted">Projeto</span>
+        <%= form.select :project_ids,
+              options_for_select(filter_options.projects.map { |o| [ o.label, o.id ] }, report.filters.project_ids),
+              {}, multiple: true, size: 4 %>
+      </label>
+
+      <label class="report-filters__field">
+        <span class="muted">Tarefa</span>
+        <%= form.select :task_ids,
+              options_for_select(filter_options.tasks.map { |o| [ o.label, o.id ] }, report.filters.task_ids),
+              {}, multiple: true, size: 4 %>
+      </label>
+
+      <fieldset class="report-filters__field report-filters__billable">
+        <legend class="muted">Faturável</legend>
+        <% billable_value = report.filters.billable %>
+        <label><%= form.radio_button :billable, "", checked: billable_value.nil? %> Todos</label>
+        <label><%= form.radio_button :billable, "true", checked: billable_value == true %> Só faturável</label>
+        <label><%= form.radio_button :billable, "false", checked: billable_value == false %> Só não</label>
+      </fieldset>
+
+      <label class="report-filters__field">
+        <span class="muted">Descrição contém</span>
+        <%= form.text_field :description, value: report.filters.description, placeholder: "buscar…" %>
+      </label>
+
+      <label class="report-filters__field">
+        <span class="muted">Agrupar por</span>
+        <%= form.select :group_by,
+              options_for_select(
+                [ [ "—", "" ], [ "Projeto", "project" ], [ "Cliente", "client" ], [ "Tarefa", "task" ], [ "Descrição", "description" ] ],
+                report.group_by&.first
+              ) %>
+      </label>
+
+      <label class="report-filters__field">
+        <span class="muted">Depois por</span>
+        <%= form.select :group_by_2,
+              options_for_select(
+                [ [ "—", "" ], [ "Projeto", "project" ], [ "Cliente", "client" ], [ "Tarefa", "task" ], [ "Descrição", "description" ] ],
+                report.group_by&.second
+              ) %>
+      </label>
+
+      <details class="report-filters__field report-filters__rounding">
+        <summary class="muted">Arredondamento</summary>
+        <label><%= form.check_box :rounding, { checked: report.rounding.on? }, "on", "off" %> Arredondar por entrada</label>
+        <%= form.select :rounding_block, options_for_select([ [ "5 min", 5 ], [ "15 min", 15 ], [ "30 min", 30 ] ], report.rounding.block) %>
+        <%= form.select :rounding_direction, options_for_select([ [ "Mais próximo", "nearest" ], [ "Pra cima", "up" ], [ "Pra baixo", "down" ] ], report.rounding.direction) %>
+      </details>
+
+      <div class="report-filters__actions">
+        <%= form.submit "Aplicar", class: "btn btn--sm" %>
+        <%= link_to "Limpar", reports_path(view: view), class: "btn btn--quiet btn--sm" %>
+      </div>
+    </div>
+  </details>
+<% end %>
