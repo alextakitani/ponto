@@ -124,11 +124,32 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+/* Coluna esquerda da linha: sumário em cima, tags embaixo. min-width:0 deixa
+   descrições longas truncarem em vez de estourar o grid da .tracker-entry. */
+.tracker-entry__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
 .tracker-entry__summary {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
+}
+
+/* Chips de tag da linha. gap próprio → o .tag-badge NÃO usa a margin-left dele aqui
+   (senão duplica o espaço); zeramos a margin no contexto flex. */
+.tracker-entry__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.tracker-entry__tags .tag-badge {
+  margin-left: 0;
 }
 
 .tracker-entry__description {

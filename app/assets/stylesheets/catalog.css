@@ -262,3 +262,98 @@
 .preferences-empty {
   padding: var(--space-2) 0;
 }
+
+/* --- Seletor de tags inline (Q8/Q51) ---------------------------------------- */
+/*
+ * Usado no form de entry (inline edit e entry manual). O painel é um <details>
+ * flutuante como o .row-menu: summary "Tags" vira botão, o painel abre ancorado e
+ * elevado. Zero-JS pra abrir/fechar (o controller `menu` só faz light-dismiss).
+ */
+.tags-field {
+  position: relative;
+}
+
+.tags-field__details > summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.tags-field__details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.tags-field__panel {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-1);
+  padding: var(--space-3);
+  min-width: 15rem;
+  max-width: min(22rem, calc(100vw - 2 * var(--space-4)));
+  background-color: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Chips das tags já aplicadas — gap próprio, sem a margin-left do .tag-badge. */
+.tags-field__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.tags-field__chips:empty {
+  display: none;
+}
+
+.tags-field__chips .tag-badge {
+  margin-left: 0;
+}
+
+/* Tags disponíveis como checkboxes empilhados. */
+.tags-field__options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+.tags-field__option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-normal);
+}
+
+.tags-field__option input {
+  width: auto;
+}
+
+/* Criar tag inline: label + linha [input | Adicionar]. */
+.tags-field__new {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+}
+
+.tags-field__new-row {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.tags-field__new-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.tags-field__new-row .btn {
+  flex: none;
+}
