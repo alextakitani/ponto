@@ -23,7 +23,7 @@
       </nav>
 
       <div class="shell-sidebar__footer">
-        <%= render "layouts/shell/nav_item", label: "Preferências", icon_name: "settings", active: false, current: false %>
+        <%= render "layouts/shell/nav_item", label: "Preferências", icon_name: "settings", active: true, current: current_page?(preferences_path), href: preferences_path %>
         <% if current_user.admin? %>
           <%= link_to admin_root_path, class: "shell-nav__item" do %>
             <%= icon("shield") %>
@@ -73,10 +73,10 @@
             <%= icon("tags") %>
             Tags
           <% end %>
-          <span class="shell-nav__item shell-nav__item--disabled" aria-disabled="true">
+          <%= link_to preferences_path, class: "shell-nav__item" do %>
             <%= icon("settings") %>
-            Preferências <span class="shell-badge">em breve</span>
-          </span>
+            Preferências
+          <% end %>
           <% if current_user.admin? %>
             <%= link_to admin_root_path, class: "shell-nav__item" do %>
               <%= icon("shield") %>

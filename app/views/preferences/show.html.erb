@@ -1,0 +1,133 @@
+<% content_for :title, "Preferências" %>
+
+<header class="page-header">
+  <div>
+    <h1>Preferências</h1>
+    <p class="muted">Ajustes da sua conta, tokens para automação e controles de dados.</p>
+  </div>
+</header>
+
+<div class="preferences-layout">
+  <section class="preferences-section" aria-labelledby="profile-heading">
+    <div class="preferences-section__header">
+      <h2 id="profile-heading">Perfil</h2>
+      <p class="muted">Seu nome aparece na interface. O e-mail é usado para login e não é editável por aqui.</p>
+    </div>
+
+    <%= form_with model: @user, url: preferences_path, method: :patch, class: "form-stack" do |form| %>
+      <% if @profile_errors.any? %>
+        <div class="form-errors">
+          <ul>
+            <% @profile_errors.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="form-field">
+        <%= form.label :name, "Nome" %>
+        <%= form.text_field :name, autocomplete: "name" %>
+      </div>
+
+      <div class="form-field">
+        <label>E-mail</label>
+        <input type="email" value="<%= @user.email %>" disabled>
+      </div>
+
+      <div class="form-field">
+        <%= form.label :time_zone, "Fuso horário" %>
+        <%= form.select :time_zone, @time_zone_options %>
+        <p class="form-hint">Usado no tracker e nos relatórios.</p>
+      </div>
+
+      <div class="form-actions">
+        <%= form.submit "Salvar perfil" %>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="preferences-section" aria-labelledby="tokens-heading">
+    <div class="preferences-section__header">
+      <h2 id="tokens-heading">Extensão & CLI</h2>
+      <p class="muted">Tokens autorizam a extensão Chrome e o futuro CLI ponto. Guarde o valor ao criar; depois ele não será exibido novamente.</p>
+    </div>
+
+    <% if flash[:created_access_token].present? %>
+      <div class="token-once" role="status">
+        <strong>Token criado. Copie agora:</strong>
+        <code><%= flash[:created_access_token] %></code>
+      </div>
+    <% end %>
+
+    <%= form_with url: preferences_access_tokens_path, scope: :access_token, class: "form-stack token-form" do |form| %>
+      <% if @access_token_errors.any? %>
+        <div class="form-errors">
+          <ul>
+            <% @access_token_errors.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="form-row">
+        <div class="form-field">
+          <%= form.label :label, "Rótulo" %>
+          <%= form.text_field :label, placeholder: "Extensão do notebook" %>
+        </div>
+        <div class="form-field">
+          <%= form.label :permission, "Permissão" %>
+          <%= form.select :permission, [["read", "read"], ["write", "write"]] %>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <%= form.submit "Criar token" %>
+      </div>
+    <% end %>
+
+    <% if @access_tokens.any? %>
+      <table class="data-table token-table">
+        <thead>
+          <tr>
+            <th>Rótulo</th>
+            <th>Permissão</th>
+            <th>Último uso</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @access_tokens.each do |access_token| %>
+            <tr>
+              <td><%= access_token.label.presence || "Sem rótulo" %></td>
+              <td><%= access_token.permission %></td>
+              <td><%= token_last_used(access_token) %></td>
+              <td class="data-table__actions">
+                <%= button_to access_token_path(access_token), method: :delete,
+                      class: "btn btn--quiet btn--sm",
+                      form: { data: { turbo_confirm: "Revogar este token? Essa ação não pode ser desfeita." } } do %>
+                  Revogar
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <div class="empty-state preferences-empty">
+        <p>Nenhum token criado ainda.</p>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="preferences-section" aria-labelledby="data-heading">
+    <div class="preferences-section__header">
+      <h2 id="data-heading">Meus dados</h2>
+      <p class="muted">Exportação de dados da conta entrará junto com o importador.</p>
+    </div>
+
+    <%# TODO(Q26/importador): implementar export real dos dados do usuário. %>
+    <button type="button" class="btn btn--quiet" disabled>Exportar meus dados (em breve)</button>
+  </section>
+</div>
