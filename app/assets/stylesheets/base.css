@@ -23,6 +23,10 @@ body {
   line-height: var(--leading);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* InterVariable é fonte variável (eixo opsz): deixa o navegador escolher o master
+     óptico certo por tamanho, e liga o kerning explícito. Herdado por todo o app. */
+  font-optical-sizing: auto;
+  font-kerning: normal;
 }
 
 h1,
