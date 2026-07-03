@@ -2,15 +2,20 @@ class AccessTokensController < ApplicationController
   layout "app"
 
   def create
-    @access_token = Current.user.access_tokens.new(access_token_params)
+    attributes = access_token_params
+    # ⚠️ permission é enum: atribuir valor fora do range LEVANTA ArgumentError
+    # (500) antes do save. Whitelist manual → renderiza 422 pra request forjado.
+    unless AccessToken.permissions.key?(attributes[:permission])
+      return render_create_error([ "Permissão inválida." ])
+    end
+
+    @access_token = Current.user.access_tokens.new(attributes)
 
     if @access_token.save
       flash[:created_access_token] = @access_token.token
       redirect_to preferences_path, notice: "Token criado."
     else
-      set_preferences
-      @access_token_errors = @access_token.errors.full_messages
-      render "preferences/show", status: :unprocessable_entity
+      render_create_error(@access_token.errors.full_messages)
     end
   end
 
@@ -33,5 +38,11 @@ class AccessTokensController < ApplicationController
 
     def access_token_params
       params.require(:access_token).permit(:label, :permission)
+    end
+
+    def render_create_error(messages)
+      set_preferences
+      @access_token_errors = messages
+      render "preferences/show", status: :unprocessable_entity
     end
 end
