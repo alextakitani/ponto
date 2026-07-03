@@ -30,6 +30,12 @@ Rails.application.routes.draw do
   # o logado pra cá.
   get "home" => "home#show", as: :home
 
+  # Relatórios (Fatia 5.1) — o entregável principal. PÁGINA ÚNICA com abas
+  # Summary/Detailed via param `view`; período/filtros/group_by/rounding viajam na
+  # URL (pra 5.2 herdar no export e pro compartilhamento de link). Só :index (é uma
+  # consulta sem estado no servidor — o PORO Report monta tudo dos params).
+  resources :reports, only: :index
+
   # Clientes (Fatia 2.2) — 1ª tabela de domínio. Arquivar/desarquivar seguem a
   # disciplina REST do projeto (STYLE.md): ação sem verbo padrão vira sub-resource
   # singular, não custom action. Espelha o `resource :suspension` do admin:

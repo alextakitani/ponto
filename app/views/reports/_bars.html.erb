@@ -1,0 +1,13 @@
+<%# Barras por DIA (Q6/Q21): uma barra por dia do período, altura = horas do dia.
+    Materializa a Q6 (o corte de dia no fuso do user). SVG-livre: divs com height %
+    (server-rendered, zero JS). Dias sem entry = barra vazia (o eixo é o período). %>
+<% peak = daily_series.map(&:duration_seconds).max.to_i %>
+<figure class="report-bars" aria-label="Horas por dia">
+  <div class="report-bars__track">
+    <% daily_series.each do |bucket| %>
+      <div class="report-bars__col" title="<%= bucket.date.strftime("%d/%m") %> — <%= report_duration(bucket.duration_seconds) %>">
+        <div class="report-bars__bar" style="height: <%= report_bar_height(bucket, peak) %>%"></div>
+      </div>
+    <% end %>
+  </div>
+</figure>
