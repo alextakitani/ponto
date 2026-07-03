@@ -49,6 +49,17 @@ class PreferencesTest < ActionDispatch::IntegrationTest
     assert_match(/Fuso horário inválido/, response.body)
   end
 
+  test "update NÃO permite escalar privilégio (admin/suspended_at) via mass-assignment" do
+    # Segurança: o perfil só edita name/time_zone. Se admin/suspended_at fossem
+    # mass-assignable aqui, um user comum viraria admin ou se des-suspenderia sozinho.
+    refute @user.admin?
+    patch preferences_path, params: {
+      user: { name: "Ana", time_zone: "America/Sao_Paulo", admin: true, suspended_at: nil }
+    }
+
+    assert_not @user.reload.admin?, "não deve escalar para admin via /preferences"
+  end
+
   test "update ignora tentativa de editar outra conta" do
     other = create_user(email: "outra@example.com")
     other.update!(name: "Outra", time_zone: "UTC")
