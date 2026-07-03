@@ -1,0 +1,87 @@
+<%= turbo_frame_tag "command_palette" do %>
+  <dialog class="command-palette" data-command-palette-target="dialog">
+    <div class="command-palette__panel">
+      <label class="command-palette__label" for="command_palette_query">Buscar ação</label>
+      <input id="command_palette_query"
+          class="command-palette__search"
+          type="search"
+          autocomplete="off"
+          placeholder="Digite para filtrar comandos"
+          data-command-palette-target="input"
+          data-action="input->command-palette#filter keydown->command-palette#handleListKeydown">
+
+      <p class="command-palette__status" role="status" data-command-palette-target="status"></p>
+
+      <div class="command-palette__groups" data-command-palette-target="list">
+        <section class="command-palette__group" data-command-palette-target="group">
+          <h2>Timer</h2>
+          <% if @current_timer %>
+            <%= button_to timer_path, method: :delete,
+                  class: "command-palette__item",
+                  params: (params[:page].present? ? { page: params[:page] } : {}),
+                  data: { command_palette_target: "item", command_palette_label: "parar timer" } do %>
+              <span>Parar</span>
+              <small>Finaliza o timer em andamento</small>
+            <% end %>
+          <% else %>
+            <button type="button"
+                class="command-palette__item"
+                data-command-palette-target="item"
+                data-command-palette-label="iniciar timer"
+                data-action="command-palette#focusTimer">
+              <span>Iniciar</span>
+              <small>Foca a descrição do timer</small>
+            </button>
+          <% end %>
+        </section>
+
+        <section class="command-palette__group" data-command-palette-target="group">
+          <h2>Navegação</h2>
+          <%= link_to home_path, class: "command-palette__item",
+                data: { command_palette_target: "item", command_palette_label: "tracker navegação" } do %>
+            <span>Tracker</span>
+            <small>Ir para o tracker</small>
+          <% end %>
+          <%= link_to reports_path, class: "command-palette__item",
+                data: { command_palette_target: "item", command_palette_label: "relatórios reports navegação" } do %>
+            <span>Relatórios</span>
+            <small>Ir para relatórios</small>
+          <% end %>
+          <%= link_to projects_path, class: "command-palette__item",
+                data: { command_palette_target: "item", command_palette_label: "projetos projects navegação" } do %>
+            <span>Projetos</span>
+            <small>Ir para projetos</small>
+          <% end %>
+          <%= link_to clients_path, class: "command-palette__item",
+                data: { command_palette_target: "item", command_palette_label: "clientes clients navegação" } do %>
+            <span>Clientes</span>
+            <small>Ir para clientes</small>
+          <% end %>
+          <%= link_to tags_path, class: "command-palette__item",
+                data: { command_palette_target: "item", command_palette_label: "tags etiquetas navegação" } do %>
+            <span>Tags</span>
+            <small>Ir para tags</small>
+          <% end %>
+        </section>
+
+        <% if @recent_time_entries.any? %>
+          <section class="command-palette__group" data-command-palette-target="group">
+            <h2>Recentes</h2>
+            <% @recent_time_entries.each do |time_entry| %>
+              <%= button_to time_entry_duplicate_path(time_entry),
+                    class: "command-palette__item",
+                    params: (params[:page].present? ? { page: params[:page] } : {}),
+                    data: {
+                      command_palette_target: "item",
+                      command_palette_label: "#{tracker_entry_description(time_entry)} #{tracker_entry_project_name(time_entry)} retomar recentes"
+                    } do %>
+                <span>Retomar <%= tracker_entry_description(time_entry) %></span>
+                <small><%= tracker_entry_project_name(time_entry) %></small>
+              <% end %>
+            <% end %>
+          </section>
+        <% end %>
+      </div>
+    </div>
+  </dialog>
+<% end %>

@@ -4,7 +4,9 @@
     <%= render "layouts/head" %>
   </head>
 
-  <body class="app">
+  <body class="app"
+      data-controller="command-palette"
+      data-action="keydown@window->command-palette#handleGlobalKeydown">
     <%# Sidebar fixa (desktop). Nav de trabalho no topo; rodapé = Preferências/Admin/
         Sair (não são navegação de trabalho — Q65b). Só "Clientes" tem tela nesta
         fatia; os demais renderizam DESABILITADOS com badge "em breve" (sem link
@@ -39,7 +41,7 @@
 
     <div class="shell-main">
       <div class="shell-timerbar">
-        <%= turbo_frame_tag "timer_bar", src: timer_path do %>
+        <%= turbo_frame_tag "timer_bar", src: timer_path(page: params[:page]) do %>
           <div class="shell-timerbar__loading muted">Carregando timer…</div>
         <% end %>
       </div>
@@ -49,6 +51,17 @@
       <main class="shell-content">
         <%= yield %>
       </main>
+    </div>
+
+    <div class="shell-command">
+      <button type="button" class="shell-command__trigger" aria-label="Abrir comandos"
+          data-command-palette-target="trigger"
+          data-action="command-palette#open">
+        <%= icon("search") %>
+      </button>
+
+      <%= turbo_frame_tag "command_palette", src: command_palette_path(page: params[:page]) do %>
+      <% end %>
     </div>
 
     <%# Bottom tab bar (mobile ≤ breakpoint — Q65/Q65b). Tracker · Relatórios ·

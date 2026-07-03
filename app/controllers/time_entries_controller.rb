@@ -40,7 +40,7 @@ class TimeEntriesController < ApplicationController
       @manual_entry = TimeEntry.new
       respond_to do |format|
         format.turbo_stream { render :create, status: :created }
-        format.html { redirect_to home_path, notice: "Entrada criada." }
+        format.html { redirect_to home_path(page: tracker_page_param), notice: "Entrada criada." }
         format.json { render :show, status: :created }
       end
     else
@@ -48,7 +48,7 @@ class TimeEntriesController < ApplicationController
       load_tracker_day_groups
       respond_to do |format|
         format.turbo_stream { render :create, status: :unprocessable_entity }
-        format.html { redirect_to home_path, alert: @time_entry.errors.full_messages.to_sentence }
+        format.html { redirect_to home_path(page: tracker_page_param), alert: @time_entry.errors.full_messages.to_sentence }
         format.json { render_errors(@time_entry) }
       end
     end
@@ -61,7 +61,7 @@ class TimeEntriesController < ApplicationController
           if turbo_frame_request?
             render partial: "time_entries/frame", locals: { time_entry: @time_entry }, layout: false
           else
-            redirect_to home_path, notice: "Entrada atualizada."
+            redirect_to home_path(page: tracker_page_param), notice: "Entrada atualizada."
           end
         end
         format.json { render :show }
@@ -78,10 +78,11 @@ class TimeEntriesController < ApplicationController
     @time_entry.destroy
     load_tracker_day_groups
     @current_timer = authorized_scope(TimeEntry.all).find_by(ended_at: nil)
+    @latest_restart_entry = authorized_scope(TimeEntry.all).where.not(ended_at: nil).order(ended_at: :desc, id: :desc).first
 
     respond_to do |format|
       format.turbo_stream
-      format.html { redirect_to home_path, notice: "Entrada removida." }
+      format.html { redirect_to home_path(page: tracker_page_param), notice: "Entrada removida." }
       format.json { head :no_content }
     end
   end

@@ -1,3 +1,8 @@
 <%= turbo_stream.replace "tracker_entries" do %>
   <%= render "home/tracker_entries", day_groups: @tracker_day_groups %>
 <% end %>
+
+<%= turbo_stream.replace "command_palette" do %>
+  <%= turbo_frame_tag "command_palette", src: command_palette_path(page: params[:page]) do %>
+  <% end %>
+<% end %>

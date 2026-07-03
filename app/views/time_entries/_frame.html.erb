@@ -47,6 +47,7 @@
           <% if time_entry.ended_at? %>
             <%# Duplicar (Q47): re-dispara este entry num timer novo rodando AGORA. %>
             <%= button_to time_entry_duplicate_path(time_entry), class: "btn btn--quiet",
+                  params: (params[:page].present? ? { page: params[:page] } : {}),
                   data: { turbo_frame: "timer_bar" } do %>
               <%= icon("play") %>
               Duplicar

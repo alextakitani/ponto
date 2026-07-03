@@ -1,19 +1,29 @@
 module TrackerData
   extend ActiveSupport::Concern
 
+  TRACKER_PAGE_LIMIT = 50
+
+  included do
+    helper_method :tracker_next_page_params
+  end
+
   private
     def tracker_relation
-      authorized_scope(TimeEntry.all).includes(:tags, project: :client)
+      authorized_scope(TimeEntry.all)
+        .includes(:tags, project: :client)
+        .order(started_at: :desc, id: :desc)
     end
 
     def load_tracker_day_groups
-      @tracker_day_groups = tracker_day_groups
+      @tracker_pagy, @tracker_entries_page = pagy(tracker_relation, limit: TRACKER_PAGE_LIMIT)
+      @tracker_day_groups = tracker_day_groups(@tracker_entries_page)
+      @tracker_has_more = @tracker_pagy.next.present?
     end
 
-    def tracker_day_groups(now: Time.current)
+    def tracker_day_groups(entries, now: Time.current)
       time_zone = ActiveSupport::TimeZone[Current.user.time_zone] || Time.zone
 
-      tracker_relation.to_a
+      entries
         .group_by { |entry| tracker_group_date(entry, time_zone, now:) }
         .sort_by { |date, _entries| -date.jd }
         .map do |date, day_entries|
@@ -27,6 +37,20 @@ module TrackerData
             total_seconds: sorted_entries.sum { |entry| tracker_elapsed_seconds(entry, now:) }
           }
         end
+    end
+
+    def tracker_next_page_params
+      return {} unless @tracker_pagy&.next
+
+      params.permit(:page).to_h.merge(
+        page: @tracker_pagy.next,
+        last_date: @tracker_day_groups.last&.fetch(:date)
+      ).compact
+    end
+
+    def tracker_page_param
+      page = params[:page].to_i
+      page.positive? ? page : nil
     end
 
     def tracker_elapsed_seconds(entry, now: Time.current)

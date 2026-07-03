@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  include Pagy::Backend
+
   include Authentication
   include RequestForgeryProtection
   include ActionPolicy::Controller

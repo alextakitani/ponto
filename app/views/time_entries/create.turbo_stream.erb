@@ -5,3 +5,8 @@
 <%= turbo_stream.replace "manual_entry_form" do %>
   <%= render "time_entries/manual_form", time_entry: @manual_entry %>
 <% end %>
+
+<%= turbo_stream.replace "command_palette" do %>
+  <%= turbo_frame_tag "command_palette", src: command_palette_path(page: params[:page]) do %>
+  <% end %>
+<% end %>
