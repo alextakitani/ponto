@@ -369,6 +369,7 @@
 /* ────────────── Régua de tiques (assinatura) ────────────── */
 
 .lp-ruler {
+  position: relative;
   max-width: var(--lp-max);
   margin: 0 auto;
   padding: 0 var(--lp-gutter);
@@ -377,6 +378,37 @@
   align-items: flex-end;
   height: var(--space-6);
   border-bottom: 1px solid var(--color-border);
+}
+
+/*
+ * Marcador de "agora" (overdrive): uma linha fina no acento que varre a régua bem
+ * devagar (28s), como o ponteiro do dia. Fica dentro dos gutters. Estado-base
+ * (reduced-motion / sem animação) = parado a ~65% (meio da tarde), coerente com o
+ * mockup mostrando 01:47 de trabalho acumulado.
+ */
+.lp-ruler__now {
+  position: absolute;
+  bottom: -1px;
+  left: 65%;
+  width: 2px;
+  height: calc(var(--space-6) + 2px);
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in srgb, var(--color-accent) 65%, transparent)
+  );
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .lp-ruler__now {
+    animation: lp-ruler-sweep 28s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes lp-ruler-sweep {
+  from { left: calc(var(--lp-gutter) + 2%); }
+  to   { left: calc(100% - var(--lp-gutter) - 2%); }
 }
 
 .lp-ruler__tick {
@@ -496,6 +528,49 @@
   background-color: var(--color-accent);
   border-radius: 2px 2px 0 0;
   opacity: 0.85;
+  transform-origin: bottom;
+}
+
+/*
+ * Overdrive: o gráfico da prova "ganha vida" ao entrar na viewport — o donut
+ * desenha (gira + revela) e as barras crescem escalonadas do chão. Puro CSS
+ * scroll-driven (animation-timeline: view()), zero JS. Fora de suporte, o padrão
+ * é o gráfico ESTÁTICO já pronto (progressive enhancement); e reduced-motion
+ * desliga tudo. O @supports garante que o estado-base (sem animação) é o completo.
+ */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .lp-donut {
+      animation: lp-donut-draw linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 35%;
+    }
+
+    .lp-bars__bar {
+      animation: lp-bar-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 40%;
+    }
+
+    /* Escalona as 7 barras: cada uma entra um pouco depois via range deslocado. */
+    .lp-bars__bar:nth-child(1) { animation-range: entry 12% cover 30%; }
+    .lp-bars__bar:nth-child(2) { animation-range: entry 15% cover 32%; }
+    .lp-bars__bar:nth-child(3) { animation-range: entry 18% cover 34%; }
+    .lp-bars__bar:nth-child(4) { animation-range: entry 21% cover 36%; }
+    .lp-bars__bar:nth-child(5) { animation-range: entry 24% cover 38%; }
+    .lp-bars__bar:nth-child(6) { animation-range: entry 27% cover 40%; }
+    .lp-bars__bar:nth-child(7) { animation-range: entry 30% cover 42%; }
+  }
+}
+
+@keyframes lp-donut-draw {
+  from { opacity: 0; transform: rotate(-90deg) scale(0.7); }
+  to   { opacity: 1; transform: rotate(-90deg) scale(1); }
+}
+
+@keyframes lp-bar-rise {
+  from { transform: scaleY(0); opacity: 0; }
+  to   { transform: scaleY(1); opacity: 0.85; }
 }
 
 /* Mockup 2: popup da extensão */

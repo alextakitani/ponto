@@ -40,8 +40,12 @@
         </div>
       </div>
 
-      <%# ── Assinatura: mockup do tracker com o timer CORRENDO (produto = tese) ── %>
-      <div class="lp-shot" aria-hidden="true">
+      <%# ── Assinatura: mockup do tracker com o timer CORRENDO (produto = tese) ──
+          Overdrive (lp-live): o cronômetro tica de verdade e os valores contam de
+          0 ao total quando o mockup entra na viewport. SSR mostra os valores finais
+          (fallback estático + reduced-motion). %>
+      <div class="lp-shot" aria-hidden="true"
+          data-controller="lp-live" data-lp-live-start-value="01:47:12">
         <div class="lp-app">
           <div class="lp-app__bar">
             <span class="lp-app__dot lp-app__dot--live"></span>
@@ -49,7 +53,7 @@
               <span class="lp-app__proj"><span class="lp-swatch lp-swatch--a"></span><%= t("landing.mockups.tracker.project_a") %></span>
               <span class="lp-app__desc"><%= t("landing.mockups.tracker.desc_running") %></span>
             </div>
-            <span class="lp-clock tabular-nums">01:47:12</span>
+            <span class="lp-clock tabular-nums" data-lp-live-target="clock">01:47:12</span>
             <button class="lp-app__stop" type="button" tabindex="-1"><%= t("landing.mockups.tracker.stop") %></button>
           </div>
 
@@ -58,27 +62,30 @@
               <span class="lp-row__proj"><span class="lp-swatch lp-swatch--a"></span><%= t("landing.mockups.tracker.project_a") %></span>
               <span class="lp-row__desc muted"><%= t("landing.mockups.tracker.desc_cert") %></span>
               <span class="lp-row__dur tabular-nums">2:10:00</span>
-              <span class="lp-row__amt tabular-nums">R$&nbsp;260,00</span>
+              <span class="lp-row__amt tabular-nums" data-lp-live-target="amount">R$&nbsp;260,00</span>
             </li>
             <li class="lp-row">
               <span class="lp-row__proj"><span class="lp-swatch lp-swatch--b"></span><%= t("landing.mockups.tracker.project_b") %></span>
               <span class="lp-row__desc muted"><%= t("landing.mockups.tracker.desc_review") %></span>
               <span class="lp-row__dur tabular-nums">0:45:00</span>
-              <span class="lp-row__amt tabular-nums">€&nbsp;60,00</span>
+              <span class="lp-row__amt tabular-nums" data-lp-live-target="amount">€&nbsp;60,00</span>
             </li>
             <li class="lp-row">
               <span class="lp-row__proj"><span class="lp-swatch lp-swatch--c"></span><%= t("landing.mockups.tracker.project_c") %></span>
               <span class="lp-row__desc muted"><%= t("landing.mockups.tracker.desc_scope") %></span>
               <span class="lp-row__dur tabular-nums">1:00:00</span>
-              <span class="lp-row__amt tabular-nums">R$&nbsp;180,00</span>
+              <span class="lp-row__amt tabular-nums" data-lp-live-target="amount">R$&nbsp;180,00</span>
             </li>
           </ul>
         </div>
       </div>
     </section>
 
-    <%# ── Régua de tiques: a assinatura tipográfica (eixo de horas do dia) ── %>
+    <%# ── Régua de tiques: a assinatura tipográfica (eixo de horas do dia) ──
+        Overdrive: um marcador de "agora" (acento) varre a régua devagar — o dia
+        passando. CSS puro; reduced-motion o deixa parado no ponto atual. %>
     <div class="lp-ruler" aria-hidden="true">
+      <span class="lp-ruler__now"></span>
       <% %w[08 09 10 11 12 13 14 15 16 17 18].each do |h| %>
         <span class="lp-ruler__tick"><span class="lp-ruler__label tabular-nums"><%= h %></span></span>
       <% end %>
