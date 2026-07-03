@@ -90,6 +90,7 @@ class ReportsController < ApplicationController
         client_ids: Array(params[:client_ids]),
         project_ids: Array(params[:project_ids]),
         task_ids: Array(params[:task_ids]),
+        tag_ids: Array(params[:tag_ids]),
         billable: billable_param,
         description: params[:description]
       )

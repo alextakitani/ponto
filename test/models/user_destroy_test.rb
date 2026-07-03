@@ -9,6 +9,7 @@ class UserDestroyTest < ActiveSupport::TestCase
     user.sessions.create!
     user.sign_in_codes.create!
     user.access_tokens.create!(permission: "read")
+    user.tags.create!(name: "Urgente")
     user.time_entries.create!(started_at: Time.current - 1.hour, ended_at: Time.current)
 
     user.destroy_completely
@@ -17,6 +18,7 @@ class UserDestroyTest < ActiveSupport::TestCase
     assert_equal 0, Session.where(user_id: user.id).count
     assert_equal 0, SignInCode.where(user_id: user.id).count
     assert_equal 0, AccessToken.where(user_id: user.id).count
+    assert_equal 0, Tag.where(user_id: user.id).count
     assert_equal 0, TimeEntry.where(user_id: user.id).count
   end
 

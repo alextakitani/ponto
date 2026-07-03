@@ -49,6 +49,10 @@ Rails.application.routes.draw do
     resource :archival, only: %i[create destroy], module: :clients
   end
 
+  resources :tags do
+    resource :archival, only: %i[create destroy], module: :tags
+  end
+
   # Projetos (Fatia 2.3) — irmão do Client. Mesmo padrão REST: arquivar/desarquivar
   # via sub-resource singular `archival` (não custom action — STYLE.md). Tasks
   # (sub-bucket do projeto — Q1) vivem ANINHADAS sob o projeto, com shallow: as ações

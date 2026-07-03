@@ -22,7 +22,7 @@ class Report
   class Export
     include ActionView::Helpers::NumberHelper
 
-    # As 14 colunas do Detailed (Q19), nesta ordem. Tags vazio (fase futura).
+    # As 14 colunas do Detailed (Q19), nesta ordem.
     BASE_HEADERS = [
       "Projeto", "Cliente", "Descrição", "Tarefa", "Tags", "Faturável",
       "Data início", "Hora início", "Data fim", "Hora fim",
@@ -96,7 +96,7 @@ class Report
           row.client&.name.to_s,           # 2 Cliente
           row.description.to_s,            # 3 Descrição
           row.task&.name.to_s,             # 4 Tarefa
-          "",                              # 5 Tags — TODO(fase Tags): coluna reservada, vazia por ora
+          row.tags.map(&:name).sort.join(", "), # 5 Tags
           row.billable? ? "Sim" : "Não",  # 6 Faturável (pt-BR)
           local_date(row.started_at),      # 7 Data início (Date local)
           local_time(row.started_at),      # 8 Hora início (HH:MM local)

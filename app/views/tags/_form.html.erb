@@ -1,0 +1,28 @@
+<%= form_with model: tag, class: "form-stack" do |form| %>
+  <% if tag.errors.any? %>
+    <div class="form-errors" role="alert">
+      <% if tag.name_conflicts_with_archived? %>
+        <p>
+          Já existe uma tag com esse nome (arquivada).
+          <%= link_to "Desarquive-a", tags_path(archived: "1") %> em vez de criar outra.
+        </p>
+      <% else %>
+        <ul>
+          <% tag.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="form-field">
+    <%= form.label :name, "Nome" %>
+    <%= form.text_field :name, autofocus: true, autocomplete: "off" %>
+  </div>
+
+  <div class="form-actions">
+    <%= form.submit tag.persisted? ? "Salvar" : "Criar tag", class: "btn" %>
+    <%= link_to "Cancelar", tags_path, class: "btn btn--quiet" %>
+  </div>
+<% end %>

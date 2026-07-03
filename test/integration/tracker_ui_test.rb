@@ -146,6 +146,58 @@ class TrackerUiTest < ActionDispatch::IntegrationTest
     assert_equal ActiveSupport::TimeZone[@user.time_zone].parse("2026-07-02T09:30").utc, entry.started_at
   end
 
+  test "edição inline aceita tags existentes, mantém arquivada já aplicada e cria nova inline" do
+    active = @user.tags.create!(name: "Bug")
+    archived = @user.tags.create!(name: "Legado")
+    archived.archive!
+    entry = @user.time_entries.create!(
+      description: "Antes",
+      started_at: Time.utc(2026, 7, 2, 12, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 13, 0, 0)
+    )
+    entry.tags << archived
+
+    get edit_time_entry_path(entry), headers: turbo_frame_headers(entry)
+
+    assert_response :success
+    assert_select "input[name='time_entry[tag_ids][]'][value='#{active.id}']", count: 1
+    assert_select "input[name='time_entry[tag_ids][]'][value='#{archived.id}'][checked='checked']", count: 1
+    assert_select "input[name='time_entry[new_tag_names][]']", count: 1
+
+    patch time_entry_path(entry),
+      params: {
+        time_entry: {
+          description: "Depois",
+          tag_ids: [ active.id.to_s, archived.id.to_s ],
+          new_tag_names: [ "Urgente" ]
+        }
+      },
+      headers: turbo_frame_headers(entry)
+
+    assert_response :success
+    assert_equal [ "Bug", "Legado", "Urgente" ], entry.reload.tags.order(:created_at).map(&:name)
+    assert_select "[data-entry-id='#{entry.id}']", text: /Bug/
+    assert_select "[data-entry-id='#{entry.id}']", text: /Legado/
+    assert_select "[data-entry-id='#{entry.id}']", text: /Urgente/
+  end
+
+  test "editar entry com tag alheia é rejeitado e não aplica nada" do
+    entry = @user.time_entries.create!(
+      description: "Antes",
+      started_at: Time.utc(2026, 7, 2, 12, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 13, 0, 0)
+    )
+    foreign = create_user(email: "tag-alheia@example.com").tags.create!(name: "Alheia")
+
+    patch time_entry_path(entry),
+      params: { time_entry: { tag_ids: [ foreign.id.to_s ] } },
+      headers: turbo_frame_headers(entry)
+
+    assert_response :unprocessable_entity
+    assert_empty entry.reload.tags
+    assert_includes response.body, "não pertence a você"
+  end
+
   test "editar entry de outro user dá 404" do
     other = create_user(email: "private-entry@example.com")
     entry = other.time_entries.create!(description: "Privado", started_at: Time.current, ended_at: Time.current + 1.hour)

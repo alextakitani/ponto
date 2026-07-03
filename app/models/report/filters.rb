@@ -9,16 +9,17 @@ class Report
   class Filters
     NONE = "none" # sentinela do balde "(sem projeto)"/"(sem cliente)"
 
-    attr_reader :client_ids, :project_ids, :task_ids, :billable, :description
+    attr_reader :client_ids, :project_ids, :task_ids, :tag_ids, :billable, :description
 
     def self.none
       new
     end
 
-    def initialize(client_ids: [], project_ids: [], task_ids: [], billable: nil, description: nil)
+    def initialize(client_ids: [], project_ids: [], task_ids: [], tag_ids: [], billable: nil, description: nil)
       @client_ids = Array(client_ids).map(&:to_s).reject(&:blank?)
       @project_ids = Array(project_ids).map(&:to_s).reject(&:blank?)
       @task_ids = Array(task_ids).map(&:to_s).reject(&:blank?)
+      @tag_ids = Array(tag_ids).map(&:to_s).reject(&:blank?)
       # billable: nil = todos, true = só faturável, false = só não-faturável (Q54).
       @billable = billable
       @description = description.to_s.strip.presence
@@ -30,6 +31,7 @@ class Report
       relation = filter_by_ids(relation, :project_id, @project_ids)
       relation = filter_by_ids(relation, :task_id, @task_ids)
       relation = filter_by_client(relation, @client_ids)
+      relation = filter_by_tag(relation, @tag_ids)
       relation = relation.where(billable: @billable) unless @billable.nil?
       relation
     end
@@ -77,6 +79,24 @@ class Report
           joined.where(client_col.eq(nil))
         else
           joined.where(projects: { client_id: real_ids })
+        end
+      end
+
+      def filter_by_tag(relation, ids)
+        return relation if ids.empty?
+
+        real_ids = ids.reject { |id| id == NONE }
+        wants_none = ids.include?(NONE)
+
+        tagged = relation.where(id: Tagging.where(tag_id: real_ids).select(:time_entry_id)) if real_ids.any?
+        untagged = relation.where.missing(:taggings) if wants_none
+
+        if tagged && untagged
+          relation.where(id: tagged.select(:id)).or(relation.where(id: untagged.select(:id)))
+        elsif tagged
+          tagged
+        else
+          untagged
         end
       end
   end

@@ -20,6 +20,7 @@ class Report
     def description = entry.description
     def project = entry.project
     def task = entry.task
+    def tags = entry.tags.to_a
     def client = entry.project&.client
     def billable? = entry.billable?
     def rate_cents = entry.rate_cents

@@ -33,9 +33,9 @@ class TimeEntriesController < ApplicationController
 
   def create
     authorize! TimeEntry, to: :create?
-    @time_entry = authorized_scope(TimeEntry.all).new(time_entry_create_params)
+    @time_entry = authorized_scope(TimeEntry.all).new
 
-    if @time_entry.save
+    if save_time_entry_with_tags(@time_entry, time_entry_create_params)
       load_tracker_day_groups
       @manual_entry = TimeEntry.new
       respond_to do |format|
@@ -55,7 +55,7 @@ class TimeEntriesController < ApplicationController
   end
 
   def update
-    if @time_entry.update(time_entry_update_params)
+    if save_time_entry_with_tags(@time_entry, time_entry_update_params)
       respond_to do |format|
         format.html do
           if turbo_frame_request?
@@ -93,7 +93,7 @@ class TimeEntriesController < ApplicationController
     end
 
     def time_entry_create_params
-      attrs = params.require(:time_entry).permit(:project_id, :task_id, :description, :started_at, :ended_at, :billable)
+      attrs = params.require(:time_entry).permit(:project_id, :task_id, :description, :started_at, :ended_at, :billable, tag_ids: [], new_tag_names: [])
       # Início/fim vêm do datetime-local no FUSO do user (Q23b); convertê-los pra UTC
       # antes de gravar (o banco é UTC). Mesmo parse do update.
       attrs[:started_at] = parse_user_datetime(attrs[:started_at]) if attrs[:started_at].present?
@@ -104,7 +104,7 @@ class TimeEntriesController < ApplicationController
     def time_entry_update_params
       permitted = [ :project_id, :task_id, :description, :billable, :started_at ]
       permitted << :ended_at if @time_entry.ended_at?
-      attrs = params.require(:time_entry).permit(*permitted)
+      attrs = params.require(:time_entry).permit(*permitted, tag_ids: [], new_tag_names: [])
       attrs[:started_at] = parse_user_datetime(attrs[:started_at]) if attrs[:started_at].present?
       attrs
     end
@@ -117,5 +117,51 @@ class TimeEntriesController < ApplicationController
       return value if value.match?(/[zZ]|[+-]\d{2}:\d{2}\z/)
 
       (ActiveSupport::TimeZone[Current.user.time_zone] || Time.zone).parse(value)
+    end
+
+    def save_time_entry_with_tags(time_entry, attrs)
+      tag_ids = Array(attrs.delete(:tag_ids))
+      new_tag_names = Array(attrs.delete(:new_tag_names))
+
+      time_entry.assign_attributes(attrs)
+      return false unless time_entry.valid?
+
+      saved = false
+      TimeEntry.transaction do
+        time_entry.save!
+        unless sync_time_entry_tags(time_entry, tag_ids:, new_tag_names:)
+          raise ActiveRecord::Rollback
+        end
+        saved = true
+      end
+      saved
+    end
+
+    def sync_time_entry_tags(time_entry, tag_ids:, new_tag_names:)
+      tags = tags_from_ids(tag_ids)
+      return false if time_entry.errors.any?
+
+      tags += tags_from_names(new_tag_names)
+      time_entry.tags = tags.uniq
+      true
+    end
+
+    def tags_from_ids(tag_ids)
+      ids = tag_ids.map(&:to_s).reject(&:blank?)
+      return [] if ids.empty?
+
+      tags = Current.user.tags.where(id: ids).to_a
+      return tags if tags.size == ids.uniq.size
+
+      @time_entry.errors.add(:tags, "contêm item que não pertence a você")
+      []
+    end
+
+    def tags_from_names(new_tag_names)
+      new_tag_names
+        .map { |name| name.to_s.strip }
+        .reject(&:blank?)
+        .uniq
+        .map { |name| Current.user.tags.find_or_create_by!(name: name) }
     end
 end
