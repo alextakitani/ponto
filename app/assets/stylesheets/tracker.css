@@ -164,20 +164,43 @@
   white-space: nowrap;
 }
 
+/*
+ * Coluna direita = grade de trilhas FIXAS (não flex), pra duração, valor e ⋮
+ * colunarem VERTICALMENTE entre todas as linhas do dia. Como cada .tracker-entry
+ * é um grid próprio, o alinhamento entre linhas depende das trilhas terem largura
+ * determinística: por isso larguras fixas (ch), não `auto`. tabular-nums + trilha
+ * fixa = a coluna de horas/dinheiro fica reta (o princípio "o número parece certo").
+ * O ⋮ ganha um respiro extra (margin-left) pra separar a AÇÃO do par numérico.
+ */
 .tracker-entry__actions {
-  display: flex;
+  display: grid;
+  /* Trilha do valor larga o bastante pro pior caso REALISTA de uma entry única
+     ("R$ 12.345,56" = 12 chars); valores maiores são raros e truncam graciosos em
+     vez de quebrar o alinhamento das linhas típicas. */
+  grid-template-columns: 6.5ch 11ch auto;
   align-items: center;
-  gap: var(--space-2);
+  column-gap: var(--space-2);
 }
 
-.tracker-entry__duration {
-  min-width: 6.5ch;
-  text-align: right;
-}
-
+.tracker-entry__duration,
 .tracker-entry__amount {
-  min-width: 7.5ch;
   text-align: right;
+}
+
+/* Valor de 6+ dígitos (raro) trunca com reticências em vez de estourar a trilha e
+   desalinhar as linhas típicas. min-width:0 deixa o grid honrar a trilha fixa. */
+.tracker-entry__amount {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Empurra o ⋮ pro fim da sua trilha e afasta do par numérico (proximidade:
+   duração+valor são um grupo; a ação é outro). */
+.tracker-entry__actions .row-menu {
+  justify-self: end;
+  margin-left: var(--space-1);
 }
 
 .tracker-entry--running .tracker-entry__description,
@@ -295,8 +318,12 @@
     grid-template-columns: 1fr;
   }
 
+  /* Empilhada no mobile, a linha é isolada — não há irmãs pra colunar contra, então
+     as trilhas fixas do desktop não servem. Volta a flex simples que espalha
+     duração·valor·⋮ pela largura (o alinhamento entre linhas só importa no desktop). */
   .timer-bar__actions,
   .tracker-entry__actions {
+    display: flex;
     justify-content: space-between;
   }
 
