@@ -19,13 +19,13 @@ en:
       en: "English"
     hero:
       eyebrow: "Self-hosted time tracker"
-      title_html: "Clock in.<br>The report becomes the invoice."
+      title_html: "Track your time.<br>The report becomes the invoice."
       lede: "Built for people who bill by the hour: a one-click timer, per-client hourly rates, and a monthly export that's ready to become an invoice. Runs on your own server — your data stays with you."
     cloud:
-      pitch_html: "Don't want to self-host? Use <strong>Ponto Cloud</strong> — this very instance, for just <strong>US$ 1/month</strong>. Access is invite-only: request yours."
+      pitch_html: "Don't want to self-host? Use <strong>Ponto Cloud</strong> — this very instance, for just <strong>US$ 1/month</strong><sup>*</sup>. Access is invite-only: request yours."
     proofs:
       heading: "From timer to invoice, without leaving the app"
-      sub_html: "The timer stays at the top of every screen. Organize work as Client&nbsp;→&nbsp;Project&nbsp;→&nbsp;Task, set each client's hourly rate (in dollars, euros…), and export the report at month's end."
+      sub_html: "The timer stays at the top of every screen. Organize work as Client&nbsp;→&nbsp;Project&nbsp;→&nbsp;Task.<br>Set each client's hourly rate (in&nbsp;dollars, euros…) and export the report at month's end."
       reports:
         title: "Reports that close out the month"
         text_html: "Hours per day, breakdown by project, and two-level grouping — from summary to detail. Export to <strong>.xlsx or CSV</strong> and attach it straight to the invoice."
@@ -38,13 +38,13 @@ en:
         badge: "coming soon"
         text: "Terminal commands and JSON output for AI agents, like Claude. Uses the same token as the extension."
     frozen:
-      heading: "January's number doesn't change in June"
+      heading: "History always preserved"
       sub: "Every entry keeps the hourly rate from the day it was logged. Raised a client's rate? The new rate applies from here on out — history stays intact and old invoices stay correct."
       now: "current rate"
       lock_title: "frozen"
     host:
       heading: "Self-host in 4 steps"
-      sub_html: "A single Rails app with SQLite, no Node. The repo already ships the Dockerfile and Kamal config — and the %{readme_link} is the full guide."
+      sub_html: "A single Rails app with SQLite. The repo already ships the Dockerfile and Kamal config — and the %{readme_link} is the full guide."
       readme: "README"
       steps:
         clone:
@@ -82,11 +82,12 @@ en:
         value: "Each account stays isolated from the others; access is invite-only."
     final:
       heading: "Request access to Ponto Cloud"
-      sub_html: "Don't want to self-host? Use this instance for <strong>US$ 1/month</strong>. Leave your email — approved requests get the invite in their inbox. Prefer to host it yourself? The code is on %{github_link}."
+      sub_html: "Don't want to self-host? Use this instance for <strong>US$ 1/month</strong><sup>*</sup>. Leave your email — approved requests get the invite in their inbox.<br>Prefer to host it yourself? The code is on %{github_link}."
       github_link: "GitHub"
       signin_prompt: "Already have an account?"
     footer:
       nav_label: "Footer"
+      promo_note: "* US$ 1/month is a promotional price. If it ever changes, you'll be told first."
     mockups:
       tracker:
         project_a: "Kubernetes homelab"

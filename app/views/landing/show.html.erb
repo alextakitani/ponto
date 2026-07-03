@@ -274,10 +274,15 @@
 
     <%# ═══════════════ CTA FINAL ═══════════════ %>
     <section class="lp-section lp-final" aria-labelledby="final-h">
-      <h2 id="final-h" class="lp-section__title"><%= t("landing.final.heading") %></h2>
-      <p class="lp-section__sub muted">
-        <%= t("landing.final.sub_html", github_link: link_to(t("landing.final.github_link"), "https://github.com/alextakitani/ponto")) %>
-      </p>
+      <%# copy embrulhado num wrapper fit-content: o div encolhe pra largura do
+          TÍTULO (o filho mais largo), e o sub herda essa largura exata — sem
+          max-width chutado. %>
+      <div class="lp-final__copy">
+        <h2 id="final-h" class="lp-section__title"><%= t("landing.final.heading") %></h2>
+        <p class="lp-section__sub muted">
+          <%= t("landing.final.sub_html", github_link: link_to(t("landing.final.github_link"), "https://github.com/alextakitani/ponto")) %>
+        </p>
+      </div>
       <div class="lp-final__cta">
         <% if @operator_setup_needed %>
           <%= render "shared/bootstrap_notice", css_class: "lp-notice" %>
@@ -292,11 +297,15 @@
   </main>
 
   <footer class="lp-foot">
-    <span class="lp-foot__brand"><%= render "shared/logo_mark", size: 28, css_class: "lp-mark lp-mark--sm" %>Ponto</span>
-    <nav class="lp-foot__nav" aria-label="<%= t("landing.footer.nav_label") %>">
-      <%= render "shared/locale_switcher" %>
-      <%= link_to t("landing.nav.github"), "https://github.com/alextakitani/ponto" %>
-      <%= link_to t("landing.nav.sign_in"), sign_in_path %>
-    </nav>
+    <%# Nota do asterisco do preço promocional (Ponto Cloud US$ 1/mês). %>
+    <p class="lp-foot__note muted"><%= t("landing.footer.promo_note") %></p>
+    <div class="lp-foot__bar">
+      <span class="lp-foot__brand"><%= render "shared/logo_mark", size: 28, css_class: "lp-mark lp-mark--sm" %>Ponto</span>
+      <nav class="lp-foot__nav" aria-label="<%= t("landing.footer.nav_label") %>">
+        <%= render "shared/locale_switcher" %>
+        <%= link_to t("landing.nav.github"), "https://github.com/alextakitani/ponto" %>
+        <%= link_to t("landing.nav.sign_in"), sign_in_path %>
+      </nav>
+    </div>
   </footer>
 </div>
