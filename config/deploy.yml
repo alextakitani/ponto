@@ -16,11 +16,12 @@ servers:
 #
 # Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
 #
-# SSL automático (Let's Encrypt) no kamal-proxy. Pré-requisitos: DNS de
-# ponto.takitani.net apontando pro IP público + portas 80/443 encaminhadas
-# pro container (o ACME http-01 valida por fora).
+# ponto.takitani.net entra por CLOUDFLARE TUNNEL: o TLS termina na borda da
+# Cloudflare e o cloudflared entrega HTTP interno pro kamal-proxy (ingress →
+# http://10.0.0.10:80). Sem Let's Encrypt aqui (ssl: false) — o app confia
+# no https externo via assume_ssl/force_ssl no production.rb.
 proxy:
-  ssl: true
+  ssl: false
   host: ponto.takitani.net
 
 # Where you keep your container images.
