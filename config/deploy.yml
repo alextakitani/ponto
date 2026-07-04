@@ -34,6 +34,12 @@ registry:
   # QUEM builda (HTTP puro, ok na LAN do homelab).
   server: 10.0.0.10:5555
 
+  # O registry do homelab NÃO tem auth (LAN); o Kamal exige as chaves mesmo
+  # assim — credencial dummy (o docker login passa trivialmente sem auth).
+  username: ponto
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
   # Needed for authenticated registries.
   # username: your-user
 
