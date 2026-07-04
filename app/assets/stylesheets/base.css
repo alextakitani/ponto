@@ -166,8 +166,9 @@ svg {
   width: max-content;
   padding: var(--space-3) var(--space-5);
   border-radius: var(--radius);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface-raised, var(--color-surface));
+  /* Borda no ACENTO + fundo tingido (pedido do dono: toast conspícuo, não sutil). */
+  border: 1px solid var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface-raised));
   color: var(--color-text);
   font-size: var(--text-lg);
   font-weight: var(--weight-medium);
