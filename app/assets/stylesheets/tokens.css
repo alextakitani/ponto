@@ -2,7 +2,8 @@
  * Design tokens do Ponto (Q62) — custom properties, zero-build.
  * Direção visual (Q63): moderna, minimal densa, estilo Linear — base neutra,
  * UM acento, hierarquia por tipografia/espaço, chrome quieto.
- * Dark mode automático (Q64): mesmos tokens com valores no @media escuro.
+ * Tema padrão segue o sistema via light-dark(); usuário pode forçar claro/escuro no
+ * body[data-theme] do shell interno.
  * NÃO colocar regras de layout aqui — só tokens.
  */
 
@@ -21,6 +22,8 @@
 }
 
 :root {
+  color-scheme: light dark;
+
   /* Tipografia */
   --font-sans: "InterVariable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
@@ -50,43 +53,28 @@
   --radius: 6px;
   --radius-sm: 4px;
 
-  /*
-   * Cores SEMÂNTICAS (tema claro). Base quase-branca, acento índigo contido.
-   * Contraste AA sobre a surface garantido nos dois temas.
-   */
-  --color-surface: #ffffff;         /* fundo base */
-  --color-surface-sunken: #f6f7f9;  /* fundo recuado (app shell, listras) */
-  --color-surface-raised: #ffffff;  /* cartões/painéis elevados */
-  --color-text: #16181d;            /* texto principal (~15:1 sobre surface) */
-  --color-text-subtle: #5c626e;     /* texto secundário (~5.6:1, AA) */
-  --color-border: #e3e5e9;          /* bordas/divisórias sutis */
-  --color-border-strong: #c7cad1;   /* borda de foco de campo, hover */
-  --color-accent: #4f46e5;          /* índigo — único acento (AA sobre branco) */
-  --color-accent-hover: #4338ca;    /* estado hover do acento */
-  --color-on-accent: #ffffff;       /* texto sobre o acento */
-  --color-danger: #c22b2b;          /* erro/destrutivo (AA sobre branco) */
-  --color-on-danger: #ffffff;
+  /* Cores SEMÂNTICAS. Cada par é claro/escuro, transposto 1:1 dos tokens antigos. */
+  --color-surface: light-dark(#ffffff, #16181d);         /* fundo base */
+  --color-surface-sunken: light-dark(#f6f7f9, #0f1115);  /* fundo recuado */
+  --color-surface-raised: light-dark(#ffffff, #1d2027);  /* cartões/painéis elevados */
+  --color-text: light-dark(#16181d, #e7e9ee);            /* texto principal */
+  --color-text-subtle: light-dark(#5c626e, #9aa0ac);     /* texto secundário */
+  --color-border: light-dark(#e3e5e9, #2a2e37);          /* bordas/divisórias sutis */
+  --color-border-strong: light-dark(#c7cad1, #3c414d);   /* borda de campo/hover */
+  --color-accent: light-dark(#4f46e5, #8b8cf0);          /* índigo — único acento */
+  --color-accent-hover: light-dark(#4338ca, #a1a2f4);    /* estado hover do acento */
+  --color-on-accent: light-dark(#ffffff, #16181d);       /* texto sobre o acento */
+  --color-danger: light-dark(#c22b2b, #f0716f);          /* erro/destrutivo */
+  --color-on-danger: light-dark(#ffffff, #16181d);
 
   /* Anel de foco (acento translúcido) */
-  --focus-ring: 0 0 0 3px rgba(79, 70, 229, 0.35);
+  --focus-ring: 0 0 0 3px light-dark(rgba(79, 70, 229, 0.35), rgba(139, 140, 240, 0.4));
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Base quase-preta; acento índigo mais claro p/ manter AA sobre escuro. */
-    --color-surface: #16181d;
-    --color-surface-sunken: #0f1115;
-    --color-surface-raised: #1d2027;
-    --color-text: #e7e9ee;            /* ~13:1 sobre surface */
-    --color-text-subtle: #9aa0ac;     /* ~5.4:1, AA */
-    --color-border: #2a2e37;
-    --color-border-strong: #3c414d;
-    --color-accent: #8b8cf0;          /* índigo claro — AA sobre surface escura */
-    --color-accent-hover: #a1a2f4;
-    --color-on-accent: #16181d;       /* texto escuro sobre acento claro */
-    --color-danger: #f0716f;
-    --color-on-danger: #16181d;
+body[data-theme="light"] {
+  color-scheme: light;
+}
 
-    --focus-ring: 0 0 0 3px rgba(139, 140, 240, 0.4);
-  }
+body[data-theme="dark"] {
+  color-scheme: dark;
 }

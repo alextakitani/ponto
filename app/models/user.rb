@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   # Erro de domínio (Q34c): o sistema nunca pode ficar sem ≥1 admin ATIVO.
   LastAdminError = Class.new(StandardError)
+  THEMES = %w[system light dark].freeze
 
   has_many :sessions, dependent: :destroy
   has_many :sign_in_codes, dependent: :destroy
@@ -14,11 +15,13 @@ class User < ApplicationRecord
   # `tasks` também pende direto do user (isolamento DIRETO Q23 — a Task carrega
   # user_id além de project_id), pra a deleção da conta levar a bolha inteira.
   has_many :tasks, dependent: :destroy
+  belongs_to :default_project, class_name: "Project", optional: true
 
   normalizes :email, with: ->(value) { value.strip.downcase.presence }
 
   validates :email, presence: true, uniqueness: true,
                     format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :theme, inclusion: { in: THEMES, message: "não é válido" }
 
   # Invariante ≥1 admin ATIVO (Q34c). Admin suspenso NÃO conta como ativo.
   # - rebaixar (admin: true -> false) o último admin ativo: falha na validação;
@@ -38,6 +41,7 @@ class User < ApplicationRecord
 
   validate :must_keep_one_active_admin, if: :demoting_last_active_admin?
   validate :must_keep_one_active_admin_on_suspend, if: :suspending_last_active_admin?
+  validate :default_project_belongs_to_user
   before_destroy :must_keep_one_active_admin_on_destroy
 
   # Bootstrap do 1º admin (Q37): só com o banco VAZIO e o e-mail batendo com
@@ -110,6 +114,12 @@ class User < ApplicationRecord
     update!(suspended_at: nil)
   end
 
+  def active_default_project
+    if default_project&.active?
+      default_project
+    end
+  end
+
   # Deletar conta = apagar a BOLHA inteira do usuário (Q33/Q33a). Hoje a bolha é
   # só o auth: sessions/sign_in_codes/access_tokens saem pelos `dependent: :destroy`
   # das associações acima. A fatia de domínio (Clients/Projects/TimeEntries…)
@@ -176,5 +186,11 @@ class User < ApplicationRecord
 
     errors.add(:base, "não é possível remover o último admin ativo")
     throw :abort
+  end
+
+  def default_project_belongs_to_user
+    if default_project && default_project.user_id != id
+      errors.add(:default_project, "não pertence a você")
+    end
   end
 end

@@ -35,6 +35,32 @@ class UserTest < ActiveSupport::TestCase
     assert_nil token.reload.last_used_at
   end
 
+  test "active_default_project devolve nil quando o projeto está arquivado" do
+    project = @user.projects.create!(name: "Padrão")
+    @user.update!(default_project: project)
+
+    assert_equal project, @user.active_default_project
+    project.archive!
+
+    assert_nil @user.reload.active_default_project
+  end
+
+  test "default_project precisa pertencer ao user" do
+    other = create_user(email: "outro@example.com")
+    alheio = other.projects.create!(name: "Alheio")
+
+    assert_not @user.update(default_project: alheio)
+    assert_nil @user.reload.default_project_id
+  end
+
+  test "hard-delete do projeto padrão limpa a referência" do
+    project = @user.projects.create!(name: "Padrão")
+    @user.update!(default_project: project)
+
+    assert_nothing_raised { project.destroy! }
+    assert_nil @user.reload.default_project_id
+  end
+
   # --- Suspensão (Q34): estado por timestamp (soft-state do projeto) -----------
 
   test "suspended? reflete a presença de suspended_at" do

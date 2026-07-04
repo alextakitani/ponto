@@ -64,21 +64,16 @@ textarea:focus {
 /* Seta do select desenhada inline (sem asset), tingida pelo texto secundário. */
 select {
   padding-right: var(--space-6);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%235c626e' stroke-width='1.5'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+  background-image:
+    linear-gradient(45deg, transparent 50%, light-dark(#5c626e, #9aa0ac) 50%),
+    linear-gradient(135deg, light-dark(#5c626e, #9aa0ac) 50%, transparent 50%);
   background-repeat: no-repeat;
-  background-position: right var(--space-3) center;
-}
-
-/*
- * A cor da seta (stroke='%235c626e') é o valor CLARO de --color-text-subtle
- * embutido no data-URI. Um data-URI NÃO aceita var(), então duplicamos a regra
- * aqui com o valor ESCURO do token (#9aa0ac) pra a seta seguir o dark mode.
- * ⚠️ Manter em sincronia com --color-text-subtle em tokens.css (ambos os temas).
- */
-@media (prefers-color-scheme: dark) {
-  select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%239aa0ac' stroke-width='1.5'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
-  }
+  background-position:
+    calc(100% - 17px) 50%,
+    calc(100% - 12px) 50%;
+  background-size:
+    5px 5px,
+    5px 5px;
 }
 
 /*

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_03_120100) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_04_191845) do
   create_table "access_requests", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -133,11 +133,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_03_120100) do
   create_table "users", force: :cascade do |t|
     t.boolean "admin", default: false, null: false
     t.datetime "created_at", null: false
+    t.integer "default_project_id"
     t.string "email", null: false
     t.string "name"
     t.datetime "suspended_at"
+    t.string "theme", default: "system", null: false
     t.string "time_zone", default: "America/Sao_Paulo", null: false
     t.datetime "updated_at", null: false
+    t.index ["default_project_id"], name: "index_users_on_default_project_id"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
@@ -155,4 +158,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_03_120100) do
   add_foreign_key "time_entries", "projects"
   add_foreign_key "time_entries", "tasks", on_delete: :nullify
   add_foreign_key "time_entries", "users"
+  add_foreign_key "users", "projects", column: "default_project_id", on_delete: :nullify
 end

@@ -27,6 +27,7 @@
   </div>
 <% else %>
   <% form_time_entry ||= TimeEntry.new %>
+  <% selected_project_id = form_time_entry.project_id || (Current.user.active_default_project&.id unless form_time_entry.errors.any?) %>
 
   <%= form_with url: timer_path, scope: :timer, class: "timer-bar timer-bar--idle" do |form| %>
     <%= hidden_field_tag :page, params[:page] if params[:page].present? %>
@@ -40,7 +41,7 @@
 
       <div class="timer-bar__select">
         <%= form.label :project_id, "Projeto", class: "timer-bar__label" %>
-        <%= form.select :project_id, grouped_options_for_select(tracker_grouped_project_options, form_time_entry.project_id),
+        <%= form.select :project_id, grouped_options_for_select(tracker_grouped_project_options, selected_project_id),
               { include_blank: "(sem projeto)" } %>
       </div>
     </div>

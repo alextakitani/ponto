@@ -125,6 +125,36 @@ class ProjectsTest < ActionDispatch::IntegrationTest
     assert_not project.reload.archived?
   end
 
+  test "POST default com projeto próprio seta o padrão" do
+    project = @user.projects.create!(name: "Padrão")
+
+    post project_default_path(project)
+
+    assert_redirected_to projects_path
+    assert_equal project, @user.reload.default_project
+  end
+
+  test "POST default com projeto de outro user dá 404" do
+    outro = create_user(email: "outro@example.com")
+    alheio = outro.projects.create!(name: "Alheio")
+
+    assert_no_changes -> { @user.reload.default_project_id } do
+      post project_default_path(alheio)
+    end
+
+    assert_response :not_found
+  end
+
+  test "DELETE default limpa o padrão" do
+    project = @user.projects.create!(name: "Padrão")
+    @user.update!(default_project: project)
+
+    delete project_default_path(project)
+
+    assert_redirected_to projects_path
+    assert_nil @user.reload.default_project_id
+  end
+
   # --- Hard-delete restrito do Client pela via web (Q7) -----------------------
 
   test "deletar cliente COM projeto falha com mensagem amigável (restrict Q7)" do
