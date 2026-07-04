@@ -3,6 +3,13 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # Dev também roda no LXC do homelab e é acessado de fora da máquina (LAN ou
+  # tailnet — ver docs/deploy.md): o Host Authorization default só permite
+  # localhost. Libera o IP da LAN e qualquer nome da tailnet (*.ts.net).
+  # Lembrete: pra expor, suba com `bin/rails s -b 0.0.0.0`.
+  config.hosts << "10.0.0.10"
+  config.hosts << /.+\.ts\.net/
+
   # Make code changes take effect immediately without server restart.
   config.enable_reloading = true
 
