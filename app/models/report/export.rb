@@ -23,14 +23,6 @@ class Report
     include ActionView::Helpers::NumberHelper
 
     # As 14 colunas do Detailed (Q19), nesta ordem.
-    BASE_HEADERS = [
-      "Projeto", "Cliente", "Descrição", "Tarefa", "Tags", "Faturável",
-      "Data início", "Hora início", "Data fim", "Hora fim",
-      "Duração (h)", "Duração (decimal)"
-    ].freeze
-
-    CURRENCY_HEADER = "Moeda".freeze
-
     def initialize(report)
       @report = report
     end
@@ -40,14 +32,14 @@ class Report
     def headers
       value_headers =
         if multiple_currencies?
-          [ "Valor/hora", "Valor" ]
+          [ t("reports.export.headers.hourly_rate"), t("reports.export.headers.amount") ]
         else
           suffix = " (#{export_currency})"
-          [ "Valor/hora#{suffix}", "Valor#{suffix}" ]
+          [ "#{t("reports.export.headers.hourly_rate")}#{suffix}", "#{t("reports.export.headers.amount")}#{suffix}" ]
         end
 
-      base = BASE_HEADERS + value_headers
-      multiple_currencies? ? base + [ CURRENCY_HEADER ] : base
+      base = base_headers + value_headers
+      multiple_currencies? ? base + [ t("reports.export.headers.currency") ] : base
     end
 
     # A MATRIZ: uma linha por entry (started_at DESC, herdado do Report). Valores nativos
@@ -70,7 +62,7 @@ class Report
       package = Axlsx::Package.new
       workbook = package.workbook
 
-      workbook.add_worksheet(name: "Relatório") do |sheet|
+      workbook.add_worksheet(name: t("reports.export.sheet_name")) do |sheet|
         header_style = workbook.styles.add_style(b: true)
         date_style = workbook.styles.add_style(format_code: "yyyy-mm-dd")
 
@@ -97,7 +89,7 @@ class Report
           row.description.to_s,            # 3 Descrição
           row.task&.name.to_s,             # 4 Tarefa
           row.tags.map(&:name).sort.join(", "), # 5 Tags
-          row.billable? ? "Sim" : "Não",  # 6 Faturável (pt-BR)
+          row.billable? ? t("common.yes") : t("common.no"),  # 6 Faturável
           local_date(row.started_at),      # 7 Data início (Date local)
           local_time(row.started_at),      # 8 Hora início (HH:MM local)
           local_date(row.ended_at),        # 9 Data fim
@@ -114,6 +106,27 @@ class Report
       # pra o Excel enxergar data real; o resto sem estilo (número/texto nativos).
       def row_styles(row, date_style)
         row.each_index.map { |i| [ 6, 8 ].include?(i) ? date_style : nil }
+      end
+
+      def base_headers
+        [
+          t("reports.export.headers.project"),
+          t("reports.export.headers.client"),
+          t("reports.export.headers.description"),
+          t("reports.export.headers.task"),
+          t("reports.export.headers.tags"),
+          t("reports.export.headers.billable"),
+          t("reports.export.headers.start_date"),
+          t("reports.export.headers.start_time"),
+          t("reports.export.headers.end_date"),
+          t("reports.export.headers.end_time"),
+          t("reports.export.headers.duration_h"),
+          t("reports.export.headers.duration_decimal")
+        ]
+      end
+
+      def t(key, **options)
+        I18n.t(key, **options)
       end
 
       # No CSV, Date/Time viram ISO; o resto vira string via CSV padrão.

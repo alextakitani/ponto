@@ -40,9 +40,9 @@ class Project < ApplicationRecord
 
   validates :name, presence: true
   # Nome ÚNICO por user, INCLUINDO arquivados (Q44). UX de colisão-com-arquivado no form.
-  validates :name, uniqueness: { scope: :user_id, message: "já está em uso" }
+  validates :name, uniqueness: { scope: :user_id, message: :taken }
   validates :color, presence: true, format: {
-    with: /\A#\h{6}\z/, message: "não é uma cor válida"
+    with: /\A#\h{6}\z/, message: :invalid_color
   }
   validate :client_belongs_to_user
 
@@ -117,7 +117,7 @@ class Project < ApplicationRecord
     # carregar o record alheio inteiro. Sem cliente = ok (Q2).
     def client_belongs_to_user
       if client && client.user_id != user_id
-        errors.add(:client, "não pertence a você")
+        errors.add(:client, :not_owned)
       end
     end
 end

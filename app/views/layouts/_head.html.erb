@@ -1,7 +1,7 @@
 <%# <head> comum aos dois layouts (application = auth/landing; app = shell interno).
     Título/meta/CSS/importmap num lugar só, sem duplicação. %>
 <title><%= content_for(:title) || "Ponto" %></title>
-<meta name="description" content="<%= content_for(:description) || "Ponto — time tracker self-hosted" %>">
+<meta name="description" content="<%= content_for(:description) || t("shell.meta.description") %>">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="application-name" content="Ponto">

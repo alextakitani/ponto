@@ -17,7 +17,7 @@ module TimeEntries
 
       respond_to do |format|
         format.turbo_stream { render "time_entries/splits/create" }
-        format.html { redirect_to home_path, notice: "Entrada dividida." }
+        format.html { redirect_to home_path, notice: t("time_entries.splits.create.created") }
         format.json { head :no_content }
       end
     rescue ArgumentError => e
@@ -36,7 +36,7 @@ module TimeEntries
 
       def cut_at
         raw = params.require(:split).permit(:cut)[:cut].to_s
-        raise ArgumentError, "informe o ponto de corte" if raw.blank?
+        raise ArgumentError, t("time_entries.splits.errors.blank_cut") if raw.blank?
 
         parse_user_datetime(raw)
       end
@@ -45,7 +45,7 @@ module TimeEntries
         return value if value.match?(/[zZ]|[+-]\d{2}:\d{2}\z/)
 
         zone = ActiveSupport::TimeZone[Current.user.time_zone] || Time.zone
-        zone.parse(value) or raise ArgumentError, "ponto de corte inválido"
+        zone.parse(value) or raise ArgumentError, t("time_entries.splits.errors.invalid_cut")
       end
 
       def render_split_error(message)

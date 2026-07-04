@@ -1,6 +1,6 @@
 <div id="sign_in_form" class="card">
-  <h1>Entrar no Ponto</h1>
-  <p class="muted">Enviamos um código de 6 dígitos para o seu e-mail.</p>
+  <h1><%= t("sessions.email_form.title") %></h1>
+  <p class="muted"><%= t("sessions.email_form.description") %></p>
 
   <%# Aviso de operador (Q38): partial compartilhado (mesma copy da landing). %>
   <%= render "shared/bootstrap_notice" if User.bootstrap_blocked? %>
@@ -9,7 +9,7 @@
       aqui fica só o link contextual "pedir acesso", puxado pela chave dedicada
       account_missing. O link aponta pra root_path = landing pública (form de acesso). %>
   <% if flash[:account_missing] %>
-    <p class="muted"><%= link_to "Pedir acesso", root_path %></p>
+    <p class="muted"><%= link_to t("sessions.email_form.request_access"), root_path %></p>
   <% end %>
 
   <%= form_with url: sign_in_path, method: :post do |f| %>
@@ -17,7 +17,7 @@
           required: true,
           autofocus: true,
           autocomplete: "email",
-          placeholder: "voce@exemplo.com" %>
-    <%= f.submit "Enviar código" %>
+          placeholder: t("sessions.email_form.email_placeholder") %>
+    <%= f.submit t("sessions.email_form.submit") %>
   <% end %>
 </div>

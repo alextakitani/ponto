@@ -17,14 +17,6 @@ class Report
       "description" => ->(row) { row.description.presence }
     }.freeze
 
-    EMPTY_LABELS = {
-      "project"     => "(sem projeto)",
-      "client"      => "(sem cliente)",
-      "task"        => "(sem tarefa)",
-      "tag"         => "(sem tag)",
-      "description" => "(sem descrição)"
-    }.freeze
-
     def initialize(rows:, group_by:)
       @rows = rows
       @dimensions = Array(group_by).map(&:to_s).select { |d| DIMENSIONS.key?(d) }.first(2)
@@ -41,7 +33,7 @@ class Report
       # subdivide cada grupo. Ordena por duração desc.
       def build(rows, dims)
         dimension, *rest = dims
-        label = EMPTY_LABELS.fetch(dimension)
+        label = I18n.t("reports.empty_group_labels.#{dimension}")
         extractor = DIMENSIONS.fetch(dimension)
         groups_for(rows, extractor:, empty_label: label)
           .map do |title, group_rows|

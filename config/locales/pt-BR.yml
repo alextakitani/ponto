@@ -1,6 +1,5 @@
-# Copy da landing bilíngue (Q79). Esta é a FONTE CANÔNICA — a copy pt-BR do
-# copy pass do Alex, verbatim. A en.yml é a tradução. Só a landing é traduzida;
-# o resto do app segue com strings hardcoded PT (fora de escopo).
+# Copy pt-BR bilíngue (Q79). Esta é a FONTE CANÔNICA — a copy pt-BR do
+# app; a en.yml é a tradução. Landing e app interno devem ter cobertura completa.
 #
 # Chaves HTML (`_html`): o Rails marca como html_safe. Usamos só onde a copy
 # original tinha <strong>/<br>/&nbsp; embutidos; o texto continua sendo a nossa
@@ -120,15 +119,555 @@ pt-BR:
       rate_limited: "Muitos pedidos. Aguarde um minuto."
   shared:
     bootstrap_notice: "Nenhuma conta existe e ADMIN_EMAIL não está configurado — defina a variável de ambiente e recarregue."
+    forbidden:
+      title: "Acesso negado"
+      message: "Você não tem permissão para acessar esta página."
+      back: "Voltar ao início"
+  date:
+    abbr_day_names: ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"]
+    day_names: ["domingo", "segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sábado"]
+    formats:
+      short: "%d/%m %H:%M"
+      numeric: "%d/%m/%Y"
+      day_month: "%d/%m"
+  time:
+    formats:
+      short: "%d/%m %H:%M"
+  common:
+    none: "—"
+    middle_dot: " · "
+    coming_soon: "em breve"
+    archived: "arquivado"
+    archived_feminine: "arquivada"
+    "yes": "Sim"
+    "no": "Não"
+    search_by_name: "Buscar por nome…"
+    view_active: "← Ver ativos"
+    view_archived: "Ver arquivados"
+    view_active_feminine: "← Ver ativas"
+    view_archived_feminine: "Ver arquivadas"
+    actions:
+      add: "Adicionar"
+      apply: "Aplicar"
+      archive: "Arquivar"
+      cancel: "Cancelar"
+      clear: "Limpar"
+      delete: "Deletar"
+      edit: "Editar"
+      rename: "Renomear"
+      save: "Salvar"
+      unarchive: "Desarquivar"
+    labels:
+      actions: "Ações"
+      amount: "Valor"
+      billable: "Faturável"
+      client: "Cliente"
+      color: "Cor"
+      currency: "Moeda"
+      description: "Descrição"
+      duration: "Duração"
+      end: "Fim"
+      hourly_rate: "Valor por hora"
+      name: "Nome"
+      note: "Observação"
+      project: "Projeto"
+      rate_short: "Valor/hora"
+      start: "Início"
+      tag: "Tag"
+      tags: "Tags"
+      task: "Tarefa"
+    placeholders:
+      rate: "ex.: 150,00"
+  pwa:
+    manifest:
+      description: "Time tracker self-hosted, no espírito Clockify/Toggl mas enxuto — cada conta na própria bolha isolada."
+  shell:
+    meta:
+      description: "Ponto — time tracker self-hosted"
+    timer_loading: "Carregando timer…"
+    nav:
+      main: "Navegação principal"
+      mobile: "Navegação mobile"
+      tracker: "Tracker"
+      reports: "Relatórios"
+      projects: "Projetos"
+      clients: "Clientes"
+      tags: "Tags"
+      preferences: "Preferências"
+      more: "Mais"
+      sign_out: "Sair"
+    command:
+      open: "Abrir comandos"
+      search_label: "Buscar ação"
+      placeholder: "Digite para filtrar comandos"
+      groups:
+        timer: "Timer"
+        navigation: "Navegação"
+        recent: "Recentes"
+      timer:
+        stop: "Parar"
+        stop_hint: "Finaliza o timer em andamento"
+        start: "Iniciar"
+        start_hint: "Foca a descrição do timer"
+      navigation:
+        tracker: "Ir para o tracker"
+        reports: "Ir para relatórios"
+        projects: "Ir para projetos"
+        clients: "Ir para clientes"
+        tags: "Ir para tags"
+      recent:
+        resume: "Retomar %{description}"
+      search_terms:
+        stop_timer: "parar timer"
+        start_timer: "iniciar timer"
+        nav_tracker: "tracker navegação"
+        nav_reports: "relatórios reports navegação"
+        nav_projects: "projetos projects navegação"
+        nav_clients: "clientes clients navegação"
+        nav_tags: "tags etiquetas navegação"
+  auth:
+    errors:
+      suspended: "conta suspensa"
+      sign_in_required: "Faça login para continuar."
+      unauthorized: "unauthorized"
+  sessions:
+    create:
+      account_missing: "Essa conta não existe. Peça acesso na página inicial."
+      welcome: "Bem-vindo!"
+      invalid_code: "Código inválido ou expirado."
+    destroy:
+      signed_out: "Você saiu."
+    verify:
+      email_required: "Informe seu e-mail para entrar."
+    rate_limited: "Muitas tentativas. Aguarde um minuto."
+    email_form:
+      title: "Entrar no Ponto"
+      description: "Enviamos um código de 6 dígitos para o seu e-mail."
+      request_access: "Pedir acesso"
+      email_placeholder: "voce@exemplo.com"
+      submit: "Enviar código"
+    code_form:
+      title: "Digite o código"
+      description_html: "Enviamos um código de 6 dígitos para <strong>%{email}</strong>. Ele expira em 15 minutos."
+      dev_code_html: "Dev: código <strong>%{code}</strong>"
+      submit: "Entrar"
+      use_another_email: "Usar outro e-mail"
+  suspensions:
+    show:
+      title: "Conta suspensa"
+      message: "Sua conta está suspensa e o acesso ao Ponto está temporariamente bloqueado. Fale com o administrador para reativá-la."
+  admin:
+    labels:
+      actions: "Ações"
+      admin: "Admin"
+      date: "Data"
+      email: "E-mail"
+      name: "Nome"
+      note: "Observação"
+      status: "Status"
+    dashboard:
+      show:
+        title: "Admin"
+        lede: "Gerencie contas e pedidos de acesso. (Dados de domínio não aparecem aqui.)"
+        access_requests:
+          title: "Pedidos de acesso"
+        invite:
+          title: "Convidar"
+          email_placeholder: "email@exemplo.com"
+          name_placeholder: "Nome (opcional)"
+          submit: "Convidar"
+        users:
+          title: "Contas"
+    access_requests:
+      actions:
+        approve: "Aprovar"
+        reject: "Rejeitar"
+      approvals:
+        created: "Pedido de %{email} aprovado."
+      rejections:
+        created: "Pedido de %{email} recusado."
+    users:
+      current_user: "(você)"
+      delete_warning: "Isso apaga a conta e TODOS os dados dela, de forma permanente. Exporte os dados antes se precisar — o export estará disponível em breve."
+      confirm_delete_html: "Para confirmar, digite <strong>%{email}</strong>:"
+      statuses:
+        invited: "Convidado"
+        active: "Ativo"
+        suspended: "Suspenso"
+      actions:
+        delete: "Deletar…"
+        delete_permanently: "Deletar definitivamente"
+        demote: "Rebaixar"
+        promote: "Promover a admin"
+        reactivate: "Reativar"
+        resend_invite: "Reenviar convite"
+        suspend: "Suspender"
+      create:
+        invited: "Convite enviado para %{email}."
+      destroy:
+        removed: "Conta de %{email} removida."
+        confirmation_mismatch: "Confirmação não confere: digite o e-mail exato da conta."
+      admin_roles:
+        created: "%{email} agora é admin."
+        destroyed: "%{email} não é mais admin."
+      invitations:
+        created: "Convite reenviado para %{email}."
+        already_joined: "%{email} já entrou — não há convite a reenviar."
+      suspensions:
+        created: "Conta de %{email} suspensa."
+        destroyed: "Conta de %{email} reativada."
+  preferences:
+    update:
+      invalid_time_zone: "Fuso horário inválido."
+      updated: "Preferências atualizadas."
+    access_tokens:
+      invalid_permission: "Permissão inválida."
+      created: "Token criado."
+      revoked: "Token revogado."
+    show:
+      title: "Preferências"
+      lede: "Ajustes da sua conta, tokens para automação e controles de dados."
+      profile:
+        title: "Perfil"
+        description: "Seu nome aparece na interface. O e-mail é usado para login e não é editável por aqui."
+        name: "Nome"
+        email: "E-mail"
+        time_zone: "Fuso horário"
+        time_zone_hint: "Usado no tracker e nos relatórios."
+        locale: "Idioma"
+        locale_hint: "Automático usa a preferência do navegador quando não há escolha salva."
+        locales:
+          auto: "Automático"
+          pt_BR: "Português"
+          en: "English"
+        theme: "Tema"
+        theme_hint: "Sistema segue a preferência do dispositivo."
+        themes:
+          system: "Sistema"
+          light: "Claro"
+          dark: "Escuro"
+        submit: "Salvar perfil"
+      tokens:
+        title: "Extensão & CLI"
+        description: "Tokens autorizam a extensão Chrome e o futuro CLI ponto. Guarde o valor ao criar; depois ele não será exibido novamente."
+        created: "Token criado. Copie agora:"
+        label: "Rótulo"
+        label_placeholder: "Extensão do notebook"
+        permission: "Permissão"
+        submit: "Criar token"
+        last_used: "Último uso"
+        no_label: "Sem rótulo"
+        revoke_confirm: "Revogar este token? Essa ação não pode ser desfeita."
+        revoke: "Revogar"
+        empty: "Nenhum token criado ainda."
+        never: "nunca"
+      data:
+        title: "Meus dados"
+        description: "Exportação de dados da conta entrará junto com o importador."
+        export_soon: "Exportar meus dados (em breve)"
+  clients:
+    archivals:
+      created: "Cliente arquivado."
+      destroyed: "Cliente desarquivado."
+    create:
+      created: "Cliente criado."
+    update:
+      updated: "Cliente atualizado."
+    destroy:
+      destroyed: "Cliente removido."
+    client:
+      actions_label: "Ações de %{name}"
+      delete_confirm: "Deletar “%{name}” definitivamente? Esta ação não pode ser desfeita."
+    form:
+      archived_conflict_html: "Já existe um cliente com esse nome (arquivado). %{link} em vez de criar outro."
+      unarchive_it: "Desarquive-o"
+      currency_aria: "Moeda do cliente"
+      create: "Criar cliente"
+    edit:
+      title: "Editar cliente"
+    new:
+      title: "Novo cliente"
+    index:
+      title: "Clientes"
+      lede: "Cadastre seus clientes e a taxa faturável por hora de cada um."
+      new: "Novo cliente"
+      search_aria: "Buscar clientes por nome"
+      empty:
+        search: "Nenhum cliente encontrado para “%{query}”."
+        archived: "Nenhum cliente arquivado por aqui."
+        title: "Comece cadastrando um cliente"
+        description: "Um cliente guarda a taxa faturável por hora e a moeda. Depois você aponta seus projetos e horas para ele — e o relatório mensal sai pronto."
+        cta: "Cadastrar primeiro cliente"
+  projects:
+    archivals:
+      created: "Projeto arquivado."
+      destroyed: "Projeto desarquivado."
+    defaults:
+      created: "Projeto padrão definido."
+      destroyed: "Projeto padrão removido."
+    create:
+      created: "Projeto criado."
+    update:
+      updated: "Projeto atualizado."
+    destroy:
+      destroyed: "Projeto removido."
+    form:
+      archived_conflict_html: "Já existe um projeto com esse nome (arquivado). %{link} em vez de criar outro."
+      unarchive_it: "Desarquive-o"
+      no_client: "Sem cliente"
+      color_aria: "Cor do projeto"
+      color_option: "Cor %{hex}"
+      rate_optional: "Valor por hora (opcional)"
+      create: "Criar projeto"
+      rate_hints:
+        no_client: "Sem cliente → defina um valor ou o projeto fica sem taxa."
+        client_without_rate: "Este cliente não tem taxa → defina um valor ou o projeto fica sem taxa."
+        inherited: "Herdando do cliente: %{rate} — preencha para sobrescrever."
+    project:
+      actions_label: "Ações de %{name}"
+      default_badge: "Padrão"
+      from_client: "do cliente"
+      remove_default: "Remover padrão"
+      set_default: "Definir como padrão"
+      delete_confirm: "Deletar “%{name}” definitivamente? Esta ação não pode ser desfeita."
+    edit:
+      title: "Editar projeto"
+    new:
+      title: "Novo projeto"
+    index:
+      title: "Projetos"
+      lede: "Organize suas horas por projeto — cada um herda a taxa do cliente ou define a sua."
+      new: "Novo projeto"
+      search_aria: "Buscar projetos por nome"
+      all_clients: "Todos os clientes"
+      filter_client_aria: "Filtrar por cliente"
+      registered: "Registrado"
+      empty:
+        search: "Nenhum projeto encontrado para “%{query}”."
+        archived: "Nenhum projeto arquivado por aqui."
+        title: "Comece criando um projeto"
+        description: "Um projeto agrupa suas horas e pode herdar a taxa faturável do cliente (ou definir a sua). Depois você registra o tempo nele."
+        cta: "Criar primeiro projeto"
+    tasks:
+      title: "Tarefas"
+      description: "Sub-buckets do projeto para separar tipos de trabalho."
+      empty: "Nenhuma tarefa ainda. Crie a primeira abaixo."
+      create:
+        created: "Tarefa criada."
+      update:
+        updated: "Tarefa atualizada."
+      destroy:
+        destroyed: "Tarefa removida."
+      archivals:
+        created: "Tarefa arquivada."
+        destroyed: "Tarefa desarquivada."
+      form:
+        archived_conflict: "Já existe uma tarefa arquivada com esse nome — desarquive-a em vez de criar outra."
+        placeholder: "Nova tarefa…"
+        name_aria: "Nome da tarefa"
+      task:
+        delete_confirm: "Deletar a tarefa “%{name}”?"
+  tags:
+    archivals:
+      created: "Tag arquivada."
+      destroyed: "Tag desarquivada."
+    create:
+      created: "Tag criada."
+    update:
+      updated: "Tag atualizada."
+    destroy:
+      destroyed: "Tag removida."
+      used_tag: "Esta tag já foi usada em entradas. Arquive-a em vez de deletar."
+    form:
+      archived_conflict_html: "Já existe uma tag com esse nome (arquivada). %{link} em vez de criar outra."
+      unarchive_it: "Desarquive-a"
+      create: "Criar tag"
+    tag:
+      actions_label: "Ações de %{name}"
+      delete_confirm: "Deletar “%{name}” definitivamente? Esta ação não pode ser desfeita."
+    edit:
+      title: "Editar tag"
+    new:
+      title: "Nova tag"
+    index:
+      title: "Tags"
+      lede: "Classifique entradas com etiquetas livres para filtrar e agrupar depois."
+      new: "Nova tag"
+      search_aria: "Buscar tags por nome"
+      empty:
+        search: "Nenhuma tag encontrada para “%{query}”."
+        archived: "Nenhuma tag arquivada por aqui."
+        title: "Comece criando uma tag"
+        description: "Tags ajudam a cortar o histórico por assunto, contexto ou prioridade sem mexer na estrutura de clientes, projetos e tarefas."
+        cta: "Criar primeira tag"
+  tracker:
+    title: "Tracker"
+    today: "Hoje"
+    yesterday: "Ontem"
+    running: "Rodando"
+    no_description: "Sem descrição"
+    no_project: "(sem projeto)"
+    no_project_plain: "Sem projeto"
+    no_client: "(sem cliente)"
+    no_task: "Sem task"
+    description_placeholder: "No que você está trabalhando?"
+    load_more: "Carregar mais"
+    empty:
+      title: "Comece seu primeiro timer"
+      description: "Escolha um projeto se quiser, descreva o trabalho e inicie o cronômetro para registrar sua primeira entrada."
+  timers:
+    create:
+      started: "Timer iniciado."
+      already_running: "Timer já está rodando."
+      already_running_json: "timer já está rodando"
+    destroy:
+      discarded: "Timer descartado."
+      stopped: "Timer parado."
+      not_found: "timer não encontrado"
+    bar:
+      running: "Timer em andamento"
+      start: "Iniciar"
+      stop: "Parar"
+  time_entries:
+    create:
+      created: "Entrada criada."
+    update:
+      updated: "Entrada atualizada."
+    destroy:
+      destroyed: "Entrada removida."
+    entry:
+      actions_label: "Ações de %{description}"
+      duplicate: "Duplicar"
+      split: "Dividir"
+      cut_at: "Cortar em"
+      delete_confirm: "Excluir esta entrada?"
+    manual:
+      add_manually: "Adicionar manualmente"
+      description_placeholder: "No que você trabalhou?"
+      duration_placeholder: "2:30 ou 2h30"
+    tags:
+      new_tag: "Nova tag"
+      placeholder: "Criar tag inline"
+    show:
+      title: "Entrada"
+    splits:
+      create:
+        created: "Entrada dividida."
+      errors:
+        blank_cut: "informe o ponto de corte"
+        invalid_cut: "ponto de corte inválido"
+  reports:
+    index:
+      title: "Relatórios"
+      lede: "O resumo consolidado do seu tempo. Entradas em andamento ficam de fora."
+      export: "Exportar"
+    bars:
+      aria: "Horas por dia"
+    donut:
+      aria: "Distribuição do tempo por projeto"
+    detailed:
+      empty_description: "Ajuste o período ou os filtros para ver suas entradas."
+    summary:
+      group_hint: "Escolha uma dimensão em \"Agrupar por\" para ver o resumo detalhado."
+      empty_description: "Ajuste o período ou os filtros para ver seu resumo."
+    empty:
+      title: "Nada neste período"
+    filters:
+      title: "Filtros"
+      description_contains: "Descrição contém"
+      search_placeholder: "buscar…"
+      group_by: "Agrupar por"
+      then_by: "Depois por"
+      billable:
+        all: "Todos"
+        only_billable: "Só faturável"
+        only_not: "Só não"
+      rounding:
+        title: "Arredondamento"
+        per_entry: "Arredondar por entrada"
+        nearest: "Mais próximo"
+        up: "Pra cima"
+        down: "Pra baixo"
+    period:
+      aria: "Período do relatório"
+      previous: "Período anterior"
+      next: "Próximo período"
+      from: "Data inicial"
+      to: "Data final"
+      presets:
+        today: "Hoje"
+        week: "Esta semana"
+        month: "Este mês"
+        year: "Este ano"
+    metrics:
+      aria: "Totais do período"
+      total: "Total"
+    tabs:
+      aria: "Visões do relatório"
+      summary: "Resumo"
+      detailed: "Detalhado"
+    group_dimensions:
+      project: "Projeto"
+      client: "Cliente"
+      task: "Tarefa"
+      tag: "Tag"
+      description: "Descrição"
+      group: "Grupo"
+    empty_group_labels:
+      project: "(sem projeto)"
+      client: "(sem cliente)"
+      task: "(sem tarefa)"
+      tag: "(sem tag)"
+      description: "(sem descrição)"
+    export:
+      sheet_name: "Relatório"
+      headers:
+        project: "Projeto"
+        client: "Cliente"
+        description: "Descrição"
+        task: "Tarefa"
+        tags: "Tags"
+        billable: "Faturável"
+        start_date: "Data início"
+        start_time: "Hora início"
+        end_date: "Data fim"
+        end_time: "Hora fim"
+        duration_h: "Duração (h)"
+        duration_decimal: "Duração (decimal)"
+        hourly_rate: "Valor/hora"
+        amount: "Valor"
+        currency: "Moeda"
+  invitation_mailer:
+    created:
+      subject: "Sua conta no Ponto foi criada"
+      greeting: "Olá%{name},"
+      created_html: "Sua conta no <strong>Ponto</strong> foi criada. Bem-vindo!"
+      created_text: "Sua conta no Ponto foi criada. Bem-vindo!"
+      instructions: "Para entrar, use o link abaixo e informe seu e-mail — enviaremos um código de acesso na hora:"
+      sign_in: "Entrar no Ponto"
+      passwordless: "É só isso: sem senha. O código chega por e-mail sempre que você for entrar."
+  sign_in_mailer:
+    code:
+      subject: "Seu código de acesso ao Ponto: %{code}"
+      greeting: "Olá%{name},"
+      intro_html: "Seu código de acesso ao <strong>Ponto</strong> é:"
+      intro_text: "Seu código de acesso ao Ponto é: %{code}"
+      expiration: "Ele expira em 15 minutos e só pode ser usado uma vez."
+      ignore: "Se você não pediu este código, ignore este e-mail."
   # Mensagens de erro de validação do Active Record em pt-BR (default do app).
   # NÃO é a suíte completa do rails-i18n — só as chaves que a nossa UI de fato
   # exibe ao usuário (User#email presence/uniqueness/format + a exceção
   # RecordInvalid reembrulhada em User#suspend!). Validações customizadas usam
   # strings literais no próprio model, então não passam por aqui.
   errors:
+    forbidden: "forbidden"
     format: "%{attribute} %{message}"
     messages:
       record_invalid: "A validação falhou: %{errors}"
+      blank: "não pode ficar em branco"
+      taken: "já está em uso"
+      invalid: "não é válido"
+      inclusion: "não está incluído na lista"
   activerecord:
     errors:
       messages:
@@ -136,3 +675,4 @@ pt-BR:
         blank: "não pode ficar em branco"
         taken: "já está em uso"
         invalid: "não é válido"
+        inclusion: "não está incluído na lista"

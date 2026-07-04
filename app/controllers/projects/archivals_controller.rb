@@ -7,12 +7,12 @@ module Projects
 
     def create
       @project.archive!
-      redirect_to projects_path, notice: "Projeto arquivado."
+      redirect_to projects_path, notice: t("projects.archivals.created")
     end
 
     def destroy
       @project.unarchive!
-      redirect_to projects_path(archived: "1"), notice: "Projeto desarquivado."
+      redirect_to projects_path(archived: "1"), notice: t("projects.archivals.destroyed")
     end
 
     private

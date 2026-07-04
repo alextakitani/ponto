@@ -13,10 +13,10 @@ module ReportsHelper
   # Amounts por MOEDA (Q43): nunca soma moedas diferentes. Recebe o Hash currency=>cents
   # (de Totals#amounts ou Group#amounts) e devolve uma string "R$ X · € Y". Vazio → "—".
   def report_amounts(amounts)
-    return content_tag(:span, "—", class: "muted") if amounts.blank?
+    return content_tag(:span, t("common.none"), class: "muted") if amounts.blank?
 
     parts = amounts.map { |currency, cents| humanized_money_with_symbol(Money.new(cents, currency)) }
-    safe_join(parts, content_tag(:span, " · ", class: "muted", "aria-hidden": true))
+    safe_join(parts, content_tag(:span, t("common.middle_dot"), class: "muted", "aria-hidden": true))
   end
 
   # Rótulo humano do período ativo (pra o header e as setas).
@@ -60,8 +60,18 @@ module ReportsHelper
 
   # Rótulo humano de uma dimensão de agrupamento (pro cabeçalho da tabela do Summary).
   def report_group_dimension_label(dimension)
-    { "project" => "Projeto", "client" => "Cliente", "task" => "Tarefa", "tag" => "Tag", "description" => "Descrição" }
-      .fetch(dimension.to_s, "Grupo")
+    t("reports.group_dimensions.#{dimension}", default: t("reports.group_dimensions.group"))
+  end
+
+  def reports_group_options
+    [
+      [ t("common.none"), "" ],
+      [ t("reports.group_dimensions.project"), "project" ],
+      [ t("reports.group_dimensions.client"), "client" ],
+      [ t("reports.group_dimensions.task"), "task" ],
+      [ t("reports.group_dimensions.tag"), "tag" ],
+      [ t("reports.group_dimensions.description"), "description" ]
+    ]
   end
 
   # Fatias do donut POR PROJETO (Q21): agrupa as rows por projeto (cor do projeto;
@@ -81,7 +91,7 @@ module ReportsHelper
     ordered.map do |project, rows|
       fraction = rows.sum(&:duration_seconds).to_f / total
       slice = DonutSlice.new(
-        label: project&.name || "(sem projeto)",
+        label: project&.name || t("tracker.no_project"),
         color: project&.color || NO_PROJECT_COLOR,
         fraction: fraction,
         cumulative: cumulative

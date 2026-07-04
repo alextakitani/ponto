@@ -51,7 +51,7 @@ class ProjectsController < ApplicationController
 
     if @project.save
       respond_to do |format|
-        format.html { redirect_to projects_path, notice: "Projeto criado." }
+        format.html { redirect_to projects_path, notice: t("projects.create.created") }
         format.json { render :show, status: :created }
       end
     else
@@ -65,7 +65,7 @@ class ProjectsController < ApplicationController
   def update
     if @project.update(project_params)
       respond_to do |format|
-        format.html { redirect_to projects_path, notice: "Projeto atualizado." }
+        format.html { redirect_to projects_path, notice: t("projects.update.updated") }
         format.json { render :show }
       end
     else
@@ -82,7 +82,7 @@ class ProjectsController < ApplicationController
   def destroy
     @project.destroy
     respond_to do |format|
-      format.html { redirect_to projects_path, notice: "Projeto removido." }
+      format.html { redirect_to projects_path, notice: t("projects.destroy.destroyed") }
       format.json { head :no_content }
     end
   end

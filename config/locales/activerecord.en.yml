@@ -1,0 +1,111 @@
+en:
+  activerecord:
+    attributes:
+      access_request:
+        email: "Email"
+        name: "Name"
+        note: "Note"
+        status: "Status"
+      access_token:
+        label: "Label"
+        permission: "Permission"
+      client:
+        currency: "Currency"
+        name: "Name"
+        note: "Note"
+        rate: "Hourly rate"
+      project:
+        client: "Client"
+        color: "Color"
+        default_project: "Default project"
+        name: "Name"
+        rate: "Hourly rate"
+      tag:
+        name: "Name"
+      tagging:
+        tag: "Tag"
+      task:
+        name: "Name"
+        project: "Project"
+      time_entry:
+        billable: "Billable"
+        description: "Description"
+        ended_at: "End"
+        project: "Project"
+        started_at: "Start"
+        tags: "Tags"
+        task: "Task"
+      user:
+        admin: "Admin"
+        default_project: "Default project"
+        email: "Email"
+        locale: "Language"
+        name: "Name"
+        suspended_at: "Suspension"
+        theme: "Theme"
+        time_zone: "Time zone"
+    errors:
+      models:
+        access_request:
+          invalid_transition: "request has already been resolved (%{status})"
+        client:
+          attributes:
+            currency:
+              unknown_currency: "is not a valid currency"
+            rate:
+              invalid_rate: "is not a valid amount"
+        project:
+          attributes:
+            client:
+              not_owned: "does not belong to you"
+            color:
+              invalid_color: "is not a valid color"
+            rate:
+              invalid_rate: "is not a valid amount"
+        tag:
+          attributes:
+            base:
+              restrict_dependent_destroy:
+                has_many: "cannot be removed: it still has linked entries. Archive it instead of deleting."
+        tagging:
+          attributes:
+            tag:
+              not_owned: "does not belong to you"
+        task:
+          attributes:
+            project:
+              not_owned: "does not belong to you"
+        time_entry:
+          split:
+            cut_between: "the split point must be between the start and end"
+            finished_only: "only finished entries can be split"
+          attributes:
+            ended_at:
+              after_started_at: "must be after the start"
+            project:
+              not_owned: "does not belong to you"
+            tags:
+              not_owned: "contains an item that does not belong to you"
+            task:
+              not_owned: "does not belong to you"
+              project_mismatch: "does not belong to the project"
+              requires_project: "requires a project"
+        user:
+          last_admin:
+            suspend: "cannot suspend the last active admin"
+          attributes:
+            admin:
+              last_active_admin_demotion: "cannot demote the last active admin"
+            base:
+              last_active_admin_destroy: "cannot remove the last active admin"
+            default_project:
+              not_owned: "does not belong to you"
+            suspended_at:
+              last_active_admin_suspension: "cannot suspend the last active admin"
+      messages:
+        blank: "can't be blank"
+        invalid: "is invalid"
+        inclusion: "is not included in the list"
+        restrict_dependent_destroy:
+          has_many: "cannot be removed: it still has linked %{record}. Archive it instead of deleting."
+        taken: "has already been taken"

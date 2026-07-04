@@ -3,6 +3,6 @@
 <%= turbo_stream.replace dom_id(@task) do %>
   <li id="<%= dom_id(@task) %>" class="task-row task-row--editing">
     <%= render "projects/tasks/form", project: @task.project, task: @task %>
-    <%= link_to "Cancelar", edit_project_path(@task.project), class: "btn btn--quiet btn--sm" %>
+    <%= link_to t("common.actions.cancel"), edit_project_path(@task.project), class: "btn btn--quiet btn--sm" %>
   </li>
 <% end %>

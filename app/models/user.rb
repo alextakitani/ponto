@@ -2,6 +2,7 @@ class User < ApplicationRecord
   # Erro de domínio (Q34c): o sistema nunca pode ficar sem ≥1 admin ATIVO.
   LastAdminError = Class.new(StandardError)
   THEMES = %w[system light dark].freeze
+  LOCALES = %w[pt-BR en].freeze
 
   has_many :sessions, dependent: :destroy
   has_many :sign_in_codes, dependent: :destroy
@@ -18,10 +19,12 @@ class User < ApplicationRecord
   belongs_to :default_project, class_name: "Project", optional: true
 
   normalizes :email, with: ->(value) { value.strip.downcase.presence }
+  normalizes :locale, with: ->(value) { value.to_s.presence }
 
   validates :email, presence: true, uniqueness: true,
                     format: { with: URI::MailTo::EMAIL_REGEXP }
-  validates :theme, inclusion: { in: THEMES, message: "não é válido" }
+  validates :theme, inclusion: { in: THEMES, message: :invalid }
+  validates :locale, inclusion: { in: LOCALES, allow_nil: true }
 
   # Invariante ≥1 admin ATIVO (Q34c). Admin suspenso NÃO conta como ativo.
   # - rebaixar (admin: true -> false) o último admin ativo: falha na validação;
@@ -107,7 +110,7 @@ class User < ApplicationRecord
   def suspend!
     update!(suspended_at: Time.current)
   rescue ActiveRecord::RecordInvalid
-    raise LastAdminError, "não é possível suspender o último admin ativo"
+    raise LastAdminError, I18n.t("activerecord.errors.models.user.last_admin.suspend")
   end
 
   def reactivate!
@@ -170,7 +173,7 @@ class User < ApplicationRecord
     # sem admin ativo.
     return unless no_other_active_admin?
 
-    errors.add(:admin, "não pode rebaixar o último admin ativo")
+    errors.add(:admin, :last_active_admin_demotion)
   end
 
   def must_keep_one_active_admin_on_suspend
@@ -178,19 +181,19 @@ class User < ApplicationRecord
     # admin ativo.
     return unless no_other_active_admin?
 
-    errors.add(:suspended_at, "não pode suspender o último admin ativo")
+    errors.add(:suspended_at, :last_active_admin_suspension)
   end
 
   def must_keep_one_active_admin_on_destroy
     return unless last_active_admin?
 
-    errors.add(:base, "não é possível remover o último admin ativo")
+    errors.add(:base, :last_active_admin_destroy)
     throw :abort
   end
 
   def default_project_belongs_to_user
     if default_project && default_project.user_id != id
-      errors.add(:default_project, "não pertence a você")
+      errors.add(:default_project, :not_owned)
     end
   end
 end

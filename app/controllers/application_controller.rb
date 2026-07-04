@@ -40,7 +40,7 @@ class ApplicationController < ActionController::Base
     def deny_access
       respond_to do |format|
         format.html { render "shared/forbidden", status: :forbidden }
-        format.json { render json: { error: "forbidden" }, status: :forbidden }
+        format.json { render json: { error: t("errors.forbidden") }, status: :forbidden }
       end
     end
 end

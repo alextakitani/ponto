@@ -7,11 +7,11 @@
   <td class="admin__actions">
     <%= button_to admin_access_request_approval_path(access_request), class: "btn btn--quiet" do %>
       <%= icon("check") %>
-      Aprovar
+      <%= t("admin.access_requests.actions.approve") %>
     <% end %>
     <%= button_to admin_access_request_rejection_path(access_request), class: "btn btn--quiet" do %>
       <%= icon("x") %>
-      Rejeitar
+      <%= t("admin.access_requests.actions.reject") %>
     <% end %>
   </td>
 </tr>

@@ -6,8 +6,8 @@
   <% else %>
     <div class="empty-state">
       <%= icon("timer", class: "icon--lg") %>
-      <h2>Comece seu primeiro timer</h2>
-      <p class="muted">Escolha um projeto se quiser, descreva o trabalho e inicie o cronômetro para registrar sua primeira entrada.</p>
+      <h2><%= t("tracker.empty.title") %></h2>
+      <p class="muted"><%= t("tracker.empty.description") %></p>
     </div>
   <% end %>
 </div>
@@ -17,7 +17,7 @@
     <%= link_to tracker_entries_path(tracker_next_page_params),
           class: "btn btn--quiet",
           data: { turbo_stream: true } do %>
-      Carregar mais
+      <%= t("tracker.load_more") %>
     <% end %>
   <% end %>
 </div>

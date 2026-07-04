@@ -4,6 +4,6 @@ class InvitationMailer < ApplicationMailer
   # ela pedir pra entrar (SignInMailer). O disparo vem na Task 1.4.
   def created
     @user = params[:user]
-    mail to: @user.email, subject: "Sua conta no Ponto foi criada"
+    mail to: @user.email, subject: t(".subject")
   end
 end

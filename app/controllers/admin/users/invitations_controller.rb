@@ -9,9 +9,9 @@ module Admin
       def create
         if @user.invited?
           InvitationMailer.with(user: @user).created.deliver_later
-          redirect_to admin_root_path, notice: "Convite reenviado para #{@user.email}."
+          redirect_to admin_root_path, notice: t("admin.users.invitations.created", email: @user.email)
         else
-          redirect_to admin_root_path, alert: "#{@user.email} já entrou — não há convite a reenviar."
+          redirect_to admin_root_path, alert: t("admin.users.invitations.already_joined", email: @user.email)
         end
       end
 

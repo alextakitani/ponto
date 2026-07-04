@@ -1,6 +1,6 @@
-<% content_for :title, "Acesso negado" %>
+<% content_for :title, t(".title") %>
 <div class="card">
-  <h1>Acesso negado</h1>
-  <p class="muted">Você não tem permissão para acessar esta página.</p>
-  <%= link_to "Voltar ao início", home_path, class: "btn btn--quiet" %>
+  <h1><%= t(".title") %></h1>
+  <p class="muted"><%= t(".message") %></p>
+  <%= link_to t(".back"), home_path, class: "btn btn--quiet" %>
 </div>

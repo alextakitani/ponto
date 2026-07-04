@@ -1,17 +1,15 @@
 module ProjectsHelper
   # Rate EFETIVA do projeto formatada (override ou herdada — Q22), ou "—" quando não
-  # há rate (Q2). Força pt-BR (a UI interna é sempre pt-BR; Money.locale_backend segue
-  # o request → forçamos aqui, mesmo racional do client_rate). Usa a currency efetiva.
+  # há rate (Q2). Usa a currency efetiva.
   def project_effective_rate(project)
     cents = project.effective_rate_cents
     if cents
       money = Money.new(cents, project.effective_currency)
       # `.format` (não humanized_money_with_symbol) pra SEMPRE mostrar as casas decimais
-      # ("R$ 150,00", não "R$ 150"). Força pt-BR (a UI interna é sempre pt-BR; o
-      # Money.locale_backend seguiria o request → forçamos, mesmo racional do client_rate).
-      I18n.with_locale(:"pt-BR") { money.format }
+      # ("R$ 150,00", não "R$ 150").
+      money.format
     else
-      "—"
+      t("common.none")
     end
   end
 
@@ -46,11 +44,11 @@ module ProjectsHelper
   def project_rate_hint(project)
     rate = client_inherited_rate(project.client)
     if project.client.nil?
-      "Sem cliente → defina um valor ou o projeto fica sem taxa."
+      t("projects.form.rate_hints.no_client")
     elsif rate.nil?
-      "Este cliente não tem taxa → defina um valor ou o projeto fica sem taxa."
+      t("projects.form.rate_hints.client_without_rate")
     else
-      "Herdando do cliente: #{rate} — preencha para sobrescrever."
+      t("projects.form.rate_hints.inherited", rate: rate)
     end
   end
 end

@@ -1,12 +1,12 @@
 <div id="command_palette">
   <dialog class="command-palette" data-command-palette-target="dialog">
     <div class="command-palette__panel">
-      <label class="command-palette__label" for="command_palette_query">Buscar ação</label>
+      <label class="command-palette__label" for="command_palette_query"><%= t("shell.command.search_label") %></label>
       <input id="command_palette_query"
           class="command-palette__search"
           type="search"
           autocomplete="off"
-          placeholder="Digite para filtrar comandos"
+          placeholder="<%= t("shell.command.placeholder") %>"
           role="combobox"
           aria-controls="command_palette_list"
           aria-expanded="false"
@@ -18,7 +18,7 @@
 
       <div id="command_palette_list" class="command-palette__groups" role="listbox" data-command-palette-target="list">
         <section class="command-palette__group" data-command-palette-target="group" role="presentation">
-          <h2>Timer</h2>
+          <h2><%= t("shell.command.groups.timer") %></h2>
           <% if command_palette_current_timer %>
             <%= button_to timer_path, method: :delete,
                   class: "command-palette__item",
@@ -26,9 +26,9 @@
                   role: "option",
                   aria: { selected: false },
                   params: (params[:page].present? ? { page: params[:page] } : {}),
-                  data: { command_palette_target: "item", command_palette_label: "parar timer" } do %>
-              <span>Parar</span>
-              <small>Finaliza o timer em andamento</small>
+                  data: { command_palette_target: "item", command_palette_label: t("shell.command.search_terms.stop_timer") } do %>
+              <span><%= t("shell.command.timer.stop") %></span>
+              <small><%= t("shell.command.timer.stop_hint") %></small>
             <% end %>
           <% else %>
             <button type="button"
@@ -37,61 +37,61 @@
                 aria-selected="false"
                 class="command-palette__item"
                 data-command-palette-target="item"
-                data-command-palette-label="iniciar timer"
+                data-command-palette-label="<%= t("shell.command.search_terms.start_timer") %>"
                 data-action="command-palette#focusTimer">
-              <span>Iniciar</span>
-              <small>Foca a descrição do timer</small>
+              <span><%= t("shell.command.timer.start") %></span>
+              <small><%= t("shell.command.timer.start_hint") %></small>
             </button>
           <% end %>
         </section>
 
         <section class="command-palette__group" data-command-palette-target="group" role="presentation">
-          <h2>Navegação</h2>
+          <h2><%= t("shell.command.groups.navigation") %></h2>
           <%= link_to home_path, class: "command-palette__item",
                 id: "command_palette_item_nav_tracker",
                 role: "option",
                 aria: { selected: false },
-                data: { command_palette_target: "item", command_palette_label: "tracker navegação" } do %>
-            <span>Tracker</span>
-            <small>Ir para o tracker</small>
+                data: { command_palette_target: "item", command_palette_label: t("shell.command.search_terms.nav_tracker") } do %>
+            <span><%= t("shell.nav.tracker") %></span>
+            <small><%= t("shell.command.navigation.tracker") %></small>
           <% end %>
           <%= link_to reports_path, class: "command-palette__item",
                 id: "command_palette_item_nav_reports",
                 role: "option",
                 aria: { selected: false },
-                data: { command_palette_target: "item", command_palette_label: "relatórios reports navegação" } do %>
-            <span>Relatórios</span>
-            <small>Ir para relatórios</small>
+                data: { command_palette_target: "item", command_palette_label: t("shell.command.search_terms.nav_reports") } do %>
+            <span><%= t("shell.nav.reports") %></span>
+            <small><%= t("shell.command.navigation.reports") %></small>
           <% end %>
           <%= link_to projects_path, class: "command-palette__item",
                 id: "command_palette_item_nav_projects",
                 role: "option",
                 aria: { selected: false },
-                data: { command_palette_target: "item", command_palette_label: "projetos projects navegação" } do %>
-            <span>Projetos</span>
-            <small>Ir para projetos</small>
+                data: { command_palette_target: "item", command_palette_label: t("shell.command.search_terms.nav_projects") } do %>
+            <span><%= t("shell.nav.projects") %></span>
+            <small><%= t("shell.command.navigation.projects") %></small>
           <% end %>
           <%= link_to clients_path, class: "command-palette__item",
                 id: "command_palette_item_nav_clients",
                 role: "option",
                 aria: { selected: false },
-                data: { command_palette_target: "item", command_palette_label: "clientes clients navegação" } do %>
-            <span>Clientes</span>
-            <small>Ir para clientes</small>
+                data: { command_palette_target: "item", command_palette_label: t("shell.command.search_terms.nav_clients") } do %>
+            <span><%= t("shell.nav.clients") %></span>
+            <small><%= t("shell.command.navigation.clients") %></small>
           <% end %>
           <%= link_to tags_path, class: "command-palette__item",
                 id: "command_palette_item_nav_tags",
                 role: "option",
                 aria: { selected: false },
-                data: { command_palette_target: "item", command_palette_label: "tags etiquetas navegação" } do %>
-            <span>Tags</span>
-            <small>Ir para tags</small>
+                data: { command_palette_target: "item", command_palette_label: t("shell.command.search_terms.nav_tags") } do %>
+            <span><%= t("shell.nav.tags") %></span>
+            <small><%= t("shell.command.navigation.tags") %></small>
           <% end %>
         </section>
 
         <% if command_palette_recent_time_entries.any? %>
           <section class="command-palette__group" data-command-palette-target="group" role="presentation">
-            <h2>Recentes</h2>
+            <h2><%= t("shell.command.groups.recent") %></h2>
             <% command_palette_recent_time_entries.each do |time_entry| %>
               <%= button_to time_entry_duplicate_path(time_entry),
                     class: "command-palette__item",
@@ -103,7 +103,7 @@
                       command_palette_target: "item",
                       command_palette_label: "#{tracker_entry_description(time_entry)} #{tracker_entry_project_name(time_entry)}"
                     } do %>
-                <span>Retomar <%= tracker_entry_description(time_entry) %></span>
+                <span><%= t("shell.command.recent.resume", description: tracker_entry_description(time_entry)) %></span>
                 <small><%= tracker_entry_project_name(time_entry) %></small>
               <% end %>
             <% end %>

@@ -63,9 +63,9 @@ class TimeEntry < ApplicationRecord
   # Atômico: encurta A + cria B numa transação (rollback total se algo falhar).
   # Retorna a metade B.
   def split_at(cut)
-    raise ArgumentError, "só é possível dividir entradas finalizadas" unless ended_at?
+    raise ArgumentError, I18n.t("activerecord.errors.models.time_entry.split.finished_only") unless ended_at?
     unless cut > started_at && cut < ended_at
-      raise ArgumentError, "o corte deve ficar entre o início e o fim"
+      raise ArgumentError, I18n.t("activerecord.errors.models.time_entry.split.cut_between")
     end
 
     original_ended_at = ended_at
@@ -87,7 +87,7 @@ class TimeEntry < ApplicationRecord
   private
     def ended_at_after_started_at
       if ended_at.present? && started_at.present? && ended_at <= started_at
-        errors.add(:ended_at, "deve ser maior que o início")
+        errors.add(:ended_at, :after_started_at)
       end
     end
 
@@ -95,7 +95,7 @@ class TimeEntry < ApplicationRecord
       return unless project_id.present?
 
       unless Project.where(id: project_id, user_id: user_id).exists?
-        errors.add(:project, "não pertence a você")
+        errors.add(:project, :not_owned)
       end
     end
 
@@ -103,7 +103,7 @@ class TimeEntry < ApplicationRecord
       return unless task_id.present?
 
       unless Task.joins(:project).where(tasks: { id: task_id, user_id: user_id }, projects: { user_id: user_id }).exists?
-        errors.add(:task, "não pertence a você")
+        errors.add(:task, :not_owned)
       end
     end
 
@@ -111,9 +111,9 @@ class TimeEntry < ApplicationRecord
       return unless task_id.present?
 
       if project_id.blank?
-        errors.add(:task, "exige projeto")
+        errors.add(:task, :requires_project)
       elsif Task.where(id: task_id, project_id: project_id).none?
-        errors.add(:task, "não pertence ao projeto")
+        errors.add(:task, :project_mismatch)
       end
     end
 

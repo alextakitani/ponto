@@ -1,7 +1,7 @@
 <% if time_entry %>
   <div class="timer-bar timer-bar--running">
     <div class="timer-bar__context">
-      <p class="timer-bar__eyebrow">Timer em andamento</p>
+      <p class="timer-bar__eyebrow"><%= t("timers.bar.running") %></p>
       <div class="timer-bar__title">
         <span><%= tracker_entry_description(time_entry) %></span>
         <span class="timer-bar__separator" aria-hidden="true">·</span>
@@ -21,7 +21,7 @@
       </span>
       <%= button_to timer_path, method: :delete, class: "btn btn--danger" do %>
         <%= icon("square") %>
-        Parar
+        <%= t("timers.bar.stop") %>
       <% end %>
     </div>
   </div>
@@ -34,22 +34,22 @@
 
     <div class="timer-bar__fields">
       <div class="timer-bar__input">
-        <%= form.label :description, "Descrição", class: "timer-bar__label" %>
+        <%= form.label :description, t("common.labels.description"), class: "timer-bar__label" %>
         <%= form.text_field :description, value: form_time_entry.description,
-              placeholder: "No que você está trabalhando?" %>
+              placeholder: t("tracker.description_placeholder") %>
       </div>
 
       <div class="timer-bar__select">
-        <%= form.label :project_id, "Projeto", class: "timer-bar__label" %>
+        <%= form.label :project_id, t("common.labels.project"), class: "timer-bar__label" %>
         <%= form.select :project_id, grouped_options_for_select(tracker_grouped_project_options, selected_project_id),
-              { include_blank: "(sem projeto)" } %>
+              { include_blank: t("tracker.no_project") } %>
       </div>
     </div>
 
     <div class="timer-bar__actions">
       <%= form.button type: :submit, class: "btn" do %>
         <%= icon("play") %>
-        Iniciar
+        <%= t("timers.bar.start") %>
       <% end %>
     </div>
 

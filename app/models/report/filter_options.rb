@@ -17,7 +17,7 @@ class Report
       options_for(
         real: @rows.filter_map(&:project).uniq(&:id).map { |p| Option.new(id: p.id, label: p.name) },
         none_when: @rows.any? { |r| r.project.nil? },
-        none_label: "(sem projeto)"
+        none_label: I18n.t("reports.empty_group_labels.project")
       )
     end
 
@@ -25,7 +25,7 @@ class Report
       options_for(
         real: @rows.filter_map(&:client).uniq(&:id).map { |c| Option.new(id: c.id, label: c.name) },
         none_when: @rows.any? { |r| r.client.nil? },
-        none_label: "(sem cliente)"
+        none_label: I18n.t("reports.empty_group_labels.client")
       )
     end
 
@@ -33,7 +33,7 @@ class Report
       options_for(
         real: @rows.filter_map(&:task).uniq(&:id).map { |t| Option.new(id: t.id, label: t.name) },
         none_when: @rows.any? { |r| r.task.nil? && r.project },
-        none_label: "(sem tarefa)"
+        none_label: I18n.t("reports.empty_group_labels.task")
       )
     end
 
@@ -41,7 +41,7 @@ class Report
       options_for(
         real: @rows.flat_map(&:tags).uniq(&:id).map { |tag| Option.new(id: tag.id, label: tag.name) },
         none_when: @rows.any? { |row| row.tags.empty? },
-        none_label: "(sem tag)"
+        none_label: I18n.t("reports.empty_group_labels.tag")
       )
     end
 

@@ -11,24 +11,24 @@
 
   <div class="tracker-entry__edit-grid">
     <div class="form-field">
-      <%= form.label :description, "Descrição" %>
-      <%= form.text_field :description, placeholder: "No que você está trabalhando?" %>
+      <%= form.label :description, t("common.labels.description") %>
+      <%= form.text_field :description, placeholder: t("tracker.description_placeholder") %>
     </div>
 
     <div class="form-field">
-      <%= form.label :project_id, "Projeto" %>
+      <%= form.label :project_id, t("common.labels.project") %>
       <%= form.select :project_id, grouped_options_for_select(tracker_grouped_project_options, time_entry.project_id),
-            { include_blank: "(sem projeto)" } %>
+            { include_blank: t("tracker.no_project") } %>
     </div>
 
     <div class="form-field">
-      <%= form.label :started_at, "Início" %>
+      <%= form.label :started_at, t("common.labels.start") %>
       <%= form.datetime_local_field :started_at, value: tracker_datetime_local_value(time_entry.started_at) %>
     </div>
 
     <label class="tracker-billable">
       <%= form.check_box :billable %>
-      Faturável
+      <%= t("common.labels.billable") %>
     </label>
   </div>
 
@@ -36,11 +36,11 @@
 
   <dl class="tracker-entry__readonly tabular-nums">
     <div>
-      <dt>Fim</dt>
-      <dd><%= time_entry.ended_at? ? tracker_local_time(time_entry.ended_at) : "Rodando" %></dd>
+      <dt><%= t("common.labels.end") %></dt>
+      <dd><%= time_entry.ended_at? ? tracker_local_time(time_entry.ended_at) : t("tracker.running") %></dd>
     </div>
     <div>
-      <dt>Duração</dt>
+      <dt><%= t("common.labels.duration") %></dt>
       <dd>
         <% if time_entry.ended_at? %>
           <%= tracker_duration(time_entry.duration_seconds) %>
@@ -54,7 +54,7 @@
   </dl>
 
   <div class="form-actions">
-    <%= form.submit "Salvar", class: "btn btn--sm" %>
-    <%= link_to "Cancelar", time_entry_path(time_entry), class: "btn btn--quiet btn--sm" %>
+    <%= form.submit t("common.actions.save"), class: "btn btn--sm" %>
+    <%= link_to t("common.actions.cancel"), time_entry_path(time_entry), class: "btn btn--quiet btn--sm" %>
   </div>
 <% end %>

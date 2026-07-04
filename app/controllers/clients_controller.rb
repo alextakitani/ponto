@@ -48,7 +48,7 @@ class ClientsController < ApplicationController
 
     if @client.save
       respond_to do |format|
-        format.html { redirect_to clients_path, notice: "Cliente criado." }
+        format.html { redirect_to clients_path, notice: t("clients.create.created") }
         format.json { render :show, status: :created }
       end
     else
@@ -62,7 +62,7 @@ class ClientsController < ApplicationController
   def update
     if @client.update(client_params)
       respond_to do |format|
-        format.html { redirect_to clients_path, notice: "Cliente atualizado." }
+        format.html { redirect_to clients_path, notice: t("clients.update.updated") }
         format.json { render :show }
       end
     else
@@ -80,7 +80,7 @@ class ClientsController < ApplicationController
   def destroy
     if @client.destroy
       respond_to do |format|
-        format.html { redirect_to clients_path, notice: "Cliente removido." }
+        format.html { redirect_to clients_path, notice: t("clients.destroy.destroyed") }
         format.json { head :no_content }
       end
     else

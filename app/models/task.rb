@@ -14,7 +14,7 @@ class Task < ApplicationRecord
 
   validates :name, presence: true
   # Nome ÚNICO por PROJETO, incluindo arquivados (Q44). UX de colisão no form inline.
-  validates :name, uniqueness: { scope: :project_id, message: "já está em uso" }
+  validates :name, uniqueness: { scope: :project_id, message: :taken }
   validate :project_belongs_to_user
 
   # A colisão de nome bateu numa task ARQUIVADA do mesmo projeto? A UI troca o erro
@@ -30,7 +30,7 @@ class Task < ApplicationRecord
     # projeto alheio inteiro.
     def project_belongs_to_user
       if project && project.user_id != user_id
-        errors.add(:project, "não pertence a você")
+        errors.add(:project, :not_owned)
       end
     end
 end

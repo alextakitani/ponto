@@ -5,7 +5,7 @@ module Projects
     def create
       if Current.user.update(default_project: @project)
         respond_to do |format|
-          format.html { redirect_to projects_path, notice: "Projeto padrão definido." }
+          format.html { redirect_to projects_path, notice: t("projects.defaults.created") }
           format.json { render json: { default_project_id: @project.id }, status: :created }
         end
       else
@@ -20,7 +20,7 @@ module Projects
       Current.user.update(default_project: nil) if Current.user.default_project_id == @project.id
 
       respond_to do |format|
-        format.html { redirect_to projects_path, notice: "Projeto padrão removido." }
+        format.html { redirect_to projects_path, notice: t("projects.defaults.destroyed") }
         format.json { head :no_content }
       end
     end

@@ -11,7 +11,7 @@ module Admin
 
       if user.save
         InvitationMailer.with(user: user).created.deliver_later
-        redirect_to admin_root_path, notice: "Convite enviado para #{user.email}."
+        redirect_to admin_root_path, notice: t("admin.users.create.invited", email: user.email)
       else
         redirect_to admin_root_path, alert: user.errors.full_messages.to_sentence
       end
@@ -25,12 +25,12 @@ module Admin
 
       if confirmation_matches?
         if @user.destroy_completely
-          redirect_to admin_root_path, notice: "Conta de #{@user.email} removida."
+          redirect_to admin_root_path, notice: t("admin.users.destroy.removed", email: @user.email)
         else
           redirect_to admin_root_path, alert: @user.errors.full_messages.to_sentence
         end
       else
-        redirect_to admin_root_path, alert: "Confirmação não confere: digite o e-mail exato da conta."
+        redirect_to admin_root_path, alert: t("admin.users.destroy.confirmation_mismatch")
       end
     end
 

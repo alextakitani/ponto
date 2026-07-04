@@ -40,7 +40,7 @@ class TagsController < ApplicationController
 
     if @tag.save
       respond_to do |format|
-        format.html { redirect_to tags_path, notice: "Tag criada." }
+        format.html { redirect_to tags_path, notice: t("tags.create.created") }
         format.json { render :show, status: :created }
       end
     else
@@ -54,7 +54,7 @@ class TagsController < ApplicationController
   def update
     if @tag.update(tag_params)
       respond_to do |format|
-        format.html { redirect_to tags_path, notice: "Tag atualizada." }
+        format.html { redirect_to tags_path, notice: t("tags.update.updated") }
         format.json { render :show }
       end
     else
@@ -68,7 +68,7 @@ class TagsController < ApplicationController
   def destroy
     if @tag.destroy
       respond_to do |format|
-        format.html { redirect_to tags_path, notice: "Tag removida." }
+        format.html { redirect_to tags_path, notice: t("tags.destroy.destroyed") }
         format.json { head :no_content }
       end
     else
@@ -100,7 +100,7 @@ class TagsController < ApplicationController
 
     def destroy_error_message(tag)
       if tag.errors.of_kind?(:base, :restrict_dependent_destroy)
-        "Esta tag já foi usada em entradas. Arquive-a em vez de deletar."
+        t("tags.destroy.used_tag")
       else
         tag.errors.full_messages.to_sentence
       end

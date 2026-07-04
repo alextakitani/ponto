@@ -1,0 +1,11 @@
+en:
+  number:
+    format:
+      separator: "."
+      delimiter: ","
+    currency:
+      format:
+        unit: "$"
+        format: "%u%n"
+        separator: "."
+        delimiter: ","

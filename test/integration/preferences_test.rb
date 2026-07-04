@@ -48,6 +48,36 @@ class PreferencesTest < ActionDispatch::IntegrationTest
     assert_equal "light", @user.reload.theme
   end
 
+  test "update com locale válido persiste" do
+    patch preferences_path, params: {
+      user: { name: "Ana", time_zone: "America/Sao_Paulo", theme: "system", locale: "en" }
+    }
+
+    assert_redirected_to preferences_path
+    assert_equal "en", @user.reload.locale
+  end
+
+  test "update com locale automático grava nil" do
+    @user.update!(locale: "en")
+
+    patch preferences_path, params: {
+      user: { name: "Ana", time_zone: "America/Sao_Paulo", theme: "system", locale: "" }
+    }
+
+    assert_redirected_to preferences_path
+    assert_nil @user.reload.locale
+  end
+
+  test "update com locale forjado re-renderiza 422" do
+    assert_no_changes -> { @user.reload.locale } do
+      patch preferences_path, params: {
+        user: { name: "Ana", time_zone: "America/Sao_Paulo", theme: "system", locale: "de" }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
   test "update com theme forjado não estoura 500 e re-renderiza 422" do
     assert_no_changes -> { @user.reload.theme } do
       patch preferences_path, params: {
@@ -56,7 +86,8 @@ class PreferencesTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
-    assert_match(/Theme/, response.body)
+    assert_match(/Tema/, response.body)
+    assert_no_match(/data-theme="hotdog"/, response.body)
   end
 
   test "update rejeita time_zone inválido" do

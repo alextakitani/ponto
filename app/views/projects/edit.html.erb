@@ -1,7 +1,7 @@
-<% content_for :title, "Editar projeto" %>
+<% content_for :title, t(".title") %>
 
 <header class="page-header">
-  <div><h1>Editar projeto</h1></div>
+  <div><h1><%= t(".title") %></h1></div>
 </header>
 
 <%= render "form", project: @project %>
@@ -10,8 +10,8 @@
     existe). Turbo Frame recarregável; o CRUD inline mora em tasks/*. %>
 <% if @project.persisted? %>
   <section class="project-tasks">
-    <h2>Tarefas</h2>
-    <p class="muted">Sub-buckets do projeto para separar tipos de trabalho.</p>
+    <h2><%= t("projects.tasks.title") %></h2>
+    <p class="muted"><%= t("projects.tasks.description") %></p>
     <%= turbo_frame_tag "project_tasks" do %>
       <%= render "projects/tasks/section", project: @project %>
     <% end %>

@@ -1,13 +1,13 @@
-<% content_for :title, "Clientes" %>
+<% content_for :title, t(".title") %>
 
 <header class="page-header">
   <div>
-    <h1>Clientes</h1>
-    <p class="muted">Cadastre seus clientes e a taxa faturável por hora de cada um.</p>
+    <h1><%= t(".title") %></h1>
+    <p class="muted"><%= t(".lede") %></p>
   </div>
   <%= link_to new_client_path, class: "btn" do %>
     <%= icon("plus") %>
-    Novo cliente
+    <%= t(".new") %>
   <% end %>
 </header>
 
@@ -16,15 +16,15 @@
   <%= form_with url: clients_path, method: :get, class: "page-search" do |form| %>
     <%= icon("search") %>
     <% if @showing_archived %><%= form.hidden_field :archived, value: "1" %><% end %>
-    <%= form.search_field :q, value: params[:q], placeholder: "Buscar por nome…",
-          autocomplete: "off", "aria-label": "Buscar clientes por nome" %>
+    <%= form.search_field :q, value: params[:q], placeholder: t("common.search_by_name"),
+          autocomplete: "off", "aria-label": t(".search_aria") %>
   <% end %>
 
   <%# Alterna entre ativos e arquivados (link discreto — Q7). %>
   <% if @showing_archived %>
-    <%= link_to "← Ver ativos", clients_path, class: "muted" %>
+    <%= link_to t("common.view_active"), clients_path, class: "muted" %>
   <% else %>
-    <%= link_to "Ver arquivados", clients_path(archived: "1"), class: "muted" %>
+    <%= link_to t("common.view_archived"), clients_path(archived: "1"), class: "muted" %>
   <% end %>
 </div>
 
@@ -32,9 +32,9 @@
   <table class="data-table">
     <thead>
       <tr>
-        <th>Nome</th>
-        <th>Moeda</th>
-        <th class="data-table__num">Valor/hora</th>
+        <th><%= t("common.labels.name") %></th>
+        <th><%= t("common.labels.currency") %></th>
+        <th class="data-table__num"><%= t("common.labels.rate_short") %></th>
         <th></th>
       </tr>
     </thead>
@@ -44,24 +44,23 @@
   </table>
 <% elsif params[:q].present? %>
   <div class="empty-state">
-    <p>Nenhum cliente encontrado para “<%= params[:q] %>”.</p>
+    <p><%= t(".empty.search", query: params[:q]) %></p>
   </div>
 <% elsif @showing_archived %>
   <div class="empty-state">
-    <p>Nenhum cliente arquivado por aqui.</p>
+    <p><%= t(".empty.archived") %></p>
   </div>
 <% else %>
   <%# Empty state convidativo — primeira coisa que o usuário vê. %>
   <div class="empty-state">
     <%= icon("users", class: "icon--lg") %>
-    <h2>Comece cadastrando um cliente</h2>
+    <h2><%= t(".empty.title") %></h2>
     <p class="muted">
-      Um cliente guarda a taxa faturável por hora e a moeda. Depois você aponta
-      seus projetos e horas para ele — e o relatório mensal sai pronto.
+      <%= t(".empty.description") %>
     </p>
     <%= link_to new_client_path, class: "btn" do %>
       <%= icon("plus") %>
-      Cadastrar primeiro cliente
+      <%= t(".empty.cta") %>
     <% end %>
   </div>
 <% end %>

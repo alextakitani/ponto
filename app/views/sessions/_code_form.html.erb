@@ -1,12 +1,11 @@
 <div id="sign_in_form" class="card">
-  <h1>Digite o código</h1>
+  <h1><%= t("sessions.code_form.title") %></h1>
   <p class="muted">
-    Enviamos um código de 6 dígitos para <strong><%= email_pending_authentication %></strong>.
-    Ele expira em 15 minutos.
+    <%= t("sessions.code_form.description_html", email: email_pending_authentication) %>
   </p>
 
   <% if Rails.env.development? && flash[:sign_in_code].present? %>
-    <p class="muted">Dev: código <strong><%= flash[:sign_in_code] %></strong></p>
+    <p class="muted"><%= t("sessions.code_form.dev_code_html", code: flash[:sign_in_code]) %></p>
   <% end %>
 
   <%= form_with url: sign_in_session_path, method: :post do |f| %>
@@ -18,10 +17,10 @@
           pattern: "[0-9]*",
           maxlength: 6,
           placeholder: "______" %>
-    <%= f.submit "Entrar" %>
+    <%= f.submit t("sessions.code_form.submit") %>
   <% end %>
 
   <p class="muted">
-    <%= link_to "Usar outro e-mail", sign_in_path %>
+    <%= link_to t("sessions.code_form.use_another_email"), sign_in_path %>
   </p>
 </div>

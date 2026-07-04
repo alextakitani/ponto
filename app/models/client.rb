@@ -28,7 +28,7 @@ class Client < ApplicationRecord
   validates :name, presence: true
   # Nome ÚNICO por user, INCLUINDO arquivados (Q44 — sem condição de archived_at).
   # A colisão-com-arquivado ganha UX própria no controller (não o erro cru).
-  validates :name, uniqueness: { scope: :user_id, message: "já está em uso" }
+  validates :name, uniqueness: { scope: :user_id, message: :taken }
   validates :currency, presence: true
   validate :currency_must_be_known
 
@@ -46,7 +46,7 @@ class Client < ApplicationRecord
       return if currency.blank?
 
       unless Money::Currency.find(currency)
-        errors.add(:currency, "não é uma moeda válida")
+        errors.add(:currency, :unknown_currency)
       end
     end
 end

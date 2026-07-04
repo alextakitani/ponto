@@ -10,12 +10,13 @@ class PreferencesController < ApplicationController
     attributes = user_params
 
     if invalid_time_zone?(attributes[:time_zone])
-      @profile_errors = [ "Fuso horário inválido." ]
+      @profile_errors = [ t("preferences.update.invalid_time_zone") ]
       render :show, status: :unprocessable_entity
     elsif Current.user.update(attributes)
-      redirect_to preferences_path, notice: "Preferências atualizadas."
+      redirect_to preferences_path, notice: t("preferences.update.updated")
     else
       @profile_errors = Current.user.errors.full_messages
+      Current.user.reload
       render :show, status: :unprocessable_entity
     end
   end
@@ -32,7 +33,7 @@ class PreferencesController < ApplicationController
     end
 
     def user_params
-      params.require(:user).permit(:name, :time_zone, :theme)
+      params.require(:user).permit(:name, :time_zone, :theme, :locale)
     end
 
     def invalid_time_zone?(time_zone)

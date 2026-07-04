@@ -1,10 +1,9 @@
-Olá<%= @user.name.present? ? " #{@user.name}" : "" %>,
+<%= t(".greeting", name: (@user.name.present? ? " #{@user.name}" : "")) %>
 
-Sua conta no Ponto foi criada. Bem-vindo!
+<%= t(".created_text") %>
 
-Para entrar, acesse o link abaixo e informe seu e-mail — enviaremos um código
-de acesso na hora:
+<%= t(".instructions") %>
 
 <%= sign_in_url %>
 
-É só isso: sem senha. O código chega por e-mail sempre que você for entrar.
+<%= t(".passwordless") %>

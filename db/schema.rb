@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_04_191845) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_04_200000) do
   create_table "access_requests", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -135,6 +135,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_191845) do
     t.datetime "created_at", null: false
     t.integer "default_project_id"
     t.string "email", null: false
+    t.string "locale"
     t.string "name"
     t.datetime "suspended_at"
     t.string "theme", default: "system", null: false

@@ -151,6 +151,6 @@ module MonetizableRate
     # do projeto (nunca a chave :not_a_number/:invalid_currency do money-rails, que
     # nem tem tradução pt-BR → estouraria I18n::MissingTranslationData → 500).
     def rate_amount_parseable
-      errors.add(:rate, "não é um valor válido") if @rate_input_invalid
+      errors.add(:rate, :invalid_rate) if @rate_input_invalid
     end
 end
