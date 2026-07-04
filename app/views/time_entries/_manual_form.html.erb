@@ -3,6 +3,8 @@
 <%# o controller `duration-fields` recalcula o terceiro client-side. O campo `duration` %>
 <%# NÃO vai pro servidor (name em branco) — só alimenta o cálculo do `ended_at`. %>
 <%= turbo_frame_tag "manual_entry_form" do %>
+  <% selected_project_id = time_entry.project_id || (Current.user.active_default_project&.id unless time_entry.errors.any?) %>
+
   <details class="manual-entry" <%= "open" if time_entry.errors.any? %>>
     <summary class="btn btn--quiet btn--sm">
       <%= icon("plus") %>
@@ -30,7 +32,7 @@
 
         <div class="form-field">
           <%= form.label :project_id, "Projeto" %>
-          <%= form.select :project_id, grouped_options_for_select(tracker_grouped_project_options, time_entry.project_id),
+          <%= form.select :project_id, grouped_options_for_select(tracker_grouped_project_options, selected_project_id),
                 { include_blank: "(sem projeto)" } %>
         </div>
 

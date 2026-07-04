@@ -30,12 +30,33 @@ class PreferencesTest < ActionDispatch::IntegrationTest
 
   test "update altera name e time_zone do user atual" do
     patch preferences_path, params: {
-      user: { name: "Ana Paula", time_zone: "Europe/Lisbon" }
+      user: { name: "Ana Paula", time_zone: "Europe/Lisbon", theme: "dark" }
     }
 
     assert_redirected_to preferences_path
     assert_equal "Ana Paula", @user.reload.name
     assert_equal "Europe/Lisbon", @user.time_zone
+    assert_equal "dark", @user.theme
+  end
+
+  test "update com theme válido persiste e redireciona" do
+    patch preferences_path, params: {
+      user: { name: "Ana", time_zone: "America/Sao_Paulo", theme: "light" }
+    }
+
+    assert_redirected_to preferences_path
+    assert_equal "light", @user.reload.theme
+  end
+
+  test "update com theme forjado não estoura 500 e re-renderiza 422" do
+    assert_no_changes -> { @user.reload.theme } do
+      patch preferences_path, params: {
+        user: { name: "Ana", time_zone: "America/Sao_Paulo", theme: "hotdog" }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_match(/Theme/, response.body)
   end
 
   test "update rejeita time_zone inválido" do
@@ -64,7 +85,7 @@ class PreferencesTest < ActionDispatch::IntegrationTest
     # mass-assignable aqui, um user comum viraria admin ou se des-suspenderia sozinho.
     refute @user.admin?
     patch preferences_path, params: {
-      user: { name: "Ana", time_zone: "America/Sao_Paulo", admin: true, suspended_at: nil }
+      user: { name: "Ana", time_zone: "America/Sao_Paulo", theme: "system", admin: true, suspended_at: nil }
     }
 
     assert_not @user.reload.admin?, "não deve escalar para admin via /preferences"

@@ -65,6 +65,7 @@ Rails.application.routes.draw do
   # (precisam saber a QUAL projeto pertencem). Archival da task idem (aninhado no id raso).
   resources :projects do
     resource :archival, only: %i[create destroy], module: :projects
+    resource :default, only: %i[create destroy], module: :projects
 
     resources :tasks, shallow: true, module: :projects do
       resource :archival, only: %i[create destroy], module: :tasks

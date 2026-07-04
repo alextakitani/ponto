@@ -32,7 +32,7 @@ class PreferencesController < ApplicationController
     end
 
     def user_params
-      params.require(:user).permit(:name, :time_zone)
+      params.require(:user).permit(:name, :time_zone, :theme)
     end
 
     def invalid_time_zone?(time_zone)

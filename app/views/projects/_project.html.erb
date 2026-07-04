@@ -5,6 +5,7 @@
   <td>
     <span class="project-dot" style="background-color: <%= project.color %>" aria-hidden="true"></span>
     <%= link_to project.name, edit_project_path(project) %>
+    <% if project.id == Current.user.default_project_id %><span class="tag-badge">Padrão</span><% end %>
     <% if project.archived? %><span class="tag-badge">arquivado</span><% end %>
   </td>
   <td><%= project.client ? project.client.name : "—" %></td>
@@ -37,6 +38,18 @@
           <%= button_to project_archival_path(project), class: "btn btn--quiet" do %>
             <%= icon("archive") %>
             Arquivar
+          <% end %>
+        <% end %>
+
+        <% if project.id == Current.user.default_project_id %>
+          <%= button_to project_default_path(project), method: :delete, class: "btn btn--quiet" do %>
+            <%= icon("star") %>
+            Remover padrão
+          <% end %>
+        <% else %>
+          <%= button_to project_default_path(project), class: "btn btn--quiet" do %>
+            <%= icon("star") %>
+            Definir como padrão
           <% end %>
         <% end %>
 

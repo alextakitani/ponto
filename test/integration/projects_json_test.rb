@@ -25,6 +25,50 @@ class ProjectsJsonTest < ActionDispatch::IntegrationTest
     assert_equal "USD", project["effective_currency"]
     assert_kind_of Integer, project["effective_rate_cents"] # escalar, não Money
     assert project["color"].present?
+    assert_equal false, project["default"]
+  end
+
+  test "GET index marca projeto padrão como boolean escalar" do
+    default = @user.projects.create!(name: "Default")
+    @user.update!(default_project: default)
+    @user.projects.create!(name: "Outro")
+
+    get projects_path, headers: bearer(@read), as: :json
+    assert_response :success
+
+    defaults = response.parsed_body.index_by { |project| project["name"] }
+    assert_equal true, defaults["Default"]["default"]
+    assert_equal false, defaults["Outro"]["default"]
+  end
+
+  test "POST default JSON com token write seta e devolve escalar" do
+    project = @user.projects.create!(name: "Default")
+
+    post project_default_path(project), headers: bearer(@write), as: :json
+
+    assert_response :created
+    assert_equal project.id, @user.reload.default_project_id
+    assert_equal project.id, response.parsed_body["default_project_id"]
+  end
+
+  test "POST default JSON de outro user dá 404" do
+    outro = create_user(email: "outro@example.com")
+    alheio = outro.projects.create!(name: "Alheio")
+
+    post project_default_path(alheio), headers: bearer(@write), as: :json
+
+    assert_response :not_found
+    assert_nil @user.reload.default_project_id
+  end
+
+  test "DELETE default JSON limpa" do
+    project = @user.projects.create!(name: "Default")
+    @user.update!(default_project: project)
+
+    delete project_default_path(project), headers: bearer(@write), as: :json
+
+    assert_response :no_content
+    assert_nil @user.reload.default_project_id
   end
 
   test "GET show traz as tasks ativas do projeto (array)" do

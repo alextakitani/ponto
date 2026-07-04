@@ -4,7 +4,7 @@
     <%= render "layouts/head" %>
   </head>
 
-  <body class="app"
+  <body class="app"<% if Current.user.theme != "system" %> data-theme="<%= Current.user.theme %>"<% end %>
       data-controller="command-palette"
       data-action="keydown@window->command-palette#handleGlobalKeydown">
     <%# Sidebar fixa (desktop). Nav de trabalho no topo; rodapé = Preferências/Admin/
@@ -41,7 +41,7 @@
 
     <div class="shell-main">
       <div class="shell-timerbar">
-        <%= turbo_frame_tag "timer_bar", src: timer_path(page: params[:page]) do %>
+        <%= turbo_frame_tag "timer_bar", src: timer_path(page: params[:page]), data: { turbo_permanent: true } do %>
           <div class="shell-timerbar__loading muted">Carregando timer…</div>
         <% end %>
       </div>

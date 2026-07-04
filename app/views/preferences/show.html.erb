@@ -41,6 +41,12 @@
         <p class="form-hint">Usado no tracker e nos relatórios.</p>
       </div>
 
+      <div class="form-field">
+        <%= form.label :theme, "Tema" %>
+        <%= form.select :theme, [["Sistema", "system"], ["Claro", "light"], ["Escuro", "dark"]] %>
+        <p class="form-hint">Sistema segue a preferência do dispositivo.</p>
+      </div>
+
       <div class="form-actions">
         <%= form.submit "Salvar perfil" %>
       </div>
