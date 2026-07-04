@@ -889,31 +889,3 @@
   gap: var(--space-4);
   font-size: var(--text-sm);
 }
-
-/*
- * ⚠️ OVERRIDE DELIBERADO DO RESET DE REDUCED-MOTION (decisão explícita do dono).
- * O base.css congela TODA animação sob prefers-reduced-motion: reduce (com
- * !important). Aqui, SÓ pros elementos vivos do herói da landing, re-ligamos as
- * animações mesmo sob reduce — o dono pediu que os efeitos rodem pra todos, ciente
- * de que isto sobrepõe a preferência de acessibilidade (contra WCAG/impeccable).
- * Escopado aos seletores da landing pra não afetar o resto do app.
- */
-@media (prefers-reduced-motion: reduce) {
-  .lp-app__dot--live {
-    animation-duration: 1.6s !important;
-    animation-iteration-count: infinite !important;
-  }
-
-  .lp-ruler__now {
-    animation-duration: 28s !important;
-    animation-iteration-count: infinite !important;
-  }
-
-  /* Scroll-driven: o progresso é regido pelo view() timeline; devolvemos 'auto'
-     pra duração (o reset do base.css a havia zerado). */
-  .lp-donut,
-  .lp-bars__bar {
-    animation-duration: auto !important;
-    animation-iteration-count: 1 !important;
-  }
-}
