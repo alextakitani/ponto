@@ -148,12 +148,6 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .command-palette[open] {
-    animation: none;
-  }
-}
-
 @media (max-width: 48rem) {
   .shell-command {
     display: block;
