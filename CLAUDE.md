@@ -47,7 +47,10 @@ Referência de implementação: **`basecamp/fizzy`** (Rails+Hotwire), clonado em
 - **Estética: MODERNA minimal densa, estilo Linear** (Q63 — revoga o "retrô anos 90"
   do brief): base neutra, 1 acento, linhas densas sem cards/bordas, hierarquia por
   tipografia/peso/espaço; personalidade = cores dos projetos; assinatura = barra do
-  timer. **Claro + dark AUTOMÁTICO** via `prefers-color-scheme`, sem toggle (Q64).
+  timer. **Claro + dark: automático via `prefers-color-scheme` + toggle POR USUÁRIO**
+  (Q64 REVISADA 04/07: `User.theme` system/light/dark, select em Preferências; tokens
+  em `light-dark()`, override `data-theme` no `<body>` — no body de propósito: o
+  Turbo troca o body mas não os atributos do `<html>`, então o tema aplica na hora).
   Fonte: **Inter variable self-hosted** (woff2 em assets, `tabular-nums` em colunas
   numéricas — Q70). Gráficos do relatório = **SVG server-rendered** em partial ERB,
   zero JS (Q71).
@@ -245,20 +248,28 @@ Dashboard foram CORTADOS** (Q60 — Dashboard duplica o Summary; Calendar é car
   não-faturável); coluna direita em grade de trilhas fixas pra colunar entre linhas.
 - "Retomar última" foi CONSOLIDADO na palette (Recentes) — o botão da barra ociosa e
   o resource `latest_time_entry_restart` foram removidos.
+- **Projeto padrão (04/07)**: `users.default_project_id` (FK `on_delete: :nullify`,
+  posse validada — Q23). Ação ⭐ "Definir/Remover padrão" no menu ⋮ de Projetos
+  (sub-resource REST `projects/:id/default`, escopo Action Policy) + badge "Padrão".
+  Pré-seleciona nos forms do timer e do entry manual via `User#active_default_project`
+  (nil se arquivado) — SÓ em form novo; re-render com erro respeita a escolha.
+- **Navegação suave (04/07)**: View Transitions do Turbo 8 (`<meta view-transition>`
+  no head comum + cross-fade 0.15s) e a barra do timer é `data-turbo-permanent`
+  (não re-fetcha a cada navegação; o cronômetro segue ticando entre telas).
 
 **Landing (`/`) — overdrive `/impeccable` (03/07):** o mockup do herói ganha VIDA
 (cronômetro ticando via rAF, count-up dos valores, donut/barras scroll-driven,
-marcador "agora" na régua) — `lp_live_controller.js`. ⚠️ **Decisão do dono: os
-efeitos rodam MESMO sob `prefers-reduced-motion`** (guards removidos + override do
-reset global, escopado à landing) — contra WCAG, documentado no código/commit
-`273e37d`. É a ÚNICA exceção à regra de reduced-motion do app. Copy afinada nos dois
+marcador "agora" na régua) — `lp_live_controller.js`. ⚠️ **Decisão do dono
+(ampliada 04/07): o app INTEIRO ignora `prefers-reduced-motion`** — o reset global
+do base.css e todos os guards foram removidos; animações rodam sempre (contra WCAG
+2.3.3, consciente, documentado em comentário no base.css). Copy afinada nos dois
 locales (pt-BR/en em sincronia): hero "Cronometre o trabalho / Track your time",
 "Histórico sempre mantido", asterisco do preço promocional US$1/mês com nota de
 rodapé.
 
 Outras telas DESENHADAS no grilling: **admin em página única** com fila de pedidos +
-tabela de users (Q68), **Preferências em 3 seções** (perfil/fuso · tokens da extensão
-· export/import dos dados — Q66/Q72).
+tabela de users (Q68), **Preferências em 3 seções** (perfil/fuso/tema · tokens da
+extensão · export/import dos dados — Q66/Q72).
 
 Relatórios (fechado — Q53–Q58): views **Summary · Detailed** (Weekly cortada, Q55);
 período enxuto + setas ‹› default "Este mês" (Q53); 6 filtros OR/AND (Q54); rounding

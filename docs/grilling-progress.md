@@ -1096,3 +1096,54 @@ Conversa em **português**.
 ### Tipografia (typeset)
 - `font-optical-sizing: auto` + `font-kerning: normal` no `body` (InterVariable tem
   eixo opsz). Corpo mantido em 14px (densidade Linear é decisão de produto, não descuido).
+
+## Adendo pós-grilling 2 — sessão 04/07/2026 (orquestração Fable → Codex → Opus)
+
+> Refinamentos e DUAS reaberturas de decisão, pedidos ao vivo pelo dono. Implementação
+> via Codex sob spec do orquestrador; validação adversarial por Opus (APROVADO).
+
+### Q64 REABERTA: toggle de tema claro/escuro
+- O dono pediu toggle manual. Decisão nova: **default segue o sistema, mas o usuário
+  pode forçar** claro/escuro. `users.theme` (string `system|light|dark`, null: false,
+  default "system"), select "Tema" na seção perfil de Preferências.
+- Implementação: tokens migraram para **`light-dark()`** (uma declaração por token,
+  fim do bloco `@media prefers-color-scheme`); `:root { color-scheme: light dark }` +
+  override **`body[data-theme=...]`** — no `<body>` de propósito: o Turbo Drive troca
+  o body na navegação mas NÃO atualiza atributos do `<html>`, então o tema novo
+  aplica imediatamente após salvar Preferências (zero FOUC, zero JS novo).
+- Landing/auth (layout `application`) NÃO emitem `data-theme` — seguem sempre o
+  sistema (página pública). Tema forjado no PATCH → 422 (padrão da suíte).
+
+### reduced-motion: REMOVIDO DO APP INTEIRO (amplia a exceção da landing)
+- Decisão do dono: **o app ignora `prefers-reduced-motion` completamente** — caiu o
+  reset global do base.css, o guard da palette e o override (agora redundante) da
+  landing. Contra WCAG 2.3.3, consciente, documentado em comentário no base.css.
+
+### Navegação suave (o "pisca e pula" entre telas)
+- **View Transitions do Turbo 8**: `<meta name="view-transition" content="same-origin">`
+  no head comum + cross-fade 0.15s (`::view-transition-old/new(root)`). Vale pra
+  landing/admin também (head compartilhado — intencional).
+- **Barra do timer `data-turbo-permanent`**: o frame lazy re-fetchava a cada navegação
+  ("Carregando timer…" piscando). Permanente, o nó atravessa as navegações e o
+  cronômetro segue ticando. Turbo Streams continuam alcançando o frame por id (a
+  permanência só age no render de navegação). Trade-off aceito: hidden `page` pode
+  ficar defasado (pior caso o redirect pós-stop volta pra página 1).
+
+### Projeto padrão (feature nova)
+- `users.default_project_id` — FK `on_delete: :nullify` (hard-delete de projeto limpa
+  a referência), posse validada no model (projeto alheio → 422; isolamento Q23).
+- UI: ação ⭐ "Definir/Remover padrão" no menu ⋮ de Projetos via sub-resource REST
+  (`resource :default` aninhado, `Projects::DefaultsController`, escopo Action
+  Policy — projeto alheio 404) + badge "Padrão" na linha. JSON de projects ganha
+  campo escalar `default` (Q73/Q11).
+- Pré-seleção no tracker: forms do timer e do entry manual usam
+  `User#active_default_project` (nil se arquivado) como fallback **só em form novo**;
+  re-render com erro respeita o que o usuário escolheu.
+
+### Shell: dois fixes de CSS (bugs visuais reportados pelo dono)
+- **Sidebar até o rodapé**: o wrapper do command palette é filho in-flow do
+  `body.app` (grid) e criava uma segunda row implícita que roubava metade da sobra
+  do `100dvh`. Fix: `grid-template-rows: 1fr`.
+- **Menu ⋮ leve e uniforme**: itens sem borda/bloco (hover = tint sutil, destrutivo =
+  texto vermelho, não laje sólida) e `width: 100%` — o summary do split (Dividir)
+  não esticava por não ser filho direto do flex.
