@@ -17,6 +17,7 @@
       data-toast-duration-value="<%= duration %>"
       data-action="click->toast#dismiss"
       role="<%= toast_type == "alert" ? "alert" : "status" %>">
+    <%= icon(toast_type == "alert" ? "x" : "check", size: 18) %>
     <%= message %>
   </div>
 <% end %>
