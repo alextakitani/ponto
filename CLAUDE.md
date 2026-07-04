@@ -308,4 +308,7 @@ não confundir com invoicing dos clientes do usuário.)
   nunca vindo de param do cliente (é forjável).
 - **REST/CRUD**: ação que não mapeia num verbo padrão vira um novo resource (ex.:
   `start`/`stop` do timer → resource próprio), não custom action.
-- Português nos comentários/textos de UI; código (nomes, API) em inglês.
+- Comentários em português; código (nomes, API) em inglês. **UI SEMPRE via I18n
+  (`t()`) com pt-BR e en em sincronia** (Q79 REVISADA 04/07: o app INTEIRO é
+  bilíngue, não só a landing — NUNCA string de UI hardcoded em view/controller/
+  helper/mailer). pt-BR.yml é a fonte canônica; en.yml acompanha toda chave nova.
