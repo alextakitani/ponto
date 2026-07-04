@@ -5,7 +5,7 @@
   <td>
     <span class="project-dot" style="background-color: <%= project.color %>" aria-hidden="true"></span>
     <%= link_to project.name, edit_project_path(project) %>
-    <% if project.id == Current.user.default_project_id %><span class="tag-badge">Padrão</span><% end %>
+    <% if project.id == Current.user.default_project_id %><span class="default-badge"><%= icon("star", size: 12) %>Padrão</span><% end %>
     <% if project.archived? %><span class="tag-badge">arquivado</span><% end %>
   </td>
   <td><%= project.client ? project.client.name : "—" %></td>

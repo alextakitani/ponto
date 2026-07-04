@@ -149,3 +149,19 @@
 .task-row--editing {
   flex-wrap: wrap;
 }
+
+/* Badge do projeto padrão — no ACENTO, não no cinza do tag-badge: é estado
+   importante (afeta o form do timer), não metadado; o cinza passava batido
+   (feedback do dono). Mesmo tint 12% do item de nav atual. */
+.default-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  color: var(--color-accent);
+  background-color: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  border-radius: 999px;
+  vertical-align: middle;
+}
