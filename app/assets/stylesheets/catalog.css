@@ -114,7 +114,7 @@
   z-index: 5;
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 2px;
   margin-top: var(--space-1);
   padding: var(--space-2);
   min-width: 11rem;
@@ -124,16 +124,42 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
+/* Largura uniforme: link, button_to (form) e o summary do split são .btn, mas só
+   filhos diretos do flex esticam — o summary dentro do <details> encolhia. */
 .row-menu__items .btn {
   justify-content: flex-start;
+  width: 100%;
+}
+
+/* Dentro do menu os itens são QUIETOS de verdade (chrome quieto, Q63): sem borda
+   nem bloco por item — hover é um tint sutil e o destrutivo vira TEXTO vermelho,
+   não uma laje sólida. Classe tripla (0,3,0) pra vencer os .btn.btn--* do
+   forms.css sem !important. */
+.row-menu__items .btn.btn--quiet,
+.row-menu__items .btn.btn--danger {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  background-color: transparent;
+  border-color: transparent;
+  border-radius: var(--radius-sm);
+}
+
+.row-menu__items .btn.btn--quiet:hover {
+  background-color: color-mix(in srgb, var(--color-border) 45%, transparent);
+  border-color: transparent;
+}
+
+.row-menu__items .btn.btn--danger {
+  color: var(--color-danger);
+}
+
+.row-menu__items .btn.btn--danger:hover {
+  color: var(--color-danger);
+  background-color: color-mix(in srgb, var(--color-danger) 12%, transparent);
 }
 
 .row-menu__items form {
   margin: 0;
-}
-
-.row-menu__items form .btn {
-  width: 100%;
 }
 
 /* --- Empty state convidativo ------------------------------------------------ */

@@ -4,10 +4,13 @@
  * hierarquia por tipografia/peso/espaço, chrome quieto, UM acento.
  */
 
-/* Desktop: grid sidebar + conteúdo. */
+/* Desktop: grid sidebar + conteúdo. A row explícita 1fr leva TODA a altura:
+   sem ela, filhos extras do <body> (ex.: o wrapper do command palette) criam rows
+   implícitas que dividem a sobra do 100dvh — e a sidebar parava antes do rodapé. */
 .app {
   display: grid;
   grid-template-columns: 15rem 1fr;
+  grid-template-rows: 1fr;
   min-height: 100dvh;
 }
 
