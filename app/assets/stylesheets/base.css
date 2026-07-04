@@ -141,23 +141,68 @@ svg {
   gap: var(--space-3);
 }
 
-/*
- * Flash (notice/alert) — faixa discreta no topo, renderizada em toda tela.
- * notice = neutro; alert = tom de erro (usa --color-danger).
- */
+/* Flash (notice/alert) — toasts flutuantes, fora do fluxo do documento. */
+#flash {
+  position: fixed;
+  bottom: var(--space-4, 1.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: center;
+  pointer-events: none;
+}
+
 .flash {
-  padding: var(--space-3) var(--space-4);
-  font-size: var(--text-sm);
-  text-align: center;
-  border-bottom: 1px solid var(--color-border);
-  background-color: var(--color-surface-sunken);
+  pointer-events: auto;
+  max-width: min(28rem, calc(100vw - 2 * var(--space-4, 1rem)));
+  width: max-content;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-raised, var(--color-surface));
   color: var(--color-text);
+  font-size: var(--text-sm);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  animation: toast-in 0.18s ease;
 }
 
 .flash--alert {
+  background: var(--color-danger);
   color: var(--color-on-danger);
-  background-color: var(--color-danger);
-  border-bottom-color: transparent;
+  border-color: var(--color-danger);
+}
+
+.flash.toast--leaving {
+  animation: toast-out 0.18s ease forwards;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toast-out {
+  to {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+@media (max-width: 48rem) {
+  #flash {
+    bottom: calc(var(--tab-bar-height, 3rem) + var(--space-3, 0.75rem));
+  }
 }
 
 /*

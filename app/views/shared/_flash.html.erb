@@ -1,4 +1,4 @@
-<%# Mensagens de flash (notice/alert) — renderizadas em toda tela. %>
+<%# Mensagens de flash (notice/alert) — renderizadas como toasts flutuantes. %>
 <%# Chaves puladas: NÃO são mensagens de UI, então não viram banner.
     - sign_in_code: segredo de dev, exposto via header/JS, não na tela.
     - account_missing: flag de UI (true/false), não mensagem — puxa o link
@@ -8,7 +8,15 @@
 <% skipped = %w[sign_in_code account_missing created_access_token] %>
 <% flash.each do |type, message| %>
   <% next if skipped.include?(type.to_s) %>
-  <div class="flash flash--<%= type.to_s == "alert" ? "alert" : "notice" %>" role="<%= type.to_s == "alert" ? "alert" : "status" %>">
+  <% toast_type = type.to_s == "alert" ? "alert" : "notice" %>
+  <% duration = toast_type == "alert" ? 6000 : 4000 %>
+
+  <div class="flash flash--<%= toast_type %>"
+      data-controller="toast"
+      data-toast-type-value="<%= toast_type %>"
+      data-toast-duration-value="<%= duration %>"
+      data-action="click->toast#dismiss"
+      role="<%= toast_type == "alert" ? "alert" : "status" %>">
     <%= message %>
   </div>
 <% end %>
