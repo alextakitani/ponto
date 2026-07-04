@@ -1,0 +1,5 @@
+# Config do buildkit dos builders do Kamal (pré-criados — ver deploy.yml):
+# o registry do homelab é HTTP puro e o buildkit não herda o
+# insecure-registries do daemon.
+[registry."10.0.0.10:5555"]
+  http = true

@@ -97,6 +97,15 @@ asset_path: /rails/public/assets
 builder:
   arch: amd64
 
+  # Build SEMPRE no servidor (local: false + remote): quem deploya (desktop OU
+  # o próprio LXC) só dispara — o build/push roda no buildkit do LXC.
+  # ⚠️ O buildkit NÃO lê insecure-registries do daemon: o builder buildx é
+  # PRÉ-CRIADO com .kamal/buildkitd.toml (http=true pro registry) usando o
+  # nome exato que o Kamal deriva da URL ("kamal-remote-ssh---root-192-168-
+  # 0-187") — o Kamal reusa builders existentes. Ver docs/deploy.md.
+  remote: ssh://root@10.0.0.10
+  local: false
+
   # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
   # remote: ssh://docker@docker-builder-server
   #
