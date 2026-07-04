@@ -76,6 +76,6 @@ class AccessRequest < ApplicationRecord
 
   private
     def ensure_pending!
-      raise InvalidTransition, "pedido já resolvido (#{status})" unless pending?
+      raise InvalidTransition, I18n.t("activerecord.errors.models.access_request.invalid_transition", status: status) unless pending?
     end
 end

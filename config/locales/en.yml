@@ -120,3 +120,555 @@ en:
       rate_limited: "Too many requests. Please wait a minute."
   shared:
     bootstrap_notice: "No account exists and ADMIN_EMAIL isn't configured — set the environment variable and reload."
+    forbidden:
+      title: "Access denied"
+      message: "You don't have permission to access this page."
+      back: "Back home"
+  date:
+    abbr_day_names: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    day_names: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    formats:
+      short: "%m/%d %H:%M"
+      numeric: "%m/%d/%Y"
+      day_month: "%m/%d"
+  time:
+    formats:
+      short: "%m/%d %H:%M"
+  common:
+    none: "—"
+    middle_dot: " · "
+    coming_soon: "coming soon"
+    archived: "archived"
+    archived_feminine: "archived"
+    "yes": "Yes"
+    "no": "No"
+    search_by_name: "Search by name…"
+    view_active: "← View active"
+    view_archived: "View archived"
+    view_active_feminine: "← View active"
+    view_archived_feminine: "View archived"
+    actions:
+      add: "Add"
+      apply: "Apply"
+      archive: "Archive"
+      cancel: "Cancel"
+      clear: "Clear"
+      delete: "Delete"
+      edit: "Edit"
+      rename: "Rename"
+      save: "Save"
+      unarchive: "Unarchive"
+    labels:
+      actions: "Actions"
+      amount: "Amount"
+      billable: "Billable"
+      client: "Client"
+      color: "Color"
+      currency: "Currency"
+      description: "Description"
+      duration: "Duration"
+      end: "End"
+      hourly_rate: "Hourly rate"
+      name: "Name"
+      note: "Note"
+      project: "Project"
+      rate_short: "Rate/hour"
+      start: "Start"
+      tag: "Tag"
+      tags: "Tags"
+      task: "Task"
+    placeholders:
+      rate: "e.g. 150.00"
+  pwa:
+    manifest:
+      description: "Self-hosted time tracker in the spirit of Clockify/Toggl, but lean — each account in its own isolated bubble."
+  shell:
+    meta:
+      description: "Ponto — self-hosted time tracker"
+    timer_loading: "Loading timer…"
+    nav:
+      main: "Main navigation"
+      mobile: "Mobile navigation"
+      tracker: "Tracker"
+      reports: "Reports"
+      projects: "Projects"
+      clients: "Clients"
+      tags: "Tags"
+      preferences: "Preferences"
+      more: "More"
+      sign_out: "Sign out"
+    command:
+      open: "Open commands"
+      search_label: "Search action"
+      placeholder: "Type to filter commands"
+      groups:
+        timer: "Timer"
+        navigation: "Navigation"
+        recent: "Recent"
+      timer:
+        stop: "Stop"
+        stop_hint: "Stops the running timer"
+        start: "Start"
+        start_hint: "Focuses the timer description"
+      navigation:
+        tracker: "Go to tracker"
+        reports: "Go to reports"
+        projects: "Go to projects"
+        clients: "Go to clients"
+        tags: "Go to tags"
+      recent:
+        resume: "Resume %{description}"
+      search_terms:
+        stop_timer: "stop timer"
+        start_timer: "start timer"
+        nav_tracker: "tracker navigation"
+        nav_reports: "reports navigation"
+        nav_projects: "projects navigation"
+        nav_clients: "clients navigation"
+        nav_tags: "tags navigation labels"
+  auth:
+    errors:
+      suspended: "account suspended"
+      sign_in_required: "Sign in to continue."
+      unauthorized: "unauthorized"
+  sessions:
+    create:
+      account_missing: "This account doesn't exist. Request access on the home page."
+      welcome: "Welcome!"
+      invalid_code: "Invalid or expired code."
+    destroy:
+      signed_out: "You signed out."
+    verify:
+      email_required: "Enter your email to sign in."
+    rate_limited: "Too many attempts. Please wait a minute."
+    email_form:
+      title: "Sign in to Ponto"
+      description: "We'll send a 6-digit code to your email."
+      request_access: "Request access"
+      email_placeholder: "you@example.com"
+      submit: "Send code"
+    code_form:
+      title: "Enter the code"
+      description_html: "We sent a 6-digit code to <strong>%{email}</strong>. It expires in 15 minutes."
+      dev_code_html: "Dev: code <strong>%{code}</strong>"
+      submit: "Sign in"
+      use_another_email: "Use another email"
+  suspensions:
+    show:
+      title: "Account suspended"
+      message: "Your account is suspended and access to Ponto is temporarily blocked. Contact the administrator to reactivate it."
+  admin:
+    labels:
+      actions: "Actions"
+      admin: "Admin"
+      date: "Date"
+      email: "Email"
+      name: "Name"
+      note: "Note"
+      status: "Status"
+    dashboard:
+      show:
+        title: "Admin"
+        lede: "Manage accounts and access requests. (Domain data does not appear here.)"
+        access_requests:
+          title: "Access requests"
+        invite:
+          title: "Invite"
+          email_placeholder: "email@example.com"
+          name_placeholder: "Name (optional)"
+          submit: "Invite"
+        users:
+          title: "Accounts"
+    access_requests:
+      actions:
+        approve: "Approve"
+        reject: "Reject"
+      approvals:
+        created: "Request from %{email} approved."
+      rejections:
+        created: "Request from %{email} rejected."
+    users:
+      current_user: "(you)"
+      delete_warning: "This deletes the account and ALL of its data permanently. Export the data first if needed — export will be available soon."
+      confirm_delete_html: "To confirm, type <strong>%{email}</strong>:"
+      statuses:
+        invited: "Invited"
+        active: "Active"
+        suspended: "Suspended"
+      actions:
+        delete: "Delete…"
+        delete_permanently: "Delete permanently"
+        demote: "Demote"
+        promote: "Promote to admin"
+        reactivate: "Reactivate"
+        resend_invite: "Resend invite"
+        suspend: "Suspend"
+      create:
+        invited: "Invite sent to %{email}."
+      destroy:
+        removed: "Account %{email} removed."
+        confirmation_mismatch: "Confirmation does not match: type the account's exact email."
+      admin_roles:
+        created: "%{email} is now an admin."
+        destroyed: "%{email} is no longer an admin."
+      invitations:
+        created: "Invite resent to %{email}."
+        already_joined: "%{email} already joined — there is no invite to resend."
+      suspensions:
+        created: "Account %{email} suspended."
+        destroyed: "Account %{email} reactivated."
+  preferences:
+    update:
+      invalid_time_zone: "Invalid time zone."
+      updated: "Preferences updated."
+    access_tokens:
+      invalid_permission: "Invalid permission."
+      created: "Token created."
+      revoked: "Token revoked."
+    show:
+      title: "Preferences"
+      lede: "Account settings, automation tokens, and data controls."
+      profile:
+        title: "Profile"
+        description: "Your name appears in the interface. Email is used for sign-in and cannot be edited here."
+        name: "Name"
+        email: "Email"
+        time_zone: "Time zone"
+        time_zone_hint: "Used in the tracker and reports."
+        locale: "Language"
+        locale_hint: "Automatic uses the browser preference when no saved choice exists."
+        locales:
+          auto: "Automatic"
+          pt_BR: "Português"
+          en: "English"
+        theme: "Theme"
+        theme_hint: "System follows the device preference."
+        themes:
+          system: "System"
+          light: "Light"
+          dark: "Dark"
+        submit: "Save profile"
+      tokens:
+        title: "Extension & CLI"
+        description: "Tokens authorize the Chrome extension and future ponto CLI. Store the value when you create it; it won't be shown again."
+        created: "Token created. Copy it now:"
+        label: "Label"
+        label_placeholder: "Notebook extension"
+        permission: "Permission"
+        submit: "Create token"
+        last_used: "Last used"
+        no_label: "No label"
+        revoke_confirm: "Revoke this token? This action cannot be undone."
+        revoke: "Revoke"
+        empty: "No tokens created yet."
+        never: "never"
+      data:
+        title: "My data"
+        description: "Account data export will ship with the importer."
+        export_soon: "Export my data (coming soon)"
+  clients:
+    archivals:
+      created: "Client archived."
+      destroyed: "Client unarchived."
+    create:
+      created: "Client created."
+    update:
+      updated: "Client updated."
+    destroy:
+      destroyed: "Client removed."
+    client:
+      actions_label: "Actions for %{name}"
+      delete_confirm: "Delete “%{name}” permanently? This action cannot be undone."
+    form:
+      archived_conflict_html: "A client with this name already exists (archived). %{link} instead of creating another."
+      unarchive_it: "Unarchive it"
+      currency_aria: "Client currency"
+      create: "Create client"
+    edit:
+      title: "Edit client"
+    new:
+      title: "New client"
+    index:
+      title: "Clients"
+      lede: "Register your clients and each client's billable hourly rate."
+      new: "New client"
+      search_aria: "Search clients by name"
+      empty:
+        search: "No client found for “%{query}”."
+        archived: "No archived clients here."
+        title: "Start by adding a client"
+        description: "A client stores the billable hourly rate and currency. Then you point projects and hours to it, and the monthly report is ready."
+        cta: "Add first client"
+  projects:
+    archivals:
+      created: "Project archived."
+      destroyed: "Project unarchived."
+    defaults:
+      created: "Default project set."
+      destroyed: "Default project removed."
+    create:
+      created: "Project created."
+    update:
+      updated: "Project updated."
+    destroy:
+      destroyed: "Project removed."
+    form:
+      archived_conflict_html: "A project with this name already exists (archived). %{link} instead of creating another."
+      unarchive_it: "Unarchive it"
+      no_client: "No client"
+      color_aria: "Project color"
+      color_option: "Color %{hex}"
+      rate_optional: "Hourly rate (optional)"
+      create: "Create project"
+      rate_hints:
+        no_client: "No client → set a value or the project will have no rate."
+        client_without_rate: "This client has no rate → set a value or the project will have no rate."
+        inherited: "Inheriting from client: %{rate} — fill in to override."
+    project:
+      actions_label: "Actions for %{name}"
+      default_badge: "Default"
+      from_client: "from client"
+      remove_default: "Remove default"
+      set_default: "Set as default"
+      delete_confirm: "Delete “%{name}” permanently? This action cannot be undone."
+    edit:
+      title: "Edit project"
+    new:
+      title: "New project"
+    index:
+      title: "Projects"
+      lede: "Organize your hours by project — each one inherits the client's rate or defines its own."
+      new: "New project"
+      search_aria: "Search projects by name"
+      all_clients: "All clients"
+      filter_client_aria: "Filter by client"
+      registered: "Logged"
+      empty:
+        search: "No project found for “%{query}”."
+        archived: "No archived projects here."
+        title: "Start by creating a project"
+        description: "A project groups your hours and can inherit the client's billable rate (or define its own). Then you track time to it."
+        cta: "Create first project"
+    tasks:
+      title: "Tasks"
+      description: "Sub-buckets for separating types of work inside the project."
+      empty: "No tasks yet. Create the first one below."
+      create:
+        created: "Task created."
+      update:
+        updated: "Task updated."
+      destroy:
+        destroyed: "Task removed."
+      archivals:
+        created: "Task archived."
+        destroyed: "Task unarchived."
+      form:
+        archived_conflict: "An archived task with this name already exists — unarchive it instead of creating another."
+        placeholder: "New task…"
+        name_aria: "Task name"
+      task:
+        delete_confirm: "Delete task “%{name}”?"
+  tags:
+    archivals:
+      created: "Tag archived."
+      destroyed: "Tag unarchived."
+    create:
+      created: "Tag created."
+    update:
+      updated: "Tag updated."
+    destroy:
+      destroyed: "Tag removed."
+      used_tag: "This tag has already been used on entries. Archive it instead of deleting it."
+    form:
+      archived_conflict_html: "A tag with this name already exists (archived). %{link} instead of creating another."
+      unarchive_it: "Unarchive it"
+      create: "Create tag"
+    tag:
+      actions_label: "Actions for %{name}"
+      delete_confirm: "Delete “%{name}” permanently? This action cannot be undone."
+    edit:
+      title: "Edit tag"
+    new:
+      title: "New tag"
+    index:
+      title: "Tags"
+      lede: "Classify entries with free-form tags to filter and group later."
+      new: "New tag"
+      search_aria: "Search tags by name"
+      empty:
+        search: "No tag found for “%{query}”."
+        archived: "No archived tags here."
+        title: "Start by creating a tag"
+        description: "Tags help slice history by topic, context, or priority without changing the client, project, and task structure."
+        cta: "Create first tag"
+  tracker:
+    title: "Tracker"
+    today: "Today"
+    yesterday: "Yesterday"
+    running: "Running"
+    no_description: "No description"
+    no_project: "(no project)"
+    no_project_plain: "No project"
+    no_client: "(no client)"
+    no_task: "No task"
+    description_placeholder: "What are you working on?"
+    load_more: "Load more"
+    empty:
+      title: "Start your first timer"
+      description: "Choose a project if you want, describe the work, and start the timer to record your first entry."
+  timers:
+    create:
+      started: "Timer started."
+      already_running: "Timer is already running."
+      already_running_json: "timer is already running"
+    destroy:
+      discarded: "Timer discarded."
+      stopped: "Timer stopped."
+      not_found: "timer not found"
+    bar:
+      running: "Timer running"
+      start: "Start"
+      stop: "Stop"
+  time_entries:
+    create:
+      created: "Entry created."
+    update:
+      updated: "Entry updated."
+    destroy:
+      destroyed: "Entry removed."
+    entry:
+      actions_label: "Actions for %{description}"
+      duplicate: "Duplicate"
+      split: "Split"
+      cut_at: "Cut at"
+      delete_confirm: "Delete this entry?"
+    manual:
+      add_manually: "Add manually"
+      description_placeholder: "What did you work on?"
+      duration_placeholder: "2:30 or 2h30"
+    tags:
+      new_tag: "New tag"
+      placeholder: "Create tag inline"
+    show:
+      title: "Entry"
+    splits:
+      create:
+        created: "Entry split."
+      errors:
+        blank_cut: "enter the cut point"
+        invalid_cut: "invalid cut point"
+  reports:
+    index:
+      title: "Reports"
+      lede: "The consolidated summary of your time. Running entries are left out."
+      export: "Export"
+    bars:
+      aria: "Hours by day"
+    donut:
+      aria: "Time distribution by project"
+    detailed:
+      empty_description: "Adjust the period or filters to see your entries."
+    summary:
+      group_hint: "Choose a dimension in \"Group by\" to see the detailed summary."
+      empty_description: "Adjust the period or filters to see your summary."
+    empty:
+      title: "Nothing in this period"
+    filters:
+      title: "Filters"
+      description_contains: "Description contains"
+      search_placeholder: "search…"
+      group_by: "Group by"
+      then_by: "Then by"
+      billable:
+        all: "All"
+        only_billable: "Billable only"
+        only_not: "Only not"
+      rounding:
+        title: "Rounding"
+        per_entry: "Round per entry"
+        nearest: "Nearest"
+        up: "Up"
+        down: "Down"
+    period:
+      aria: "Report period"
+      previous: "Previous period"
+      next: "Next period"
+      from: "Start date"
+      to: "End date"
+      presets:
+        today: "Today"
+        week: "This week"
+        month: "This month"
+        year: "This year"
+    metrics:
+      aria: "Period totals"
+      total: "Total"
+    tabs:
+      aria: "Report views"
+      summary: "Summary"
+      detailed: "Detailed"
+    group_dimensions:
+      project: "Project"
+      client: "Client"
+      task: "Task"
+      tag: "Tag"
+      description: "Description"
+      group: "Group"
+    empty_group_labels:
+      project: "(no project)"
+      client: "(no client)"
+      task: "(no task)"
+      tag: "(no tag)"
+      description: "(no description)"
+    export:
+      sheet_name: "Report"
+      headers:
+        project: "Project"
+        client: "Client"
+        description: "Description"
+        task: "Task"
+        tags: "Tags"
+        billable: "Billable"
+        start_date: "Start date"
+        start_time: "Start time"
+        end_date: "End date"
+        end_time: "End time"
+        duration_h: "Duration (h)"
+        duration_decimal: "Duration (decimal)"
+        hourly_rate: "Rate/hour"
+        amount: "Amount"
+        currency: "Currency"
+  invitation_mailer:
+    created:
+      subject: "Your Ponto account was created"
+      greeting: "Hi%{name},"
+      created_html: "Your <strong>Ponto</strong> account was created. Welcome!"
+      created_text: "Your Ponto account was created. Welcome!"
+      instructions: "To sign in, use the link below and enter your email — we'll send an access code right away:"
+      sign_in: "Sign in to Ponto"
+      passwordless: "That's it: no password. The code arrives by email whenever you sign in."
+  sign_in_mailer:
+    code:
+      subject: "Your Ponto access code: %{code}"
+      greeting: "Hi%{name},"
+      intro_html: "Your <strong>Ponto</strong> access code is:"
+      intro_text: "Your Ponto access code is: %{code}"
+      expiration: "It expires in 15 minutes and can only be used once."
+      ignore: "If you didn't request this code, ignore this email."
+  errors:
+    forbidden: "forbidden"
+    format: "%{attribute} %{message}"
+    messages:
+      record_invalid: "Validation failed: %{errors}"
+      blank: "can't be blank"
+      taken: "has already been taken"
+      invalid: "is invalid"
+      inclusion: "is not included in the list"
+  activerecord:
+    errors:
+      messages:
+        record_invalid: "Validation failed: %{errors}"
+        blank: "can't be blank"
+        taken: "has already been taken"
+        invalid: "is invalid"
+        inclusion: "is not included in the list"

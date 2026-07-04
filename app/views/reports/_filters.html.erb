@@ -5,77 +5,77 @@
   <%= form.hidden_field :view, value: view %>
 
   <details class="report-filters__group">
-    <summary class="report-filters__summary">Filtros</summary>
+    <summary class="report-filters__summary"><%= t("reports.filters.title") %></summary>
     <div class="report-filters__body">
       <label class="report-filters__field">
-        <span class="muted">Cliente</span>
+        <span class="muted"><%= t("common.labels.client") %></span>
         <%= form.select :client_ids,
               options_for_select(filter_options.clients.map { |o| [ o.label, o.id ] }, report.filters.client_ids),
               {}, multiple: true, size: 4 %>
       </label>
 
       <label class="report-filters__field">
-        <span class="muted">Projeto</span>
+        <span class="muted"><%= t("common.labels.project") %></span>
         <%= form.select :project_ids,
               options_for_select(filter_options.projects.map { |o| [ o.label, o.id ] }, report.filters.project_ids),
               {}, multiple: true, size: 4 %>
       </label>
 
       <label class="report-filters__field">
-        <span class="muted">Tarefa</span>
+        <span class="muted"><%= t("common.labels.task") %></span>
         <%= form.select :task_ids,
               options_for_select(filter_options.tasks.map { |o| [ o.label, o.id ] }, report.filters.task_ids),
               {}, multiple: true, size: 4 %>
       </label>
 
       <label class="report-filters__field">
-        <span class="muted">Tag</span>
+        <span class="muted"><%= t("common.labels.tag") %></span>
         <%= form.select :tag_ids,
               options_for_select(filter_options.tags.map { |o| [ o.label, o.id ] }, report.filters.tag_ids),
               {}, multiple: true, size: 4 %>
       </label>
 
       <fieldset class="report-filters__field report-filters__billable">
-        <legend class="muted">Faturável</legend>
+        <legend class="muted"><%= t("common.labels.billable") %></legend>
         <% billable_value = report.filters.billable %>
-        <label><%= form.radio_button :billable, "", checked: billable_value.nil? %> Todos</label>
-        <label><%= form.radio_button :billable, "true", checked: billable_value == true %> Só faturável</label>
-        <label><%= form.radio_button :billable, "false", checked: billable_value == false %> Só não</label>
+        <label><%= form.radio_button :billable, "", checked: billable_value.nil? %> <%= t("reports.filters.billable.all") %></label>
+        <label><%= form.radio_button :billable, "true", checked: billable_value == true %> <%= t("reports.filters.billable.only_billable") %></label>
+        <label><%= form.radio_button :billable, "false", checked: billable_value == false %> <%= t("reports.filters.billable.only_not") %></label>
       </fieldset>
 
       <label class="report-filters__field">
-        <span class="muted">Descrição contém</span>
-        <%= form.text_field :description, value: report.filters.description, placeholder: "buscar…" %>
+        <span class="muted"><%= t("reports.filters.description_contains") %></span>
+        <%= form.text_field :description, value: report.filters.description, placeholder: t("reports.filters.search_placeholder") %>
       </label>
 
       <label class="report-filters__field">
-        <span class="muted">Agrupar por</span>
+        <span class="muted"><%= t("reports.filters.group_by") %></span>
         <%= form.select :group_by,
               options_for_select(
-                [ [ "—", "" ], [ "Projeto", "project" ], [ "Cliente", "client" ], [ "Tarefa", "task" ], [ "Tag", "tag" ], [ "Descrição", "description" ] ],
+                reports_group_options,
                 report.group_by&.first
               ) %>
       </label>
 
       <label class="report-filters__field">
-        <span class="muted">Depois por</span>
+        <span class="muted"><%= t("reports.filters.then_by") %></span>
         <%= form.select :group_by_2,
               options_for_select(
-                [ [ "—", "" ], [ "Projeto", "project" ], [ "Cliente", "client" ], [ "Tarefa", "task" ], [ "Tag", "tag" ], [ "Descrição", "description" ] ],
+                reports_group_options,
                 report.group_by&.second
               ) %>
       </label>
 
       <details class="report-filters__field report-filters__rounding">
-        <summary class="muted">Arredondamento</summary>
-        <label><%= form.check_box :rounding, { checked: report.rounding.on? }, "on", "off" %> Arredondar por entrada</label>
+        <summary class="muted"><%= t("reports.filters.rounding.title") %></summary>
+        <label><%= form.check_box :rounding, { checked: report.rounding.on? }, "on", "off" %> <%= t("reports.filters.rounding.per_entry") %></label>
         <%= form.select :rounding_block, options_for_select([ [ "5 min", 5 ], [ "15 min", 15 ], [ "30 min", 30 ] ], report.rounding.block) %>
-        <%= form.select :rounding_direction, options_for_select([ [ "Mais próximo", "nearest" ], [ "Pra cima", "up" ], [ "Pra baixo", "down" ] ], report.rounding.direction) %>
+        <%= form.select :rounding_direction, options_for_select([[t("reports.filters.rounding.nearest"), "nearest"], [t("reports.filters.rounding.up"), "up"], [t("reports.filters.rounding.down"), "down"]], report.rounding.direction) %>
       </details>
 
       <div class="report-filters__actions">
-        <%= form.submit "Aplicar", class: "btn btn--sm" %>
-        <%= link_to "Limpar", reports_path(view: view), class: "btn btn--quiet btn--sm" %>
+        <%= form.submit t("common.actions.apply"), class: "btn btn--sm" %>
+        <%= link_to t("common.actions.clear"), reports_path(view: view), class: "btn btn--quiet btn--sm" %>
       </div>
     </div>
   </details>

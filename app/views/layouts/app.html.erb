@@ -4,7 +4,7 @@
     <%= render "layouts/head" %>
   </head>
 
-  <body class="app"<% if Current.user.theme != "system" %> data-theme="<%= Current.user.theme %>"<% end %>
+  <body class="app"<% if Current.user.theme.in?(User::THEMES - [ "system" ]) %> data-theme="<%= Current.user.theme %>"<% end %>
       data-controller="command-palette"
       data-action="keydown@window->command-palette#handleGlobalKeydown">
     <%# Sidebar fixa (desktop). Nav de trabalho no topo; rodapé = Preferências/Admin/
@@ -16,16 +16,16 @@
         <%= render "shared/logo_mark", size: 48 %>Ponto
       </div>
 
-      <nav class="shell-nav" aria-label="Navegação principal">
-        <%= render "layouts/shell/nav_item", label: "Tracker",    icon_name: "timer",        active: true,  current: current_page?(home_path), href: home_path %>
-        <%= render "layouts/shell/nav_item", label: "Relatórios", icon_name: "chart-column", active: true,  current: current_page?(reports_path), href: reports_path %>
-        <%= render "layouts/shell/nav_item", label: "Projetos",   icon_name: "folder",       active: true,  current: current_page?(projects_path), href: projects_path %>
-        <%= render "layouts/shell/nav_item", label: "Clientes",   icon_name: "users",        active: true,  current: current_page?(clients_path), href: clients_path %>
-        <%= render "layouts/shell/nav_item", label: "Tags",       icon_name: "tags",         active: true,  current: current_page?(tags_path), href: tags_path %>
+      <nav class="shell-nav" aria-label="<%= t("shell.nav.main") %>">
+        <%= render "layouts/shell/nav_item", label: t("shell.nav.tracker"),    icon_name: "timer",        active: true,  current: current_page?(home_path), href: home_path %>
+        <%= render "layouts/shell/nav_item", label: t("shell.nav.reports"), icon_name: "chart-column", active: true,  current: current_page?(reports_path), href: reports_path %>
+        <%= render "layouts/shell/nav_item", label: t("shell.nav.projects"),   icon_name: "folder",       active: true,  current: current_page?(projects_path), href: projects_path %>
+        <%= render "layouts/shell/nav_item", label: t("shell.nav.clients"),   icon_name: "users",        active: true,  current: current_page?(clients_path), href: clients_path %>
+        <%= render "layouts/shell/nav_item", label: t("shell.nav.tags"),       icon_name: "tags",         active: true,  current: current_page?(tags_path), href: tags_path %>
       </nav>
 
       <div class="shell-sidebar__footer">
-        <%= render "layouts/shell/nav_item", label: "Preferências", icon_name: "settings", active: true, current: current_page?(preferences_path), href: preferences_path %>
+        <%= render "layouts/shell/nav_item", label: t("shell.nav.preferences"), icon_name: "settings", active: true, current: current_page?(preferences_path), href: preferences_path %>
         <% if current_user.admin? %>
           <%= link_to admin_root_path, class: "shell-nav__item" do %>
             <%= icon("shield") %>
@@ -34,7 +34,7 @@
         <% end %>
         <%= button_to sign_out_path, method: :delete, class: "shell-nav__item shell-nav__item--button" do %>
           <%= icon("log-out") %>
-          Sair
+          <%= t("shell.nav.sign_out") %>
         <% end %>
       </div>
     </aside>
@@ -42,7 +42,7 @@
     <div class="shell-main">
       <div class="shell-timerbar">
         <%= turbo_frame_tag "timer_bar", src: timer_path(page: params[:page]), data: { turbo_permanent: true } do %>
-          <div class="shell-timerbar__loading muted">Carregando timer…</div>
+          <div class="shell-timerbar__loading muted"><%= t("shell.timer_loading") %></div>
         <% end %>
       </div>
 
@@ -54,7 +54,7 @@
     </div>
 
     <div class="shell-command">
-      <button type="button" class="shell-command__trigger" aria-label="Abrir comandos"
+      <button type="button" class="shell-command__trigger" aria-label="<%= t("shell.command.open") %>"
           data-command-palette-target="trigger"
           data-action="command-palette#open">
         <%= icon("search") %>
@@ -66,28 +66,28 @@
     <%# Bottom tab bar (mobile ≤ breakpoint — Q65/Q65b). Tracker · Relatórios ·
         Projetos · Mais. "Mais" abre uma lista (via <details>, zero JS) com Clientes ·
         Tags · Preferências · Admin(se admin) · Sair. Os sem tela = "em breve". %>
-    <nav class="shell-tabs" aria-label="Navegação mobile">
-      <%= render "layouts/shell/tab_item", label: "Tracker",    icon_name: "timer",        active: true,  current: current_page?(home_path), href: home_path %>
-      <%= render "layouts/shell/tab_item", label: "Relatórios", icon_name: "chart-column", active: true,  current: current_page?(reports_path), href: reports_path %>
-      <%= render "layouts/shell/tab_item", label: "Projetos",   icon_name: "folder",       active: true,  current: current_page?(projects_path), href: projects_path %>
+    <nav class="shell-tabs" aria-label="<%= t("shell.nav.mobile") %>">
+      <%= render "layouts/shell/tab_item", label: t("shell.nav.tracker"),    icon_name: "timer",        active: true,  current: current_page?(home_path), href: home_path %>
+      <%= render "layouts/shell/tab_item", label: t("shell.nav.reports"), icon_name: "chart-column", active: true,  current: current_page?(reports_path), href: reports_path %>
+      <%= render "layouts/shell/tab_item", label: t("shell.nav.projects"),   icon_name: "folder",       active: true,  current: current_page?(projects_path), href: projects_path %>
 
       <details class="shell-tabs__more">
         <summary class="shell-tabs__item">
           <%= icon("menu") %>
-          Mais
+          <%= t("shell.nav.more") %>
         </summary>
         <div class="shell-tabs__more-menu">
           <%= link_to clients_path, class: "shell-nav__item" do %>
             <%= icon("users") %>
-            Clientes
+            <%= t("shell.nav.clients") %>
           <% end %>
           <%= link_to tags_path, class: "shell-nav__item" do %>
             <%= icon("tags") %>
-            Tags
+            <%= t("shell.nav.tags") %>
           <% end %>
           <%= link_to preferences_path, class: "shell-nav__item" do %>
             <%= icon("settings") %>
-            Preferências
+            <%= t("shell.nav.preferences") %>
           <% end %>
           <% if current_user.admin? %>
             <%= link_to admin_root_path, class: "shell-nav__item" do %>
@@ -97,7 +97,7 @@
           <% end %>
           <%= button_to sign_out_path, method: :delete, class: "shell-nav__item shell-nav__item--button" do %>
             <%= icon("log-out") %>
-            Sair
+            <%= t("shell.nav.sign_out") %>
           <% end %>
         </div>
       </details>

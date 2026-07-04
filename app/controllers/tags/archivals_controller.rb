@@ -4,12 +4,12 @@ module Tags
 
     def create
       @tag.archive!
-      redirect_to tags_path, notice: "Tag arquivada."
+      redirect_to tags_path, notice: t("tags.archivals.created")
     end
 
     def destroy
       @tag.unarchive!
-      redirect_to tags_path(archived: "1"), notice: "Tag desarquivada."
+      redirect_to tags_path(archived: "1"), notice: t("tags.archivals.destroyed")
     end
 
     private

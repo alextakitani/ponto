@@ -11,7 +11,7 @@ class Tag < ApplicationRecord
   encrypts :name, deterministic: true
 
   validates :name, presence: true
-  validates :name, uniqueness: { scope: :user_id, message: "já está em uso" }
+  validates :name, uniqueness: { scope: :user_id, message: :taken }
 
   def name_conflicts_with_archived?
     errors.include?(:name) &&

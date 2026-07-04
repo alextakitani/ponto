@@ -1,7 +1,7 @@
-<% content_for :title, "Novo projeto" %>
+<% content_for :title, t(".title") %>
 
 <header class="page-header">
-  <div><h1>Novo projeto</h1></div>
+  <div><h1><%= t(".title") %></h1></div>
 </header>
 
 <%= render "form", project: @project %>

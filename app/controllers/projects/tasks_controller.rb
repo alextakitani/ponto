@@ -45,7 +45,7 @@ module Projects
       if @task.save
         respond_to do |format|
           format.turbo_stream { render :create }
-          format.html { redirect_to edit_project_path(@project), notice: "Tarefa criada." }
+          format.html { redirect_to edit_project_path(@project), notice: t("projects.tasks.create.created") }
           format.json { render :show, status: :created }
         end
       else
@@ -61,7 +61,7 @@ module Projects
       if @task.update(task_params)
         respond_to do |format|
           format.turbo_stream { render :update }
-          format.html { redirect_to edit_project_path(@task.project), notice: "Tarefa atualizada." }
+          format.html { redirect_to edit_project_path(@task.project), notice: t("projects.tasks.update.updated") }
           format.json { render :show }
         end
       else
@@ -81,7 +81,7 @@ module Projects
 
       respond_to do |format|
         format.turbo_stream { render :destroy }
-        format.html { redirect_to edit_project_path(@project), notice: "Tarefa removida." }
+        format.html { redirect_to edit_project_path(@project), notice: t("projects.tasks.destroy.destroyed") }
         format.json { head :no_content }
       end
     end

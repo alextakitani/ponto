@@ -1,13 +1,14 @@
 # Resolve o locale por request (Q79). Cadeia de precedência, em ordem:
 #   1. params[:locale] válido -> usa E persiste na sessão.
-#   2. session[:locale] válido -> usa.
-#   3. Accept-Language do browser -> melhor match (en* -> :en, pt* -> :"pt-BR").
-#   4. Senão/qualquer coisa inválida -> default (:"pt-BR").
+#   2. preferência explícita do usuário logado.
+#   3. session[:locale] válido -> usa.
+#   4. Accept-Language do browser -> melhor match (en* -> :en, pt* -> :"pt-BR").
+#   5. Senão/qualquer coisa inválida -> default (:"pt-BR").
 #
 # Um param inválido NUNCA estoura: cai silenciosamente na cadeia. Envolvemos a
 # ação em I18n.with_locale para não vazar o locale entre requests (o I18n.locale
 # é global por thread; with_locale restaura no ensure). O locale hardcoded do
-# resto do app não é afetado — só a landing usa t().
+# app inteiro usa t().
 module SetLocale
   extend ActiveSupport::Concern
 
@@ -21,7 +22,7 @@ module SetLocale
     end
 
     def resolve_locale
-      locale_from_params || locale_from_session || locale_from_header || I18n.default_locale
+      locale_from_params || locale_from_user || locale_from_session || locale_from_header || I18n.default_locale
     end
 
     # Regra 1: param válido persiste na sessão (a bandeirinha grava a escolha).
@@ -33,11 +34,16 @@ module SetLocale
     end
 
     # Regra 2: escolha anterior guardada na sessão.
+    def locale_from_user
+      sanitize_locale(Current.user&.locale)
+    end
+
+    # Regra 3: escolha anterior guardada na sessão.
     def locale_from_session
       sanitize_locale(session[:locale])
     end
 
-    # Regra 3: melhor match do Accept-Language. Parsing simples e robusto: quebra
+    # Regra 4: melhor match do Accept-Language. Parsing simples e robusto: quebra
     # o header em pares idioma;q=peso, ordena por peso desc e pega o 1º cujo
     # PREFIXO de idioma casa com um locale disponível (en* -> :en, pt* -> :"pt-BR").
     def locale_from_header

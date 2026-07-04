@@ -1,14 +1,14 @@
-<% content_for :title, "Entrada" %>
+<% content_for :title, t(".title") %>
 
 <header class="page-header">
   <div>
-    <h1><%= @time_entry.description.presence || "Sem descrição" %></h1>
+    <h1><%= @time_entry.description.presence || t("tracker.no_description") %></h1>
     <p class="muted">
       <%= l(@time_entry.started_at, format: :short) %>
       <% if @time_entry.ended_at? %>
         · <%= l(@time_entry.ended_at, format: :short) %>
       <% else %>
-        · Rodando
+        <%= t("common.middle_dot") %><%= t("tracker.running") %>
       <% end %>
     </p>
   </div>
@@ -16,15 +16,15 @@
 
 <dl class="details-list">
   <div>
-    <dt>Projeto</dt>
-    <dd><%= @time_entry.project_id || "Sem projeto" %></dd>
+    <dt><%= t("common.labels.project") %></dt>
+    <dd><%= @time_entry.project&.name || t("tracker.no_project_plain") %></dd>
   </div>
   <div>
-    <dt>Task</dt>
-    <dd><%= @time_entry.task_id || "Sem task" %></dd>
+    <dt><%= t("common.labels.task") %></dt>
+    <dd><%= @time_entry.task&.name || t("tracker.no_task") %></dd>
   </div>
   <div>
-    <dt>Faturável</dt>
-    <dd><%= @time_entry.billable? ? "Sim" : "Não" %></dd>
+    <dt><%= t("common.labels.billable") %></dt>
+    <dd><%= @time_entry.billable? ? t("common.yes") : t("common.no") %></dd>
   </div>
 </dl>

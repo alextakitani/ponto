@@ -8,7 +8,7 @@ module Admin
 
       def create
         if @user.update(admin: true)
-          redirect_to admin_root_path, notice: "#{@user.email} agora é admin."
+          redirect_to admin_root_path, notice: t("admin.users.admin_roles.created", email: @user.email)
         else
           redirect_to admin_root_path, alert: @user.errors.full_messages.to_sentence
         end
@@ -16,7 +16,7 @@ module Admin
 
       def destroy
         if @user.update(admin: false)
-          redirect_to admin_root_path, notice: "#{@user.email} não é mais admin."
+          redirect_to admin_root_path, notice: t("admin.users.admin_roles.destroyed", email: @user.email)
         else
           redirect_to admin_root_path, alert: @user.errors.full_messages.to_sentence
         end

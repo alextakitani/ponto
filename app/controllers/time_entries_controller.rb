@@ -40,7 +40,7 @@ class TimeEntriesController < ApplicationController
       @manual_entry = TimeEntry.new
       respond_to do |format|
         format.turbo_stream { render :create, status: :created }
-        format.html { redirect_to home_path(page: tracker_page_param), notice: "Entrada criada." }
+        format.html { redirect_to home_path(page: tracker_page_param), notice: t("time_entries.create.created") }
         format.json { render :show, status: :created }
       end
     else
@@ -61,7 +61,7 @@ class TimeEntriesController < ApplicationController
           if turbo_frame_request?
             render partial: "time_entries/frame", locals: { time_entry: @time_entry }, layout: false
           else
-            redirect_to home_path(page: tracker_page_param), notice: "Entrada atualizada."
+            redirect_to home_path(page: tracker_page_param), notice: t("time_entries.update.updated")
           end
         end
         format.json { render :show }
@@ -81,7 +81,7 @@ class TimeEntriesController < ApplicationController
 
     respond_to do |format|
       format.turbo_stream
-      format.html { redirect_to home_path(page: tracker_page_param), notice: "Entrada removida." }
+      format.html { redirect_to home_path(page: tracker_page_param), notice: t("time_entries.destroy.destroyed") }
       format.json { head :no_content }
     end
   end
@@ -153,7 +153,7 @@ class TimeEntriesController < ApplicationController
       tags = Current.user.tags.where(id: ids).to_a
       return tags if tags.size == ids.uniq.size
 
-      @time_entry.errors.add(:tags, "contêm item que não pertence a você")
+      @time_entry.errors.add(:tags, :not_owned)
       []
     end
 

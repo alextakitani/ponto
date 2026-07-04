@@ -35,7 +35,7 @@ class TimersController < ApplicationController
         @form_time_entry = nil
         respond_to do |format|
           format.turbo_stream { render :update, status: :created }
-          format.html { redirect_to home_path(page: tracker_page_param), notice: "Timer iniciado." }
+          format.html { redirect_to home_path(page: tracker_page_param), notice: t("timers.create.started") }
           format.json { render "time_entries/show", status: :created }
         end
       else
@@ -69,7 +69,7 @@ class TimersController < ApplicationController
       respond_to do |format|
         format.turbo_stream { render :update }
         format.html do
-          redirect_to home_path(page: tracker_page_param), notice: deleted ? "Timer descartado." : "Timer parado."
+          redirect_to home_path(page: tracker_page_param), notice: deleted ? t("timers.destroy.discarded") : t("timers.destroy.stopped")
         end
         format.json do
           if deleted
@@ -84,7 +84,7 @@ class TimersController < ApplicationController
       respond_to do |format|
         format.turbo_stream { head :not_found }
         format.html { head :not_found }
-        format.json { render json: { error: "timer não encontrado" }, status: :not_found }
+        format.json { render json: { error: t("timers.destroy.not_found") }, status: :not_found }
       end
     end
   end
@@ -99,12 +99,12 @@ class TimersController < ApplicationController
     end
 
     def render_timer_conflict
-      flash.now[:alert] = "Timer já está rodando."
+      flash.now[:alert] = t("timers.create.already_running")
       load_tracker_day_groups
       respond_to do |format|
         format.turbo_stream { render :update, status: :conflict }
-        format.html { redirect_to home_path(page: tracker_page_param), alert: "Timer já está rodando." }
-        format.json { render json: { error: "timer já está rodando" }, status: :conflict }
+        format.html { redirect_to home_path(page: tracker_page_param), alert: t("timers.create.already_running") }
+        format.json { render json: { error: t("timers.create.already_running_json") }, status: :conflict }
       end
     end
 

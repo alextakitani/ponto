@@ -10,12 +10,12 @@ module Projects
 
       def create
         @task.archive!
-        respond_inline notice: "Tarefa arquivada."
+        respond_inline notice: t("projects.tasks.archivals.created")
       end
 
       def destroy
         @task.unarchive!
-        respond_inline notice: "Tarefa desarquivada."
+        respond_inline notice: t("projects.tasks.archivals.destroyed")
       end
 
       private

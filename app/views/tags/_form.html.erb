@@ -3,8 +3,7 @@
     <div class="form-errors" role="alert">
       <% if tag.name_conflicts_with_archived? %>
         <p>
-          Já existe uma tag com esse nome (arquivada).
-          <%= link_to "Desarquive-a", tags_path(archived: "1") %> em vez de criar outra.
+          <%= t(".archived_conflict_html", link: link_to(t(".unarchive_it"), tags_path(archived: "1"))) %>
         </p>
       <% else %>
         <ul>
@@ -17,12 +16,12 @@
   <% end %>
 
   <div class="form-field">
-    <%= form.label :name, "Nome" %>
+    <%= form.label :name, t("common.labels.name") %>
     <%= form.text_field :name, autofocus: true, autocomplete: "off" %>
   </div>
 
   <div class="form-actions">
-    <%= form.submit tag.persisted? ? "Salvar" : "Criar tag", class: "btn" %>
-    <%= link_to "Cancelar", tags_path, class: "btn btn--quiet" %>
+    <%= form.submit tag.persisted? ? t("common.actions.save") : t(".create"), class: "btn" %>
+    <%= link_to t("common.actions.cancel"), tags_path, class: "btn btn--quiet" %>
   </div>
 <% end %>

@@ -16,4 +16,16 @@ class SignInMailerTest < ActiveSupport::TestCase
     assert_match(/\d{6}/, mail.subject)
     assert_match(/\d{6}/, mail.body.encoded)
   end
+
+  # Regressão (review i18n): deliver_later roda em job com o locale default —
+  # o idioma do e-mail deve vir da PREFERÊNCIA do destinatário, não do processo.
+  test "o e-mail sai no idioma do destinatário" do
+    user = User.create!(email: "en@example.com", locale: "en")
+
+    perform_enqueued_jobs { user.send_sign_in_code }
+    mail = ActionMailer::Base.deliveries.last
+
+    code = mail.subject[/\d{6}/]
+    assert_equal I18n.t("sign_in_mailer.code.subject", code: code, locale: :en), mail.subject
+  end
 end

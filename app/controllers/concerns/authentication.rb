@@ -57,7 +57,7 @@ module Authentication
 
     respond_to do |format|
       format.html { redirect_to suspended_path }
-      format.json { render json: { error: "conta suspensa" }, status: :forbidden }
+      format.json { render json: { error: I18n.t("auth.errors.suspended") }, status: :forbidden }
     end
   end
 
@@ -116,9 +116,9 @@ module Authentication
     respond_to do |format|
       format.html do
         session[:return_to_after_authenticating] = request.url if request.get? || request.head?
-        redirect_to sign_in_path, alert: "Faça login para continuar."
+        redirect_to sign_in_path, alert: t("auth.errors.sign_in_required")
       end
-      format.json { render json: { error: "unauthorized" }, status: :unauthorized }
+      format.json { render json: { error: t("auth.errors.unauthorized") }, status: :unauthorized }
     end
   end
 

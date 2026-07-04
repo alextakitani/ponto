@@ -88,6 +88,31 @@ class LocaleResolutionTest < ActionDispatch::IntegrationTest
     assert_locale "en"
   end
 
+  test "preferência do usuário logado vence sessão e Accept-Language" do
+    get root_path(locale: "pt-BR")
+    assert_locale "pt-BR"
+
+    user = sign_in_as("locale-user@example.com")
+    user.update!(locale: "en")
+
+    get home_path, headers: { "Accept-Language" => "pt-BR" }
+    assert_locale "en"
+    assert_select "h1", text: "Tracker"
+    assert_includes response.body, "Add manually"
+  end
+
+  test "tela principal renderiza em en sem MissingTranslation" do
+    user = sign_in_as("english-home@example.com")
+    user.update!(locale: "en")
+
+    get home_path
+
+    assert_response :success
+    assert_locale "en"
+    assert_no_match(/translation missing/i, response.body)
+    assert_includes response.body, "Start your first timer"
+  end
+
   test "Accept-Language com peso maior para en escolhe en" do
     get root_path, headers: { "Accept-Language" => "pt;q=0.5, en;q=0.9" }
     assert_locale "en"

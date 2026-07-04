@@ -6,7 +6,7 @@
   <% if task.errors.any? %>
     <div class="task-form__error" role="alert">
       <% if task.name_conflicts_with_archived? %>
-        Já existe uma tarefa arquivada com esse nome — desarquive-a em vez de criar outra.
+        <%= t(".archived_conflict") %>
       <% else %>
         <%= task.errors.full_messages.to_sentence %>
       <% end %>
@@ -14,8 +14,8 @@
   <% end %>
 
   <div class="task-form__row">
-    <%= form.text_field :name, placeholder: task.persisted? ? nil : "Nova tarefa…",
-          autocomplete: "off", "aria-label": "Nome da tarefa" %>
-    <%= form.submit task.persisted? ? "Salvar" : "Adicionar", class: "btn btn--sm" %>
+    <%= form.text_field :name, placeholder: task.persisted? ? nil : t(".placeholder"),
+          autocomplete: "off", "aria-label": t(".name_aria") %>
+    <%= form.submit task.persisted? ? t("common.actions.save") : t("common.actions.add"), class: "btn btn--sm" %>
   </div>
 <% end %>

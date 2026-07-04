@@ -1,18 +1,18 @@
 <%# Seletor de período (Q53): setas ‹ › + presets enxutos + custom (2 datas). Tudo GET
     (viaja na URL). As setas mandam nav=prev|next sobre o preset corrente. %>
-<section class="report-period" aria-label="Período do relatório">
+<section class="report-period" aria-label="<%= t("reports.period.aria") %>">
   <div class="report-period__nav">
-    <%= link_to report_url(nav: "prev"), class: "btn btn--quiet btn--sm", aria: { label: "Período anterior" } do %>
+    <%= link_to report_url(nav: "prev"), class: "btn btn--quiet btn--sm", aria: { label: t("reports.period.previous") } do %>
       &lsaquo;
     <% end %>
     <span class="report-period__label tabular-nums"><%= report_period_label(period) %></span>
-    <%= link_to report_url(nav: "next"), class: "btn btn--quiet btn--sm", aria: { label: "Próximo período" } do %>
+    <%= link_to report_url(nav: "next"), class: "btn btn--quiet btn--sm", aria: { label: t("reports.period.next") } do %>
       &rsaquo;
     <% end %>
   </div>
 
   <div class="report-period__presets">
-    <% { "today" => "Hoje", "week" => "Esta semana", "month" => "Este mês", "year" => "Este ano" }.each do |preset, label| %>
+    <% { "today" => t("reports.period.presets.today"), "week" => t("reports.period.presets.week"), "month" => t("reports.period.presets.month"), "year" => t("reports.period.presets.year") }.each do |preset, label| %>
       <%= link_to label, report_url(period: preset, nav: nil, from: nil, to: nil),
             class: class_names("report-preset", "report-preset--active": period.preset == preset && !period.custom?) %>
     <% end %>
@@ -22,9 +22,9 @@
   <%= form_with url: reports_path, method: :get, class: "report-period__custom" do |form| %>
     <%= form.hidden_field :period, value: "custom" %>
     <%= form.hidden_field :view, value: view %>
-    <%= form.date_field :from, value: period.first_date.iso8601, "aria-label": "Data inicial" %>
+    <%= form.date_field :from, value: period.first_date.iso8601, "aria-label": t("reports.period.from") %>
     <span class="muted" aria-hidden="true">–</span>
-    <%= form.date_field :to, value: period.last_date.iso8601, "aria-label": "Data final" %>
-    <%= form.submit "Aplicar", class: "btn btn--sm" %>
+    <%= form.date_field :to, value: period.last_date.iso8601, "aria-label": t("reports.period.to") %>
+    <%= form.submit t("common.actions.apply"), class: "btn btn--sm" %>
   <% end %>
 </section>

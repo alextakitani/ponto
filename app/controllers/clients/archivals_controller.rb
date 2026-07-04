@@ -8,12 +8,12 @@ module Clients
 
     def create
       @client.archive!
-      redirect_to clients_path, notice: "Cliente arquivado."
+      redirect_to clients_path, notice: t("clients.archivals.created")
     end
 
     def destroy
       @client.unarchive!
-      redirect_to clients_path(archived: "1"), notice: "Cliente desarquivado."
+      redirect_to clients_path(archived: "1"), notice: t("clients.archivals.destroyed")
     end
 
     private

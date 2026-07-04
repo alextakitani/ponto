@@ -7,17 +7,112 @@
 pt-BR:
   activerecord:
     attributes:
+      access_request:
+        email: "E-mail"
+        name: "Nome"
+        note: "Observação"
+        status: "Status"
+      access_token:
+        label: "Rótulo"
+        permission: "Permissão"
       client:
+        currency: "Moeda"
+        name: "Nome"
+        note: "Observação"
         rate: "Valor por hora"
       project:
-        # Project compartilha o parser de rate do Client (concern MonetizableRate) →
-        # a MESMA mensagem "não é um valor válido" precisa do mesmo rótulo PT.
+        client: "Cliente"
+        color: "Cor"
+        default_project: "Projeto padrão"
+        name: "Nome"
         rate: "Valor por hora"
+      tag:
+        name: "Nome"
+      tagging:
+        tag: "Tag"
+      task:
+        name: "Nome"
+        project: "Projeto"
       time_entry:
+        billable: "Faturável"
+        description: "Descrição"
         started_at: "Início"
         ended_at: "Fim"
+        project: "Projeto"
+        task: "Tarefa"
+        tags: "Tags"
+      user:
+        admin: "Admin"
+        default_project: "Projeto padrão"
+        email: "E-mail"
+        locale: "Idioma"
+        name: "Nome"
+        suspended_at: "Suspensão"
+        theme: "Tema"
+        time_zone: "Fuso horário"
     errors:
+      models:
+        access_request:
+          invalid_transition: "pedido já resolvido (%{status})"
+        client:
+          attributes:
+            currency:
+              unknown_currency: "não é uma moeda válida"
+            rate:
+              invalid_rate: "não é um valor válido"
+        project:
+          attributes:
+            client:
+              not_owned: "não pertence a você"
+            color:
+              invalid_color: "não é uma cor válida"
+            rate:
+              invalid_rate: "não é um valor válido"
+        tag:
+          attributes:
+            base:
+              restrict_dependent_destroy:
+                has_many: "não pode ser removida: ainda tem entradas vinculadas. Arquive em vez de deletar."
+        tagging:
+          attributes:
+            tag:
+              not_owned: "não pertence a você"
+        task:
+          attributes:
+            project:
+              not_owned: "não pertence a você"
+        time_entry:
+          split:
+            finished_only: "só é possível dividir entradas finalizadas"
+            cut_between: "o corte deve ficar entre o início e o fim"
+          attributes:
+            ended_at:
+              after_started_at: "deve ser maior que o início"
+            project:
+              not_owned: "não pertence a você"
+            tags:
+              not_owned: "contêm item que não pertence a você"
+            task:
+              not_owned: "não pertence a você"
+              requires_project: "exige projeto"
+              project_mismatch: "não pertence ao projeto"
+        user:
+          last_admin:
+            suspend: "não é possível suspender o último admin ativo"
+          attributes:
+            admin:
+              last_active_admin_demotion: "não pode rebaixar o último admin ativo"
+            base:
+              last_active_admin_destroy: "não é possível remover o último admin ativo"
+            default_project:
+              not_owned: "não pertence a você"
+            suspended_at:
+              last_active_admin_suspension: "não pode suspender o último admin ativo"
       messages:
+        blank: "não pode ficar em branco"
+        taken: "já está em uso"
+        invalid: "não é válido"
+        inclusion: "não está incluído na lista"
         # `dependent: :restrict_with_error` (Q7) sem tradução estoura
         # I18n::MissingTranslationData → 500 (mesma classe de bug que o parser de rate
         # já combateu). Mensagem amigável: "tem projetos → arquive em vez de deletar".

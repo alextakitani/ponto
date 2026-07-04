@@ -3,24 +3,24 @@
 <tr id="<%= dom_id(user) %>">
   <td>
     <%= user.email %>
-    <% if user == current_user %><span class="muted">(você)</span><% end %>
+    <% if user == current_user %><span class="muted"><%= t("admin.users.current_user") %></span><% end %>
   </td>
   <td><%= user.name %></td>
-  <td><%= "sim" if user.admin? %></td>
+  <td><%= t("common.yes") if user.admin? %></td>
   <td><%= user_status_label(user) %></td>
   <td class="admin__actions">
     <%# menu_controller: fecha ao clicar fora / Escape (o <details> nativo não faz). %>
     <details class="admin__menu" data-controller="menu">
       <summary class="btn btn--quiet">
         <%= icon("ellipsis-vertical") %>
-        Ações
+        <%= t("admin.labels.actions") %>
       </summary>
       <div class="admin__menu-items">
         <%# Reenviar convite: só pra convidado (nunca entrou). %>
         <% if user.invited? %>
           <%= button_to admin_user_invitation_path(user), class: "btn btn--quiet" do %>
             <%= icon("mail") %>
-            Reenviar convite
+            <%= t("admin.users.actions.resend_invite") %>
           <% end %>
         <% end %>
 
@@ -29,12 +29,12 @@
         <% if user.suspended? %>
           <%= button_to admin_user_suspension_path(user), method: :delete, class: "btn btn--quiet" do %>
             <%= icon("user-plus") %>
-            Reativar
+            <%= t("admin.users.actions.reactivate") %>
           <% end %>
         <% else %>
           <%= button_to admin_user_suspension_path(user), class: "btn btn--quiet" do %>
             <%= icon("user-minus") %>
-            Suspender
+            <%= t("admin.users.actions.suspend") %>
           <% end %>
         <% end %>
 
@@ -42,12 +42,12 @@
         <% if user.admin? %>
           <%= button_to admin_user_admin_role_path(user), method: :delete, class: "btn btn--quiet" do %>
             <%= icon("shield-off") %>
-            Rebaixar
+            <%= t("admin.users.actions.demote") %>
           <% end %>
         <% else %>
           <%= button_to admin_user_admin_role_path(user), class: "btn btn--quiet" do %>
             <%= icon("shield") %>
-            Promover a admin
+            <%= t("admin.users.actions.promote") %>
           <% end %>
         <% end %>
 
@@ -57,17 +57,16 @@
           <details class="admin__confirm">
             <summary class="btn btn--danger">
               <%= icon("trash-2") %>
-              Deletar…
+              <%= t("admin.users.actions.delete") %>
             </summary>
             <div class="admin__confirm-box">
               <p class="muted">
-                Isso apaga a conta e TODOS os dados dela, de forma permanente.
-                Exporte os dados antes se precisar — o export estará disponível em breve.
+                <%= t("admin.users.delete_warning") %>
               </p>
               <%= form_with url: admin_user_path(user), method: :delete do |form| %>
-                <label class="muted">Para confirmar, digite <strong><%= user.email %></strong>:</label>
+                <label class="muted"><%= t("admin.users.confirm_delete_html", email: user.email) %></label>
                 <%= form.text_field :email_confirmation, autocomplete: "off" %>
-                <%= form.submit "Deletar definitivamente", class: "btn btn--danger" %>
+                <%= form.submit t("admin.users.actions.delete_permanently"), class: "btn btn--danger" %>
               <% end %>
             </div>
           </details>

@@ -33,7 +33,7 @@
       <%= link_to tracker_entries_path(tracker_next_page_params(last_visible_group)),
             class: "btn btn--quiet",
             data: { turbo_stream: true } do %>
-        Carregar mais
+        <%= t("tracker.load_more") %>
       <% end %>
     <% end %>
   </div>

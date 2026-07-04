@@ -5,7 +5,7 @@
 <tr id="<%= dom_id(client) %>">
   <td>
     <%= link_to client.name, edit_client_path(client) %>
-    <% if client.archived? %><span class="tag-badge">arquivado</span><% end %>
+    <% if client.archived? %><span class="tag-badge"><%= t("common.archived") %></span><% end %>
   </td>
   <td><%= client.currency %></td>
   <td class="data-table__num tabular-nums">
@@ -13,22 +13,22 @@
   </td>
   <td class="data-table__actions">
     <details class="row-menu" data-controller="menu">
-      <summary class="btn btn--quiet" aria-label="Ações de <%= client.name %>"><%= icon("ellipsis-vertical") %></summary>
+      <summary class="btn btn--quiet" aria-label="<%= t("clients.client.actions_label", name: client.name) %>"><%= icon("ellipsis-vertical") %></summary>
       <div class="row-menu__items">
         <%= link_to edit_client_path(client), class: "btn btn--quiet" do %>
           <%= icon("pencil") %>
-          Editar
+          <%= t("common.actions.edit") %>
         <% end %>
 
         <% if client.archived? %>
           <%= button_to client_archival_path(client), method: :delete, class: "btn btn--quiet" do %>
             <%= icon("archive-restore") %>
-            Desarquivar
+            <%= t("common.actions.unarchive") %>
           <% end %>
         <% else %>
           <%= button_to client_archival_path(client), class: "btn btn--quiet" do %>
             <%= icon("archive") %>
-            Arquivar
+            <%= t("common.actions.archive") %>
           <% end %>
         <% end %>
 
@@ -36,9 +36,9 @@
             Project nascer — por ora não há dependentes, então deletar é seguro. %>
         <%= button_to client_path(client), method: :delete,
               class: "btn btn--danger",
-              data: { turbo_confirm: "Deletar “#{client.name}” definitivamente? Esta ação não pode ser desfeita." } do %>
+              data: { turbo_confirm: t("clients.client.delete_confirm", name: client.name) } do %>
           <%= icon("trash-2") %>
-          Deletar
+          <%= t("common.actions.delete") %>
         <% end %>
       </div>
     </details>

@@ -37,7 +37,7 @@ class SessionsController < ApplicationController
       # flash[:alert] cru e NÃO ganham o link.
       # TODO(Task 1.3): trocar o alvo do link pela landing com o form de acesso.
       flash.now[:account_missing] = true
-      flash.now[:alert] = "Essa conta não existe. Peça acesso na página inicial."
+      flash.now[:alert] = t("sessions.create.account_missing")
       render :new, status: :unprocessable_entity
     end
   end
@@ -51,16 +51,16 @@ class SessionsController < ApplicationController
     if user && (code = SignInCode.consume(user, params[:code])) && emails_match?(user)
       clear_pending_authentication_token
       start_new_session_for(user)
-      redirect_to after_authentication_url, notice: "Bem-vindo!"
+      redirect_to after_authentication_url, notice: t("sessions.create.welcome")
     else
-      flash.now[:alert] = "Código inválido ou expirado."
+      flash.now[:alert] = t("sessions.create.invalid_code")
       render :verify, status: :unprocessable_entity
     end
   end
 
   def destroy
     terminate_session
-    redirect_to sign_in_path, notice: "Você saiu."
+    redirect_to sign_in_path, notice: t("sessions.destroy.signed_out")
   end
 
   private
@@ -68,7 +68,7 @@ class SessionsController < ApplicationController
   def ensure_email_pending
     return if email_pending_authentication.present?
 
-    redirect_to sign_in_path, alert: "Informe seu e-mail para entrar."
+    redirect_to sign_in_path, alert: t("sessions.verify.email_required")
   end
 
   # Disponível pro before_action e pras views (mostra o e-mail pendente).
@@ -84,6 +84,6 @@ class SessionsController < ApplicationController
   end
 
   def rate_limit_exceeded
-    redirect_to sign_in_path, alert: "Muitas tentativas. Aguarde um minuto."
+    redirect_to sign_in_path, alert: t("sessions.rate_limited")
   end
 end

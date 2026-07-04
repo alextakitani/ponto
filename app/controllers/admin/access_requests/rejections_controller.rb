@@ -10,8 +10,8 @@ module Admin
         @access_request.reject!
 
         respond_to do |format|
-          format.turbo_stream { flash.now[:notice] = "Pedido de #{@access_request.email} recusado." }
-          format.html { redirect_to admin_root_path, notice: "Pedido de #{@access_request.email} recusado." }
+          format.turbo_stream { flash.now[:notice] = t("admin.access_requests.rejections.created", email: @access_request.email) }
+          format.html { redirect_to admin_root_path, notice: t("admin.access_requests.rejections.created", email: @access_request.email) }
         end
       rescue AccessRequest::InvalidTransition => e
         redirect_to admin_root_path, alert: e.message

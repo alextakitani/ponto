@@ -1,13 +1,13 @@
-<% content_for :title, "Tags" %>
+<% content_for :title, t(".title") %>
 
 <header class="page-header">
   <div>
-    <h1>Tags</h1>
-    <p class="muted">Classifique entradas com etiquetas livres para filtrar e agrupar depois.</p>
+    <h1><%= t(".title") %></h1>
+    <p class="muted"><%= t(".lede") %></p>
   </div>
   <%= link_to new_tag_path, class: "btn" do %>
     <%= icon("plus") %>
-    Nova tag
+    <%= t(".new") %>
   <% end %>
 </header>
 
@@ -15,14 +15,14 @@
   <%= form_with url: tags_path, method: :get, class: "page-search" do |form| %>
     <%= icon("search") %>
     <% if @showing_archived %><%= form.hidden_field :archived, value: "1" %><% end %>
-    <%= form.search_field :q, value: params[:q], placeholder: "Buscar por nome…",
-          autocomplete: "off", "aria-label": "Buscar tags por nome" %>
+    <%= form.search_field :q, value: params[:q], placeholder: t("common.search_by_name"),
+          autocomplete: "off", "aria-label": t(".search_aria") %>
   <% end %>
 
   <% if @showing_archived %>
-    <%= link_to "← Ver ativas", tags_path, class: "muted" %>
+    <%= link_to t("common.view_active_feminine"), tags_path, class: "muted" %>
   <% else %>
-    <%= link_to "Ver arquivadas", tags_path(archived: "1"), class: "muted" %>
+    <%= link_to t("common.view_archived_feminine"), tags_path(archived: "1"), class: "muted" %>
   <% end %>
 </div>
 
@@ -30,7 +30,7 @@
   <table class="data-table">
     <thead>
       <tr>
-        <th>Nome</th>
+        <th><%= t("common.labels.name") %></th>
         <th></th>
       </tr>
     </thead>
@@ -40,23 +40,22 @@
   </table>
 <% elsif params[:q].present? %>
   <div class="empty-state">
-    <p>Nenhuma tag encontrada para “<%= params[:q] %>”.</p>
+    <p><%= t(".empty.search", query: params[:q]) %></p>
   </div>
 <% elsif @showing_archived %>
   <div class="empty-state">
-    <p>Nenhuma tag arquivada por aqui.</p>
+    <p><%= t(".empty.archived") %></p>
   </div>
 <% else %>
   <div class="empty-state">
     <%= icon("tags", class: "icon--lg") %>
-    <h2>Comece criando uma tag</h2>
+    <h2><%= t(".empty.title") %></h2>
     <p class="muted">
-      Tags ajudam a cortar o histórico por assunto, contexto ou prioridade sem mexer
-      na estrutura de clientes, projetos e tarefas.
+      <%= t(".empty.description") %>
     </p>
     <%= link_to new_tag_path, class: "btn" do %>
       <%= icon("plus") %>
-      Criar primeira tag
+      <%= t(".empty.cta") %>
     <% end %>
   </div>
 <% end %>

@@ -9,25 +9,25 @@
     <%= link_to edit_task_path(task), class: "btn btn--quiet btn--sm",
           data: { turbo_stream: true } do %>
       <%= icon("pencil", class: "icon--sm") %>
-      Renomear
+      <%= t("common.actions.rename") %>
     <% end %>
 
     <% if task.archived? %>
       <%= button_to task_archival_path(task), method: :delete, class: "btn btn--quiet btn--sm" do %>
         <%= icon("archive-restore", class: "icon--sm") %>
-        Desarquivar
+        <%= t("common.actions.unarchive") %>
       <% end %>
     <% else %>
       <%= button_to task_archival_path(task), class: "btn btn--quiet btn--sm" do %>
         <%= icon("archive", class: "icon--sm") %>
-        Arquivar
+        <%= t("common.actions.archive") %>
       <% end %>
     <% end %>
 
     <%= button_to task_path(task), method: :delete, class: "btn btn--danger btn--sm",
-          data: { turbo_confirm: "Deletar a tarefa “#{task.name}”?" } do %>
+          data: { turbo_confirm: t("projects.tasks.task.delete_confirm", name: task.name) } do %>
       <%= icon("trash-2", class: "icon--sm") %>
-      Deletar
+      <%= t("common.actions.delete") %>
     <% end %>
   </div>
 </li>

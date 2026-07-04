@@ -1,17 +1,17 @@
-<% content_for :title, "Admin" %>
+<% content_for :title, t(".title") %>
 <div class="admin">
   <header class="admin__header">
-    <h1>Admin</h1>
-    <p class="muted">Gerencie contas e pedidos de acesso. (Dados de domínio não aparecem aqui.)</p>
+    <h1><%= t(".title") %></h1>
+    <p class="muted"><%= t(".lede") %></p>
   </header>
 
   <%# Fila de pedidos pendentes — só renderiza quando há pendentes (Q68). %>
   <% if @pending_requests.any? %>
     <section class="admin__section" id="access_requests">
-      <h2>Pedidos de acesso</h2>
+      <h2><%= t(".access_requests.title") %></h2>
       <table class="admin__table">
         <thead>
-          <tr><th>E-mail</th><th>Nome</th><th>Observação</th><th>Data</th><th></th></tr>
+          <tr><th><%= t("admin.labels.email") %></th><th><%= t("admin.labels.name") %></th><th><%= t("admin.labels.note") %></th><th><%= t("admin.labels.date") %></th><th></th></tr>
         </thead>
         <tbody>
           <%= render partial: "admin/access_requests/access_request", collection: @pending_requests %>
@@ -22,20 +22,20 @@
 
   <%# Convidar (Q29): email + nome opcional. %>
   <section class="admin__section" id="invite">
-    <h2>Convidar</h2>
+    <h2><%= t(".invite.title") %></h2>
     <%= form_with url: admin_users_path, class: "admin__invite" do |form| %>
-      <%= form.email_field :email, name: "user[email]", placeholder: "email@exemplo.com", required: true %>
-      <%= form.text_field :name, name: "user[name]", placeholder: "Nome (opcional)" %>
-      <%= form.submit "Convidar", class: "btn" %>
+      <%= form.email_field :email, name: "user[email]", placeholder: t(".invite.email_placeholder"), required: true %>
+      <%= form.text_field :name, name: "user[name]", placeholder: t(".invite.name_placeholder") %>
+      <%= form.submit t(".invite.submit"), class: "btn" %>
     <% end %>
   </section>
 
   <%# Contas (Q31): status derivado (convidado/ativo/suspenso), ações por linha. %>
   <section class="admin__section" id="users">
-    <h2>Contas</h2>
+    <h2><%= t(".users.title") %></h2>
     <table class="admin__table">
       <thead>
-        <tr><th>E-mail</th><th>Nome</th><th>Admin</th><th>Status</th><th>Ações</th></tr>
+        <tr><th><%= t("admin.labels.email") %></th><th><%= t("admin.labels.name") %></th><th><%= t("admin.labels.admin") %></th><th><%= t("admin.labels.status") %></th><th><%= t("admin.labels.actions") %></th></tr>
       </thead>
       <tbody>
         <%= render partial: "admin/users/user", collection: @users %>

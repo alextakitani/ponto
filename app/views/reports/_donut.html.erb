@@ -2,7 +2,7 @@
     Mesma técnica do donut da landing (círculo r=15.9155 → circunferência ~100, cada
     fatia é um stroke-dasharray). Zero JS. Cores = a cor curada de cada projeto (Q52). %>
 <% slices = report_donut_slices(report) %>
-<figure class="report-donut" aria-label="Distribuição do tempo por projeto">
+<figure class="report-donut" aria-label="<%= t("reports.donut.aria") %>">
   <svg class="report-donut__svg" viewBox="0 0 42 42" role="img">
     <circle class="report-donut__track" cx="21" cy="21" r="15.9155"></circle>
     <% slices.each do |slice| %>

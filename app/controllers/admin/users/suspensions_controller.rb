@@ -8,14 +8,14 @@ module Admin
 
       def create
         @user.suspend!
-        redirect_to admin_root_path, notice: "Conta de #{@user.email} suspensa."
+        redirect_to admin_root_path, notice: t("admin.users.suspensions.created", email: @user.email)
       rescue User::LastAdminError => e
         redirect_to admin_root_path, alert: e.message
       end
 
       def destroy
         @user.reactivate!
-        redirect_to admin_root_path, notice: "Conta de #{@user.email} reativada."
+        redirect_to admin_root_path, notice: t("admin.users.suspensions.destroyed", email: @user.email)
       end
 
       private

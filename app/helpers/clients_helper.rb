@@ -4,16 +4,12 @@ module ClientsHelper
   # (o que a coluna guarda, já normalizado no model).
   TOP_CURRENCIES = %w[BRL USD EUR].freeze
 
-  # Rate formatada do cliente, ou "—" quando sem taxa (rate nil — Q2/Q15). A UI
-  # interna é SEMPRE pt-BR, mas Money.locale_backend = :i18n formataria seguindo o
-  # locale do REQUEST (":en" se o browser mandar Accept-Language en → "R$150" sem
-  # espaço/decimais). Forçamos pt-BR aqui pra o valor exibido casar com o input
-  # pt-BR do form (mesmo racional do normalize_rate_input no model).
+  # Rate formatada do cliente, ou "—" quando sem taxa (rate nil — Q2/Q15).
   def client_rate(client)
     if client.rate_cents
-      I18n.with_locale(:"pt-BR") { humanized_money_with_symbol(client.rate) }
+      humanized_money_with_symbol(client.rate)
     else
-      "—"
+      t("common.none")
     end
   end
 

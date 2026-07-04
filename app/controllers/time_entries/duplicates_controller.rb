@@ -25,7 +25,7 @@ module TimeEntries
           @form_time_entry = nil
           respond_to do |format|
             format.turbo_stream { render "timers/update", status: :created }
-            format.html { redirect_to home_path(page: tracker_page_param), notice: "Timer iniciado." }
+            format.html { redirect_to home_path(page: tracker_page_param), notice: t("timers.create.started") }
             format.json { render "time_entries/show", status: :created }
           end
         else
@@ -57,12 +57,12 @@ module TimeEntries
       end
 
       def render_timer_conflict
-        flash.now[:alert] = "Timer já está rodando."
+        flash.now[:alert] = t("timers.create.already_running")
         load_tracker_day_groups
         respond_to do |format|
           format.turbo_stream { render "timers/update", status: :conflict }
-          format.html { redirect_to home_path(page: tracker_page_param), alert: "Timer já está rodando." }
-          format.json { render json: { error: "timer já está rodando" }, status: :conflict }
+          format.html { redirect_to home_path(page: tracker_page_param), alert: t("timers.create.already_running") }
+          format.json { render json: { error: t("timers.create.already_running_json") }, status: :conflict }
         end
       end
   end

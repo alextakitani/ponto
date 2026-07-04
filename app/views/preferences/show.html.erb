@@ -1,17 +1,17 @@
-<% content_for :title, "Preferências" %>
+<% content_for :title, t(".title") %>
 
 <header class="page-header">
   <div>
-    <h1>Preferências</h1>
-    <p class="muted">Ajustes da sua conta, tokens para automação e controles de dados.</p>
+    <h1><%= t(".title") %></h1>
+    <p class="muted"><%= t(".lede") %></p>
   </div>
 </header>
 
 <div class="preferences-layout">
   <section class="preferences-section" aria-labelledby="profile-heading">
     <div class="preferences-section__header">
-      <h2 id="profile-heading">Perfil</h2>
-      <p class="muted">Seu nome aparece na interface. O e-mail é usado para login e não é editável por aqui.</p>
+      <h2 id="profile-heading"><%= t(".profile.title") %></h2>
+      <p class="muted"><%= t(".profile.description") %></p>
     </div>
 
     <%= form_with model: @user, url: preferences_path, method: :patch, class: "form-stack" do |form| %>
@@ -26,42 +26,48 @@
       <% end %>
 
       <div class="form-field">
-        <%= form.label :name, "Nome" %>
+        <%= form.label :name, t(".profile.name") %>
         <%= form.text_field :name, autocomplete: "name" %>
       </div>
 
       <div class="form-field">
-        <label>E-mail</label>
+        <label><%= t(".profile.email") %></label>
         <input type="email" value="<%= @user.email %>" disabled>
       </div>
 
       <div class="form-field">
-        <%= form.label :time_zone, "Fuso horário" %>
+        <%= form.label :time_zone, t(".profile.time_zone") %>
         <%= form.select :time_zone, @time_zone_options %>
-        <p class="form-hint">Usado no tracker e nos relatórios.</p>
+        <p class="form-hint"><%= t(".profile.time_zone_hint") %></p>
       </div>
 
       <div class="form-field">
-        <%= form.label :theme, "Tema" %>
-        <%= form.select :theme, [["Sistema", "system"], ["Claro", "light"], ["Escuro", "dark"]] %>
-        <p class="form-hint">Sistema segue a preferência do dispositivo.</p>
+        <%= form.label :locale, t(".profile.locale") %>
+        <%= form.select :locale, [[t(".profile.locales.auto"), ""], [t(".profile.locales.pt_BR"), "pt-BR"], [t(".profile.locales.en"), "en"]] %>
+        <p class="form-hint"><%= t(".profile.locale_hint") %></p>
+      </div>
+
+      <div class="form-field">
+        <%= form.label :theme, t(".profile.theme") %>
+        <%= form.select :theme, [[t(".profile.themes.system"), "system"], [t(".profile.themes.light"), "light"], [t(".profile.themes.dark"), "dark"]] %>
+        <p class="form-hint"><%= t(".profile.theme_hint") %></p>
       </div>
 
       <div class="form-actions">
-        <%= form.submit "Salvar perfil" %>
+        <%= form.submit t(".profile.submit") %>
       </div>
     <% end %>
   </section>
 
   <section class="preferences-section" aria-labelledby="tokens-heading">
     <div class="preferences-section__header">
-      <h2 id="tokens-heading">Extensão & CLI</h2>
-      <p class="muted">Tokens autorizam a extensão Chrome e o futuro CLI ponto. Guarde o valor ao criar; depois ele não será exibido novamente.</p>
+      <h2 id="tokens-heading"><%= t(".tokens.title") %></h2>
+      <p class="muted"><%= t(".tokens.description") %></p>
     </div>
 
     <% if flash[:created_access_token].present? %>
       <div class="token-once" role="status">
-        <strong>Token criado. Copie agora:</strong>
+        <strong><%= t(".tokens.created") %></strong>
         <code><%= flash[:created_access_token] %></code>
       </div>
     <% end %>
@@ -79,17 +85,17 @@
 
       <div class="form-row">
         <div class="form-field">
-          <%= form.label :label, "Rótulo" %>
-          <%= form.text_field :label, placeholder: "Extensão do notebook" %>
+          <%= form.label :label, t(".tokens.label") %>
+          <%= form.text_field :label, placeholder: t(".tokens.label_placeholder") %>
         </div>
         <div class="form-field">
-          <%= form.label :permission, "Permissão" %>
+          <%= form.label :permission, t(".tokens.permission") %>
           <%= form.select :permission, [["read", "read"], ["write", "write"]] %>
         </div>
       </div>
 
       <div class="form-actions">
-        <%= form.submit "Criar token" %>
+        <%= form.submit t(".tokens.submit") %>
       </div>
     <% end %>
 
@@ -97,23 +103,23 @@
       <table class="data-table token-table">
         <thead>
           <tr>
-            <th>Rótulo</th>
-            <th>Permissão</th>
-            <th>Último uso</th>
+            <th><%= t(".tokens.label") %></th>
+            <th><%= t(".tokens.permission") %></th>
+            <th><%= t(".tokens.last_used") %></th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           <% @access_tokens.each do |access_token| %>
             <tr>
-              <td><%= access_token.label.presence || "Sem rótulo" %></td>
+              <td><%= access_token.label.presence || t(".tokens.no_label") %></td>
               <td><%= access_token.permission %></td>
               <td><%= token_last_used(access_token) %></td>
               <td class="data-table__actions">
                 <%= button_to access_token_path(access_token), method: :delete,
                       class: "btn btn--quiet btn--sm",
-                      form: { data: { turbo_confirm: "Revogar este token? Essa ação não pode ser desfeita." } } do %>
-                  Revogar
+                      form: { data: { turbo_confirm: t(".tokens.revoke_confirm") } } do %>
+                  <%= t(".tokens.revoke") %>
                 <% end %>
               </td>
             </tr>
@@ -122,18 +128,18 @@
       </table>
     <% else %>
       <div class="empty-state preferences-empty">
-        <p>Nenhum token criado ainda.</p>
+        <p><%= t(".tokens.empty") %></p>
       </div>
     <% end %>
   </section>
 
   <section class="preferences-section" aria-labelledby="data-heading">
     <div class="preferences-section__header">
-      <h2 id="data-heading">Meus dados</h2>
-      <p class="muted">Exportação de dados da conta entrará junto com o importador.</p>
+      <h2 id="data-heading"><%= t(".data.title") %></h2>
+      <p class="muted"><%= t(".data.description") %></p>
     </div>
 
     <%# TODO(Q26/importador): implementar export real dos dados do usuário. %>
-    <button type="button" class="btn btn--quiet" disabled>Exportar meus dados (em breve)</button>
+    <button type="button" class="btn btn--quiet" disabled><%= t(".data.export_soon") %></button>
   </section>
 </div>

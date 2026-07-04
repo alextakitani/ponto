@@ -4,7 +4,7 @@ class Tagging < ApplicationRecord
   belongs_to :tag
   belongs_to :time_entry
 
-  validates :tag_id, uniqueness: { scope: :time_entry_id, message: "já está em uso" }
+  validates :tag_id, uniqueness: { scope: :time_entry_id, message: :taken }
   validate :tag_and_time_entry_belong_to_same_user
 
   private
@@ -12,6 +12,6 @@ class Tagging < ApplicationRecord
       return if tag.blank? || time_entry.blank?
       return if tag.user_id == time_entry.user_id
 
-      errors.add(:tag, "não pertence a você")
+      errors.add(:tag, :not_owned)
     end
 end

@@ -1,34 +1,34 @@
 <tr id="<%= dom_id(tag) %>">
   <td>
     <%= link_to tag.name, edit_tag_path(tag) %>
-    <% if tag.archived? %><span class="tag-badge">arquivada</span><% end %>
+    <% if tag.archived? %><span class="tag-badge"><%= t("common.archived_feminine") %></span><% end %>
   </td>
   <td class="data-table__actions">
     <details class="row-menu" data-controller="menu">
-      <summary class="btn btn--quiet" aria-label="Ações de <%= tag.name %>"><%= icon("ellipsis-vertical") %></summary>
+      <summary class="btn btn--quiet" aria-label="<%= t("tags.tag.actions_label", name: tag.name) %>"><%= icon("ellipsis-vertical") %></summary>
       <div class="row-menu__items">
         <%= link_to edit_tag_path(tag), class: "btn btn--quiet" do %>
           <%= icon("pencil") %>
-          Editar
+          <%= t("common.actions.edit") %>
         <% end %>
 
         <% if tag.archived? %>
           <%= button_to tag_archival_path(tag), method: :delete, class: "btn btn--quiet" do %>
             <%= icon("archive-restore") %>
-            Desarquivar
+            <%= t("common.actions.unarchive") %>
           <% end %>
         <% else %>
           <%= button_to tag_archival_path(tag), class: "btn btn--quiet" do %>
             <%= icon("archive") %>
-            Arquivar
+            <%= t("common.actions.archive") %>
           <% end %>
         <% end %>
 
         <%= button_to tag_path(tag), method: :delete,
               class: "btn btn--danger",
-              data: { turbo_confirm: "Deletar “#{tag.name}” definitivamente? Esta ação não pode ser desfeita." } do %>
+              data: { turbo_confirm: t("tags.tag.delete_confirm", name: tag.name) } do %>
           <%= icon("trash-2") %>
-          Deletar
+          <%= t("common.actions.delete") %>
         <% end %>
       </div>
     </details>

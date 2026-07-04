@@ -5,10 +5,10 @@
   <td>
     <span class="project-dot" style="background-color: <%= project.color %>" aria-hidden="true"></span>
     <%= link_to project.name, edit_project_path(project) %>
-    <% if project.id == Current.user.default_project_id %><span class="default-badge"><%= icon("star", size: 12) %>Padrão</span><% end %>
-    <% if project.archived? %><span class="tag-badge">arquivado</span><% end %>
+    <% if project.id == Current.user.default_project_id %><span class="default-badge"><%= icon("star", size: 12) %><%= t("projects.project.default_badge") %></span><% end %>
+    <% if project.archived? %><span class="tag-badge"><%= t("common.archived") %></span><% end %>
   </td>
-  <td><%= project.client ? project.client.name : "—" %></td>
+  <td><%= project.client ? project.client.name : t("common.none") %></td>
   <td class="data-table__num tabular-nums">
     <%# TODO Fase 3 (TimeEntry): somar as horas registradas no projeto. Placeholder. %>
     <span class="muted">0:00</span>
@@ -16,40 +16,40 @@
   <td class="data-table__num tabular-nums">
     <%= project_effective_rate(project) %>
     <% if project.rate_inherited? %>
-      <span class="muted project-rate-source">do cliente</span>
+      <span class="muted project-rate-source"><%= t("projects.project.from_client") %></span>
     <% end %>
   </td>
   <td class="data-table__actions">
     <%# Summary = botão compacto sem label visível → aria-label (Q80). %>
     <details class="row-menu" data-controller="menu">
-      <summary class="btn btn--quiet" aria-label="Ações de <%= project.name %>"><%= icon("ellipsis-vertical") %></summary>
+      <summary class="btn btn--quiet" aria-label="<%= t("projects.project.actions_label", name: project.name) %>"><%= icon("ellipsis-vertical") %></summary>
       <div class="row-menu__items">
         <%= link_to edit_project_path(project), class: "btn btn--quiet" do %>
           <%= icon("pencil") %>
-          Editar
+          <%= t("common.actions.edit") %>
         <% end %>
 
         <% if project.archived? %>
           <%= button_to project_archival_path(project), method: :delete, class: "btn btn--quiet" do %>
             <%= icon("archive-restore") %>
-            Desarquivar
+            <%= t("common.actions.unarchive") %>
           <% end %>
         <% else %>
           <%= button_to project_archival_path(project), class: "btn btn--quiet" do %>
             <%= icon("archive") %>
-            Arquivar
+            <%= t("common.actions.archive") %>
           <% end %>
         <% end %>
 
         <% if project.id == Current.user.default_project_id %>
           <%= button_to project_default_path(project), method: :delete, class: "btn btn--quiet" do %>
             <%= icon("star") %>
-            Remover padrão
+            <%= t("projects.project.remove_default") %>
           <% end %>
         <% else %>
           <%= button_to project_default_path(project), class: "btn btn--quiet" do %>
             <%= icon("star") %>
-            Definir como padrão
+            <%= t("projects.project.set_default") %>
           <% end %>
         <% end %>
 
@@ -57,9 +57,9 @@
             quando houver entries. %>
         <%= button_to project_path(project), method: :delete,
               class: "btn btn--danger",
-              data: { turbo_confirm: "Deletar “#{project.name}” definitivamente? Esta ação não pode ser desfeita." } do %>
+              data: { turbo_confirm: t("projects.project.delete_confirm", name: project.name) } do %>
           <%= icon("trash-2") %>
-          Deletar
+          <%= t("common.actions.delete") %>
         <% end %>
       </div>
     </details>

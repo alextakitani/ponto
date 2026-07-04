@@ -8,7 +8,7 @@
   <details class="manual-entry" <%= "open" if time_entry.errors.any? %>>
     <summary class="btn btn--quiet btn--sm">
       <%= icon("plus") %>
-      Adicionar manualmente
+      <%= t("time_entries.manual.add_manually") %>
     </summary>
 
     <%= form_with model: time_entry, url: time_entries_path,
@@ -26,25 +26,25 @@
 
       <div class="manual-entry__grid">
         <div class="form-field">
-          <%= form.label :description, "Descrição" %>
-          <%= form.text_field :description, placeholder: "No que você trabalhou?" %>
+          <%= form.label :description, t("common.labels.description") %>
+          <%= form.text_field :description, placeholder: t("time_entries.manual.description_placeholder") %>
         </div>
 
         <div class="form-field">
-          <%= form.label :project_id, "Projeto" %>
+          <%= form.label :project_id, t("common.labels.project") %>
           <%= form.select :project_id, grouped_options_for_select(tracker_grouped_project_options, selected_project_id),
-                { include_blank: "(sem projeto)" } %>
+                { include_blank: t("tracker.no_project") } %>
         </div>
 
         <div class="form-field">
-          <%= form.label :started_at, "Início" %>
+          <%= form.label :started_at, t("common.labels.start") %>
           <%= form.datetime_local_field :started_at,
                 value: tracker_datetime_local_value(time_entry.started_at),
                 data: { duration_fields_target: "start" } %>
         </div>
 
         <div class="form-field">
-          <%= form.label :ended_at, "Fim" %>
+          <%= form.label :ended_at, t("common.labels.end") %>
           <%= form.datetime_local_field :ended_at,
                 value: tracker_datetime_local_value(time_entry.ended_at),
                 data: { duration_fields_target: "end" } %>
@@ -53,22 +53,22 @@
         <div class="form-field">
           <%# Duração é auxiliar: aceita "2:30" ou "2h30" e calcula o fim. NÃO tem name %>
           <%# → não é enviada ao servidor (o servidor recebe início+fim reais — Q5). %>
-          <label for="manual_duration">Duração</label>
+          <label for="manual_duration"><%= t("common.labels.duration") %></label>
           <input id="manual_duration" type="text" inputmode="text"
-                 placeholder="2:30 ou 2h30"
+                 placeholder="<%= t("time_entries.manual.duration_placeholder") %>"
                  data-duration-fields-target="duration">
         </div>
 
         <label class="tracker-billable">
           <%= form.check_box :billable %>
-          Faturável
+          <%= t("common.labels.billable") %>
         </label>
       </div>
 
       <%= render "time_entries/tags_fields", form:, time_entry: %>
 
       <div class="form-actions">
-        <%= form.submit "Adicionar", class: "btn btn--sm" %>
+        <%= form.submit t("common.actions.add"), class: "btn btn--sm" %>
       </div>
     <% end %>
   </details>
