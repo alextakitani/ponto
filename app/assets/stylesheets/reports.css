@@ -51,11 +51,11 @@
   background-color: var(--color-surface-sunken);
 }
 
+/* Flui junto dos presets (sem margin-left:auto — órfão na 2ª linha ao quebrar). */
 .report-period__custom {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin-left: auto;
 }
 
 .report-period__custom input {
@@ -154,9 +154,11 @@
   letter-spacing: 0.04em;
 }
 
+/* Os números-herói da tela (o entregável): grandes, firmes, tabulares. */
 .report-metric__value {
-  font-size: var(--text-xl);
+  font-size: var(--text-2xl);
   font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
 }
 
 /* --- Abas Summary/Detailed -------------------------------------------------- */
@@ -373,4 +375,51 @@
 .report-detailed .project-dot,
 .report-detailed__num {
   vertical-align: middle;
+}
+
+/* --- Mobile (≤48rem) — o relatório nunca tinha adaptado -------------------- */
+@media (max-width: 48rem) {
+  /* Barra de período empilha limpa: nav numa linha, presets noutra, custom
+     ocupa a largura (inputs dividem o espaço). */
+  .report-period {
+    gap: var(--space-3);
+  }
+
+  .report-period__label {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .report-period__nav {
+    width: 100%;
+  }
+
+  .report-period__custom {
+    width: 100%;
+  }
+
+  .report-period__custom input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Métricas: mantêm o impacto mas quebram sem estourar. */
+  .report-metrics {
+    flex-wrap: wrap;
+    gap: var(--space-4) var(--space-6);
+  }
+
+  /* Tabelas densas rolam na horizontal em vez de esmagar as colunas. */
+  .report-summary,
+  .report-detailed {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Gráficos empilham (donut sobre as barras) em vez de espremer lado a lado. */
+  .report-charts {
+    flex-direction: column;
+    gap: var(--space-5);
+  }
 }

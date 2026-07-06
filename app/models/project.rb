@@ -20,15 +20,16 @@ class Project < ApplicationRecord
   # override vivem no concern.
   include MonetizableRate
 
-  # Paleta fixa curada (Q52) — 12 cores com contraste sobre fundo claro E escuro
-  # (Q64: dark automático). Tons ~Tailwind 500/600, evitando muito claro/escuro.
+  # Paleta fixa curada (Q52) — 12 acentos do Catppuccin Latte, saturados e legíveis
+  # nos dois temas (Q64: dark automático via tokens). Ordem análoga à anterior:
+  # vermelho→laranja→amarelo→verde→teal→azul→lavanda→mauve→rosa→maroon→sapphire→flamingo.
   # A UI só oferece estes swatches; o MODEL valida FORMATO (não inclusão) → a paleta
   # pode evoluir sem invalidar cor antiga (Q52). São 12 → um projeto por cor antes de
   # repetir (a auto-atribuição escolhe a menos usada).
   PALETTE = %w[
-    #e05252 #e07a3c #d9a520 #4c9a4c
-    #2f9e8f #2f7fd1 #4f5ed9 #7b52c9
-    #c0479e #8a6d3b #5b7083 #b0863c
+    #d20f39 #fe640b #df8e1d #40a02b
+    #179299 #1e66f5 #7287fd #8839ef
+    #ea76cb #e64553 #209fb5 #dd7878
   ].freeze
 
   # A moeda MORA no Client (Q42). Projeto SEM cliente e COM rate própria não tem moeda

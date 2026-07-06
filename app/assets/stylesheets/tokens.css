@@ -1,18 +1,19 @@
 /*
  * Design tokens do Ponto (Q62) — custom properties, zero-build.
- * Direção visual (Q63): moderna, minimal densa, estilo Linear — base neutra,
- * UM acento, hierarquia por tipografia/espaço, chrome quieto.
+ * Direção visual (revisada 06/07/2026): moderna, minimal densa — PALETA CATPPUCCIN
+ * (Latte no claro, Mocha no escuro; https://catppuccin.com — decisão do dono).
+ * Acento = TEAL (escolha do dono; o Mauve foi testado e rejeitado no claro).
+ * Hierarquia por tipografia/espaço, chrome quieto, UM acento.
  * Tema padrão segue o sistema via light-dark(); usuário pode forçar claro/escuro no
  * body[data-theme] do shell interno.
  * NÃO colocar regras de layout aqui — só tokens.
+ *
+ * ⚠️ Contraste: o Teal do Latte (#179299) NÃO passa AA como texto (3.4:1) — o
+ * acento claro usa um teal ESCURECIDO (#0d7379, ~5:1), mantendo o hue; o próprio
+ * Catppuccin prevê ajuste por acessibilidade. No Mocha o Teal puro (#94e2d5) passa
+ * folgado (~11:1). Texto subtle: Subtext1/Subtext0 (~6:1 / ~7:1). Danger = Red.
  */
 
-/*
- * Inter variable self-hosted (Q70). font-display: swap p/ não bloquear render.
- * O arquivo mora em app/assets/fonts/, mas o Propshaft achata cada subdir de
- * app/assets num root do load path — o caminho lógico é a bare "InterVariable.woff2"
- * (NÃO "../fonts/..."), e é assim que o url() precisa referenciar p/ ganhar o digest.
- */
 @font-face {
   font-family: "InterVariable";
   font-style: normal;
@@ -53,22 +54,29 @@
   --radius: 6px;
   --radius-sm: 4px;
 
-  /* Cores SEMÂNTICAS. Cada par é claro/escuro, transposto 1:1 dos tokens antigos. */
-  --color-surface: light-dark(#ffffff, #16181d);         /* fundo base */
-  --color-surface-sunken: light-dark(#f6f7f9, #0f1115);  /* fundo recuado */
-  --color-surface-raised: light-dark(#ffffff, #1d2027);  /* cartões/painéis elevados */
-  --color-text: light-dark(#16181d, #e7e9ee);            /* texto principal */
-  --color-text-subtle: light-dark(#5c626e, #9aa0ac);     /* texto secundário */
-  --color-border: light-dark(#e3e5e9, #2a2e37);          /* bordas/divisórias sutis */
-  --color-border-strong: light-dark(#c7cad1, #3c414d);   /* borda de campo/hover */
-  --color-accent: light-dark(#4f46e5, #8b8cf0);          /* índigo — único acento */
-  --color-accent-hover: light-dark(#4338ca, #a1a2f4);    /* estado hover do acento */
-  --color-on-accent: light-dark(#ffffff, #16181d);       /* texto sobre o acento */
-  --color-danger: light-dark(#c22b2b, #f0716f);          /* erro/destrutivo */
-  --color-on-danger: light-dark(#ffffff, #16181d);
+  /*
+   * Cores SEMÂNTICAS — Catppuccin Latte → Mocha.
+   * Latte: Base #eff1f5 · Mantle #e6e9ef · Crust #dce0e8 · Surface0 #ccd0da ·
+   *        Surface2 #acb0be · Text #4c4f69 · Subtext1 #5c5f77
+   * Mocha: Base #1e1e2e · Mantle #181825 · Crust #11111b · Surface0 #313244 ·
+   *        Surface1 #45475a · Text #cdd6f4 · Subtext0 #a6adc8
+   */
+  --color-surface: light-dark(#eff1f5, #1e1e2e);          /* fundo base (Base) */
+  --color-surface-sunken: light-dark(#e6e9ef, #181825);   /* recuado: sidebar, listras (Mantle) */
+  --color-surface-deep: light-dark(#dce0e8, #11111b);     /* mais fundo: chips, wells (Crust) */
+  --color-surface-raised: light-dark(#ffffff, #313244);   /* painéis/menus elevados */
+  --color-text: light-dark(#4c4f69, #cdd6f4);             /* texto principal (~7.4:1 / ~11:1) */
+  --color-text-subtle: light-dark(#5c5f77, #a6adc8);      /* secundário (~6:1 / ~7:1, AA) */
+  --color-border: light-dark(#ccd0da, #313244);           /* divisórias sutis (Surface0) */
+  --color-border-strong: light-dark(#acb0be, #45475a);    /* borda de campo/hover */
+  --color-accent: light-dark(#0d7379, #94e2d5);           /* TEAL — o único acento (AA) */
+  --color-accent-hover: light-dark(#0a5d62, #a9e9de);     /* hover do acento */
+  --color-on-accent: light-dark(#ffffff, #11111b);        /* texto sobre o acento */
+  --color-danger: light-dark(#d20f39, #f38ba8);           /* Red do Catppuccin (AA) */
+  --color-on-danger: light-dark(#ffffff, #11111b);
 
   /* Anel de foco (acento translúcido) */
-  --focus-ring: 0 0 0 3px light-dark(rgba(79, 70, 229, 0.35), rgba(139, 140, 240, 0.4));
+  --focus-ring: 0 0 0 3px light-dark(rgba(13, 115, 121, 0.30), rgba(148, 226, 213, 0.35));
 }
 
 body[data-theme="light"] {

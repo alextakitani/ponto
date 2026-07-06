@@ -1,8 +1,9 @@
 <%#
   Manifest da PWA (Q69). theme_color/background_color = --color-surface do tema CLARO
-  (tokens.css: #ffffff) — o SO usa cor estática (não segue prefers-color-scheme), então
-  fixamos no claro. icons: SVG (any) + PNG 512 (any) + PNG 512 maskable (fundo creme
-  full-bleed, marca ~70% central). Comentário fica em ERB p/ o JSON de saída seguir válido.
+  (tokens.css: Catppuccin Latte Base #eff1f5) — o SO usa cor estática (não segue
+  prefers-color-scheme), então fixamos no claro. icons: SVG (any) + PNG 512 (any) +
+  PNG 512 maskable (fundo creme full-bleed, marca ~70% central). Comentário fica em ERB
+  p/ o JSON de saída seguir válido.
 %>{
   "name": "Ponto",
   "short_name": "Ponto",
@@ -29,6 +30,6 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff"
+  "theme_color": "#eff1f5",
+  "background_color": "#eff1f5"
 }

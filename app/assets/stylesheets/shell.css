@@ -23,8 +23,16 @@
   flex-direction: column;
   gap: var(--space-1);
   padding: var(--space-4) var(--space-3);
-  background-color: var(--color-surface-sunken);
+  /* Crust: um degrau mais fundo que o conteúdo — a sidebar é moldura, não página. */
+  background-color: var(--color-surface-deep);
   border-right: 1px solid var(--color-border);
+  /* A mesma linha-assinatura da barra do timer, correndo pelo topo inteiro do app. */
+  border-top: 3px solid var(--color-accent);
+}
+
+/* Header mobile (marca acima do timer): invisível no desktop — lá a marca é da sidebar. */
+.shell-mobile-header {
+  display: none;
 }
 
 .shell-sidebar__brand {
@@ -157,6 +165,8 @@ a.shell-nav__item:hover {
   padding: var(--space-6) var(--space-5);
   max-width: 64rem;
   width: 100%;
+  /* Centrado na área útil — sem o vazio morto todo à direita em telas largas. */
+  margin-inline: auto;
 }
 
 /* --- Bottom tab bar (mobile) ------------------------------------------------ */
@@ -174,6 +184,26 @@ a.shell-nav__item:hover {
 
   .shell-sidebar {
     display: none;
+  }
+
+  /* A marca vem da sidebar (oculta) pro header fino do topo — que herda a
+     linha-assinatura de acento. A barra do timer abaixo NÃO repete a linha
+     (duas linhas teal em 50px seriam chumbo). */
+  .shell-mobile-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-lg);
+    font-weight: var(--weight-semibold);
+    letter-spacing: -0.01em;
+    background-color: var(--color-surface-deep);
+    border-top: 3px solid var(--color-accent);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .shell-timerbar {
+    border-top: none;
   }
 
   /*

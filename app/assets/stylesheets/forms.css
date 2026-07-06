@@ -61,12 +61,13 @@ textarea:focus {
   box-shadow: var(--focus-ring);
 }
 
-/* Seta do select desenhada inline (sem asset), tingida pelo texto secundário. */
+/* Seta do select desenhada inline (sem asset), tingida pelo texto secundário.
+   Cores: Catppuccin Latte Subtext 0 (#5c5f77) claro / Mocha Subtext 1 (#a6adc8) escuro. */
 select {
   padding-right: var(--space-6);
   background-image:
-    linear-gradient(45deg, transparent 50%, light-dark(#5c626e, #9aa0ac) 50%),
-    linear-gradient(135deg, light-dark(#5c626e, #9aa0ac) 50%, transparent 50%);
+    linear-gradient(45deg, transparent 50%, light-dark(#5c5f77, #a6adc8) 50%),
+    linear-gradient(135deg, light-dark(#5c5f77, #a6adc8) 50%, transparent 50%);
   background-repeat: no-repeat;
   background-position:
     calc(100% - 17px) 50%,

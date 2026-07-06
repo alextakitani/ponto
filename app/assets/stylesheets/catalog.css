@@ -436,3 +436,19 @@
 .tags-field__new-row .btn {
   flex: none;
 }
+
+/* --- Mobile (≤48rem) --------------------------------------------------------- */
+@media (max-width: 48rem) {
+  /* Tabelas densas de catálogo rolam na horizontal — sem esmagar/cortar colunas. */
+  .data-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Cabeçalho de página: título e ação primária empilham quando não cabem. */
+  .page-header {
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+}

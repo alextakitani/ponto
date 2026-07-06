@@ -40,6 +40,12 @@
     </aside>
 
     <div class="shell-main">
+      <%# Header mobile: a marca (que mora na sidebar, oculta no mobile) aparece num
+          header fino acima da barra do timer — senão o topo fica órfão de identidade. %>
+      <div class="shell-mobile-header">
+        <%= render "shared/logo_mark", size: 32 %>Ponto
+      </div>
+
       <div class="shell-timerbar">
         <%= turbo_frame_tag "timer_bar", src: timer_path(page: params[:page]), data: { turbo_permanent: true } do %>
           <div class="shell-timerbar__loading muted"><%= t("shell.timer_loading") %></div>

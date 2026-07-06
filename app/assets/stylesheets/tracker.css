@@ -2,16 +2,20 @@
  * Tracker UI (Fatia 3.2): barra do timer + lista diária + edição inline.
  */
 
+/* A ASSINATURA (Q63): borda GROSSA de acento no topo da barra do timer — uma linha
+   só, sem degradê (decisão do dono). Marca o timer em toda tela. */
 .shell-timerbar {
   min-height: auto;
   padding: var(--space-3) var(--space-5);
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 10%, transparent), transparent 42%),
-    var(--color-surface);
+  background-color: var(--color-surface);
+  border-top: 3px solid var(--color-accent);
 }
 
 .shell-timerbar turbo-frame {
   display: block;
+  /* Mesmo eixo do conteúdo centrado (shell-content: 64rem centrado). */
+  max-width: 64rem;
+  margin-inline: auto;
 }
 
 .shell-timerbar__loading {
@@ -92,20 +96,25 @@
   gap: var(--space-2);
 }
 
+/* Cabeçalho do dia = FAIXA recuada (Mantle), não linha solta: separa os dias com
+   superfície, e os totais ganham hierarquia (horas fortes, valor discreto). */
 .tracker-day__header {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-3);
-  padding-bottom: var(--space-2);
-  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-surface-sunken);
+  border-radius: var(--radius-sm);
 }
 
 .tracker-day__header h2 {
-  font-size: var(--text-base);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
 }
 
-/* Totais do dia à direita do cabeçalho: valor (faturável, mais discreto) + horas. */
+/* Totais do dia à direita do cabeçalho: valor (faturável, discreto) + horas (fortes —
+   é O número do dia). */
 .tracker-day__totals {
   display: flex;
   align-items: baseline;
@@ -119,7 +128,8 @@
 
 .tracker-day__total {
   font-size: var(--text-sm);
-  color: var(--color-text-subtle);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
 }
 
 .tracker-day__entries {
@@ -132,16 +142,25 @@
   grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--space-3);
   align-items: center;
-  padding: var(--space-3) 0;
+  padding: var(--space-3) var(--space-2);
+  margin: 0 calc(-1 * var(--space-2));
   border-bottom: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
 }
 
-/* Coluna esquerda da linha: sumário em cima, tags embaixo. min-width:0 deixa
-   descrições longas truncarem em vez de estourar o grid da .tracker-entry. */
+/* A linha responde ao mouse (tem ⋮/edição): lavagem sutil, sem virar card. */
+.tracker-entry:hover {
+  background-color: color-mix(in srgb, var(--color-border) 30%, transparent);
+}
+
+/* Coluna esquerda: sumário e tags CORREM INLINE (uma linha só no desktop — tags
+   quebravam pra 2ª linha e a lista ficava dentada). min-width:0 deixa descrições
+   longas truncarem em vez de estourar o grid. */
 .tracker-entry__main {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
   min-width: 0;
 }
 
@@ -319,24 +338,99 @@
   }
 
   .shell-timerbar {
-    padding: var(--space-3);
+    padding: var(--space-2) var(--space-3);
   }
 
-  .timer-bar,
+  /* Timer ocioso compacto: descrição em cima (linha própria), projeto + Iniciar
+     dividem a linha de baixo. As labels uppercase saem da tela (o placeholder e o
+     select dizem tudo) mas ficam pra leitores de tela (clip, não display:none). */
+  .timer-bar {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+
+  .timer-bar__fields {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2);
+  }
+
+  .timer-bar--idle {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+
+  .timer-bar__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
   .tracker-entry,
   .tracker-entry__edit-grid,
-  .tracker-entry__readonly,
-  .timer-bar__fields {
+  .tracker-entry__readonly {
     grid-template-columns: 1fr;
   }
 
-  /* Empilhada no mobile, a linha é isolada — não há irmãs pra colunar contra, então
-     as trilhas fixas do desktop não servem. Volta a flex simples que espalha
-     duração·valor·⋮ pela largura (o alinhamento entre linhas só importa no desktop). */
-  .timer-bar__actions,
+  /* Linha do tracker no mobile: grade [info | números]. Esquerda empilha descrição /
+     projeto·horário / tags; direita alinha duração (forte) sobre valor, com o ⋮
+     centrado ao lado ocupando as duas linhas (alvo de toque confortável). */
+  .tracker-entry {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+
+  .tracker-entry__main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+
+  .tracker-entry__summary {
+    row-gap: 2px;
+  }
+
+  /* Sem separadores "·" no mobile: com o sumário quebrando em 2 linhas eles viram
+     órfãos no fim da linha; o espaçamento do gap já separa os itens. */
+  .tracker-entry__separator {
+    display: none;
+  }
+
   .tracker-entry__actions {
+    display: grid;
+    grid-template-columns: auto auto;
+    column-gap: var(--space-2);
+    row-gap: 2px;
+    justify-items: end;
+    align-items: center;
+  }
+
+  .tracker-entry__duration {
+    grid-column: 1;
+    grid-row: 1;
+    font-weight: var(--weight-semibold);
+  }
+
+  .tracker-entry__amount {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: var(--text-xs);
+  }
+
+  .tracker-entry__actions .row-menu {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    margin-left: 0;
+  }
+
+  /* Timer RODANDO: título + cronômetro/Parar empilhados, cronômetro protagonista. */
+  .timer-bar__actions {
     display: flex;
     justify-content: space-between;
+    align-items: center;
   }
 
   .timer-bar__stopwatch {
