@@ -403,52 +403,79 @@
     align-items: center;
   }
 
-  .tracker-entry,
   .tracker-entry__edit-grid,
   .tracker-entry__readonly {
     grid-template-columns: 1fr;
   }
 
-  /* Linha do tracker no mobile: DIVULGAÇÃO PROGRESSIVA — celular é "olhada +
-     start/stop" (PRODUCT.md). A linha mostra descrição / projeto·horário /
-     duração + ⋮; o € por entry e as tags são metadados que vivem no relatório e
-     na edição (mostrar tudo deixava "muita informação junta"). */
-  /* align-items: start (não center): a coluna direita (duração + ⋮) ancora no
-     TOPO da linha — centralizar fazia os números flutuarem em alturas diferentes
-     conforme a linha tem tags (3 linhas) ou não (2 linhas). */
+  /* Linha do tracker no mobile — layout do dono (06/07):
+       1ª linha: descrição … início–fim · decorrido · ⋮
+       2ª linha: projeto (bolinha + nome)
+       3ª linha: tags e alertas.
+     Sem markup extra: os wrappers (main/summary/actions) viram display:contents
+     e cada dado se posiciona pelas grid-template-areas da própria linha. */
   .tracker-entry {
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    grid-template-areas:
+      "desc range dur menu"
+      "proj proj  proj proj"
+      "tags tags  tags tags";
+    column-gap: var(--space-2);
+    row-gap: 2px;
     align-items: start;
   }
 
-  /* EDIÇÃO inline no mobile: coluna única (o grid [info | números] da linha de
-     leitura esmagava o form de edição). */
+  .tracker-entry__main,
+  .tracker-entry__summary,
+  .tracker-entry__actions {
+    display: contents;
+  }
+
+  /* EDIÇÃO inline no mobile: coluna única e sem áreas (o form tem grid próprio;
+     as áreas da linha de leitura esmagariam o form). */
   .tracker-entry--editing {
     grid-template-columns: 1fr;
+    grid-template-areas: none;
   }
 
-  .tracker-entry__main {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 2px;
-  }
-
-  /* Sumário em DUAS linhas controladas: descrição ocupa a 1ª inteira (trunca);
-     projeto + horário dividem a 2ª (projeto trunca, horário nunca quebra). */
-  .tracker-entry__summary {
-    flex-wrap: wrap;
-    min-width: 0;
-    row-gap: 2px;
-  }
-
+  /* 1ª linha: fontes de tamanhos diferentes alinham pelo PÉ (baseline), não
+     pelo topo — senão o horário (xs) flutua acima da descrição. */
   .tracker-entry__description {
-    flex-basis: 100%;
+    grid-area: desc;
+    align-self: baseline;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
+  .tracker-entry__range {
+    grid-area: range;
+    align-self: baseline;
+    font-size: var(--text-xs);
+    color: var(--color-text-subtle);
+  }
+
+  .tracker-entry__duration {
+    grid-area: dur;
+    align-self: baseline;
+    font-weight: var(--weight-semibold);
+  }
+
+  /* O ⋮ sem CAIXA (a moldura de 44px pendurada lia como bagunça): ícone quieto,
+     alvo de toque de 2.75rem intacto, centrado na 1ª linha via margem negativa. */
+  .tracker-entry__actions .row-menu {
+    grid-area: menu;
+    margin-left: 0;
+  }
+
+  .tracker-entry__actions .row-menu > summary {
+    border-color: transparent;
+    margin-block: calc((1lh - 2.75rem) / 2);
+  }
+
   .tracker-entry__project {
+    grid-area: proj;
     min-width: 0;
     overflow: hidden;
   }
@@ -459,11 +486,6 @@
     white-space: nowrap;
   }
 
-  .tracker-entry__range {
-    font-size: var(--text-xs);
-    color: var(--color-text-subtle);
-  }
-
   /* Sem separadores "·" e sem € por entry no mobile (o valor vive no relatório).
      As TAGS ficam — linha própria de chips, compacta (pedido do dono). */
   .tracker-entry__separator,
@@ -472,32 +494,8 @@
   }
 
   .tracker-entry__tags {
+    grid-area: tags;
     margin-top: 2px;
-  }
-
-  /* flex-start (não center): centralizar contra o ⋮ (44px de alvo de toque)
-     deixava a duração flutuando ENTRE as linhas de texto. Com start, a duração
-     casa a baseline com a 1ª linha (descrição) — mesma fonte/line-height. */
-  .tracker-entry__actions {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-1);
-  }
-
-  /* O ⋮ perde a CAIXA na linha do tracker (a moldura de 44px pendurada ao lado
-     de 3 linhas de texto lia como bagunça): vira ícone quieto, com o alvo de
-     toque de 2.75rem intacto e o ícone centrado na 1ª linha via margens
-     negativas (1lh = a linha da duração ao lado). */
-  .tracker-entry__actions .row-menu > summary {
-    border-color: transparent;
-    margin-block: calc((1lh - 2.75rem) / 2);
-  }
-
-  .tracker-entry__duration {
-    font-weight: var(--weight-semibold);
-  }
-
-  .tracker-entry__actions .row-menu {
     margin-left: 0;
   }
 
@@ -511,7 +509,7 @@
   }
 
   .tracker-day__header {
-    padding-right: calc(42px + var(--space-1));
+    padding-right: calc(42px + var(--space-2));
   }
 
   /* Timer RODANDO: título + cronômetro/Parar empilhados, cronômetro protagonista. */
