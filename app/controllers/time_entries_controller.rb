@@ -56,7 +56,9 @@ class TimeEntriesController < ApplicationController
 
   def update
     if save_time_entry_with_tags(@time_entry, time_entry_update_params)
+      load_tracker_day_groups
       respond_to do |format|
+        format.turbo_stream
         format.html do
           if turbo_frame_request?
             render partial: "time_entries/frame", locals: { time_entry: @time_entry }, layout: false

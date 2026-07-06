@@ -137,13 +137,85 @@ class TrackerUiTest < ActionDispatch::IntegrationTest
       headers: turbo_frame_headers(entry)
 
     assert_response :success
-    assert_select "turbo-frame##{ActionView::RecordIdentifier.dom_id(entry)}", count: 1
-    assert_select "turbo-frame##{ActionView::RecordIdentifier.dom_id(entry)} input[name='time_entry[description]']", count: 0
+    assert_equal Mime[:turbo_stream], response.media_type
+    assert_turbo_stream action: :replace, target: "tracker_entries"
     assert_select "[data-entry-id='#{entry.id}']", text: /Depois/
     assert_equal "Depois", entry.reload.description
     assert_equal second_project.id, entry.project_id
     assert_equal false, entry.billable
     assert_equal ActiveSupport::TimeZone[@user.time_zone].parse("2026-07-02T09:30").utc, entry.started_at
+  end
+
+  test "edição inline com horas alteradas re-renderiza a lista do tracker" do
+    entry = @user.time_entries.create!(
+      description: "Horas antigas",
+      started_at: Time.utc(2026, 7, 2, 12, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 13, 0, 0)
+    )
+
+    patch time_entry_path(entry),
+      params: {
+        time_entry: {
+          started_at: "2026-07-02T09:00",
+          ended_at: "2026-07-02T11:00"
+        }
+      },
+      headers: turbo_frame_headers(entry)
+
+    assert_response :success
+    assert_equal Mime[:turbo_stream], response.media_type
+    assert_turbo_stream action: :replace, target: "tracker_entries"
+    assert_select "[data-entry-id='#{entry.id}'] .tracker-entry__duration", text: /02:00:00/
+  end
+
+  test "edição inline que resolve overlap remove badge dos dois entries na resposta" do
+    first = @user.time_entries.create!(
+      description: "Primeiro overlap",
+      started_at: Time.utc(2026, 7, 2, 12, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 13, 0, 0)
+    )
+    second = @user.time_entries.build(
+      description: "Segundo overlap",
+      started_at: Time.utc(2026, 7, 2, 12, 30, 0),
+      ended_at: Time.utc(2026, 7, 2, 13, 30, 0)
+    )
+    second.allow_overlap = true
+    second.save!
+
+    patch time_entry_path(second),
+      params: {
+        time_entry: {
+          started_at: "2026-07-02T11:00",
+          ended_at: "2026-07-02T12:00"
+        }
+      },
+      headers: turbo_frame_headers(second)
+
+    assert_response :success
+    assert_turbo_stream action: :replace, target: "tracker_entries"
+    assert_select "[data-entry-id='#{first.id}'] .tag-badge--danger", count: 0
+    assert_select "[data-entry-id='#{second.id}'] .tag-badge--danger", count: 0
+  end
+
+  test "edição inline atualiza total do dia na resposta" do
+    entry = @user.time_entries.create!(
+      description: "Total do dia",
+      started_at: Time.utc(2026, 7, 2, 12, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 13, 0, 0)
+    )
+
+    patch time_entry_path(entry),
+      params: {
+        time_entry: {
+          started_at: "2026-07-02T09:00",
+          ended_at: "2026-07-02T11:30"
+        }
+      },
+      headers: turbo_frame_headers(entry)
+
+    assert_response :success
+    assert_turbo_stream action: :replace, target: "tracker_entries"
+    assert_select "#day-2026-07-02-totals .tracker-day__total", text: "02:30:00"
   end
 
   test "edição inline de entry finalizado salva início e fim editáveis" do
@@ -171,6 +243,8 @@ class TrackerUiTest < ActionDispatch::IntegrationTest
       headers: turbo_frame_headers(entry)
 
     assert_response :success
+    assert_equal Mime[:turbo_stream], response.media_type
+    assert_turbo_stream action: :replace, target: "tracker_entries"
     assert_equal ActiveSupport::TimeZone[@user.time_zone].parse("2026-07-02T09:30").utc, entry.reload.started_at
     assert_equal ActiveSupport::TimeZone[@user.time_zone].parse("2026-07-02T10:45").utc, entry.ended_at
   end
@@ -191,6 +265,8 @@ class TrackerUiTest < ActionDispatch::IntegrationTest
       headers: turbo_frame_headers(running)
 
     assert_response :success
+    assert_equal Mime[:turbo_stream], response.media_type
+    assert_turbo_stream action: :replace, target: "tracker_entries"
     assert_nil running.reload.ended_at
     assert_equal "Ainda rodando", running.description
   end
@@ -245,6 +321,8 @@ class TrackerUiTest < ActionDispatch::IntegrationTest
       headers: turbo_frame_headers(entry)
 
     assert_response :success
+    assert_equal Mime[:turbo_stream], response.media_type
+    assert_turbo_stream action: :replace, target: "tracker_entries"
     assert_equal [ "Bug", "Legado", "Urgente" ], entry.reload.tags.order(:created_at).map(&:name)
     assert_select "[data-entry-id='#{entry.id}']", text: /Bug/
     assert_select "[data-entry-id='#{entry.id}']", text: /Legado/
