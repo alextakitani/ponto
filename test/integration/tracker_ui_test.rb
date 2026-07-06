@@ -146,6 +146,76 @@ class TrackerUiTest < ActionDispatch::IntegrationTest
     assert_equal ActiveSupport::TimeZone[@user.time_zone].parse("2026-07-02T09:30").utc, entry.started_at
   end
 
+  test "edição inline de entry finalizado salva início e fim editáveis" do
+    entry = @user.time_entries.create!(
+      description: "Antes",
+      started_at: Time.utc(2026, 7, 2, 12, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 13, 0, 0)
+    )
+
+    get edit_time_entry_path(entry), headers: turbo_frame_headers(entry)
+
+    assert_response :success
+    assert_select "input[name='time_entry[started_at]'][data-duration-fields-target='start']", count: 1
+    assert_select "input[name='time_entry[ended_at]'][data-duration-fields-target='end']", count: 1
+    assert_select "input[data-duration-fields-target='duration'][name]", count: 0
+    assert_select ".tracker-entry__readonly", count: 0
+
+    patch time_entry_path(entry),
+      params: {
+        time_entry: {
+          started_at: "2026-07-02T09:30",
+          ended_at: "2026-07-02T10:45"
+        }
+      },
+      headers: turbo_frame_headers(entry)
+
+    assert_response :success
+    assert_equal ActiveSupport::TimeZone[@user.time_zone].parse("2026-07-02T09:30").utc, entry.reload.started_at
+    assert_equal ActiveSupport::TimeZone[@user.time_zone].parse("2026-07-02T10:45").utc, entry.ended_at
+  end
+
+  test "edição inline de entry rodando ignora ended_at forjado" do
+    running = @user.time_entries.create!(
+      description: "Rodando",
+      started_at: Time.utc(2026, 7, 2, 12, 0, 0)
+    )
+
+    patch time_entry_path(running),
+      params: {
+        time_entry: {
+          description: "Ainda rodando",
+          ended_at: "2026-07-02T10:45"
+        }
+      },
+      headers: turbo_frame_headers(running)
+
+    assert_response :success
+    assert_nil running.reload.ended_at
+    assert_equal "Ainda rodando", running.description
+  end
+
+  test "edição inline rejeita fim anterior ao início" do
+    entry = @user.time_entries.create!(
+      description: "Antes",
+      started_at: Time.utc(2026, 7, 2, 12, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 13, 0, 0)
+    )
+
+    patch time_entry_path(entry),
+      params: {
+        time_entry: {
+          started_at: "2026-07-02T10:00",
+          ended_at: "2026-07-02T09:00"
+        }
+      },
+      headers: turbo_frame_headers(entry)
+
+    assert_response :unprocessable_entity
+    assert_equal Time.utc(2026, 7, 2, 12, 0, 0), entry.reload.started_at
+    assert_equal Time.utc(2026, 7, 2, 13, 0, 0), entry.ended_at
+  end
+
   test "edição inline aceita tags existentes, mantém arquivada já aplicada e cria nova inline" do
     active = @user.tags.create!(name: "Bug")
     archived = @user.tags.create!(name: "Legado")

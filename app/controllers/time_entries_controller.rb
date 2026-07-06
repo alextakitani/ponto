@@ -102,10 +102,11 @@ class TimeEntriesController < ApplicationController
     end
 
     def time_entry_update_params
-      permitted = [ :project_id, :task_id, :description, :billable, :started_at ]
-      permitted << :ended_at if @time_entry.ended_at?
-      attrs = params.require(:time_entry).permit(*permitted, tag_ids: [], new_tag_names: [])
+      attrs = params.require(:time_entry).permit(:project_id, :task_id, :description, :billable, :started_at, :ended_at, tag_ids: [], new_tag_names: [])
+      # Q49(c): entry rodando só pode parar pelo stop; edição inline não carimba fim.
+      attrs.delete(:ended_at) unless @time_entry.ended_at?
       attrs[:started_at] = parse_user_datetime(attrs[:started_at]) if attrs[:started_at].present?
+      attrs[:ended_at] = parse_user_datetime(attrs[:ended_at]) if attrs[:ended_at].present?
       attrs
     end
 

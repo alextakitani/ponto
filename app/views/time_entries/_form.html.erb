@@ -1,7 +1,7 @@
 <%# dirty-form: avisa antes de perder edição não salva (Cancelar/navegar/fechar). %>
 <%= form_with model: time_entry, class: "tracker-entry tracker-entry--editing",
       data: {
-        controller: "dirty-form",
+        controller: "#{"duration-fields " if time_entry.ended_at?}dirty-form",
         dirty_form_message_value: t("time_entries.form.unsaved_warning"),
         action: "change->dirty-form#markDirty input->dirty-form#markDirty submit->dirty-form#allowLeave"
       } do |form| %>
@@ -29,8 +29,28 @@
 
     <div class="form-field">
       <%= form.label :started_at, t("common.labels.start") %>
-      <%= form.datetime_local_field :started_at, value: tracker_datetime_local_value(time_entry.started_at) %>
+      <%= form.datetime_local_field :started_at,
+            value: tracker_datetime_local_value(time_entry.started_at),
+            data: ({ duration_fields_target: "start" } if time_entry.ended_at?) %>
     </div>
+
+    <% if time_entry.ended_at? %>
+      <div class="form-field">
+        <%= form.label :ended_at, t("common.labels.end") %>
+        <%= form.datetime_local_field :ended_at,
+              value: tracker_datetime_local_value(time_entry.ended_at),
+              data: { duration_fields_target: "end" } %>
+      </div>
+
+      <div class="form-field">
+        <%# Duração é auxiliar: aceita "2:30" ou "2h30" e calcula o fim. NÃO tem name %>
+        <%# → não é enviada ao servidor (o servidor recebe início+fim reais — Q5). %>
+        <label for="<%= dom_id(time_entry, :duration) %>"><%= t("common.labels.duration") %></label>
+        <input id="<%= dom_id(time_entry, :duration) %>" type="text" inputmode="text"
+               placeholder="<%= t("time_entries.manual.duration_placeholder") %>"
+               data-duration-fields-target="duration">
+      </div>
+    <% end %>
 
     <label class="tracker-billable">
       <%= form.check_box :billable %>
@@ -40,24 +60,26 @@
 
   <%= render "time_entries/tags_fields", form:, time_entry: %>
 
-  <dl class="tracker-entry__readonly tabular-nums">
-    <div>
-      <dt><%= t("common.labels.end") %></dt>
-      <dd><%= time_entry.ended_at? ? tracker_local_time(time_entry.ended_at) : t("tracker.running") %></dd>
-    </div>
-    <div>
-      <dt><%= t("common.labels.duration") %></dt>
-      <dd>
-        <% if time_entry.ended_at? %>
-          <%= tracker_duration(time_entry.duration_seconds) %>
-        <% else %>
-          <span data-controller="stopwatch" data-stopwatch-started-at-value="<%= time_entry.started_at.iso8601 %>">
-            <%= tracker_duration(0) %>
-          </span>
-        <% end %>
-      </dd>
-    </div>
-  </dl>
+  <% unless time_entry.ended_at? %>
+    <dl class="tracker-entry__readonly tabular-nums">
+      <div>
+        <dt><%= t("common.labels.end") %></dt>
+        <dd><%= time_entry.ended_at? ? tracker_local_time(time_entry.ended_at) : t("tracker.running") %></dd>
+      </div>
+      <div>
+        <dt><%= t("common.labels.duration") %></dt>
+        <dd>
+          <% if time_entry.ended_at? %>
+            <%= tracker_duration(time_entry.duration_seconds) %>
+          <% else %>
+            <span data-controller="stopwatch" data-stopwatch-started-at-value="<%= time_entry.started_at.iso8601 %>">
+              <%= tracker_duration(0) %>
+            </span>
+          <% end %>
+        </dd>
+      </div>
+    </dl>
+  <% end %>
 
   <div class="form-actions">
     <%= form.submit t("common.actions.save"), class: "btn btn--sm" %>
