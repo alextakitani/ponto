@@ -46,8 +46,10 @@
         <%# Duração é auxiliar: aceita "2:30" ou "2h30" e calcula o fim. NÃO tem name %>
         <%# → não é enviada ao servidor (o servidor recebe início+fim reais — Q5). %>
         <label for="<%= dom_id(time_entry, :duration) %>"><%= t("common.labels.duration") %></label>
+        <%# Pré-preenchida no MESMO formato h:mm que o controller escreve ao recalcular. %>
         <input id="<%= dom_id(time_entry, :duration) %>" type="text" inputmode="text"
                placeholder="<%= t("time_entries.manual.duration_placeholder") %>"
+               value="<%= format("%d:%02d", time_entry.duration_seconds.to_i / 3600, (time_entry.duration_seconds.to_i % 3600) / 60) %>"
                data-duration-fields-target="duration">
       </div>
     <% end %>
