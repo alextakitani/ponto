@@ -758,7 +758,7 @@ pt-BR:
       taken: "já está em uso"
       invalid: "não é válido"
       inclusion: "não está incluído na lista"
-      overlap: "se sobrepõe à entrada %{range}"
+      overlap: "conflita com outra entrada já registrada (%{range})"
   activerecord:
     errors:
       messages:

@@ -754,7 +754,7 @@ en:
       taken: "has already been taken"
       invalid: "is invalid"
       inclusion: "is not included in the list"
-      overlap: "overlaps entry %{range}"
+      overlap: "conflicts with another existing entry (%{range})"
   activerecord:
     errors:
       messages:
