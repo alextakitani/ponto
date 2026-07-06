@@ -117,7 +117,9 @@
 .row-menu__items {
   position: absolute;
   right: 0;
-  z-index: 5;
+  /* Acima da bottom tab bar (z10 no shell) — aberto no fim da lista, o menu
+     era coberto por ela no mobile. */
+  z-index: 11;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -431,7 +433,8 @@
 
 .tags-field__panel {
   position: absolute;
-  z-index: 5;
+  /* Acima da bottom tab bar (z10) — mesma razão do .row-menu__items. */
+  z-index: 11;
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
@@ -518,5 +521,17 @@
   .page-header {
     flex-wrap: wrap;
     gap: var(--space-3);
+  }
+
+  /* Toolbar: a busca ganha a linha inteira; filtro e link "Arquivados" dividem
+     a de baixo (em linha única os três se esmagavam em 390px). */
+  .page-toolbar {
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .page-search {
+    flex-basis: 100%;
+    max-width: none;
   }
 }

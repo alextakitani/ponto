@@ -214,8 +214,8 @@ a.shell-nav__item:hover {
   /*
    * A barra do timer é a assinatura (Q63) e o Stop não pode sumir quando a lista
    * rola ou o form manual expande. No mobile ela GRUDA no topo da viewport —
-   * sempre visível, sem markup novo. z-index abaixo da tab bar (10) e do menu ⋮ da
-   * linha (5 é local, não colide), acima do conteúdo que rola por baixo.
+   * sempre visível, sem markup novo. z-index abaixo da tab bar (10) e dos
+   * popovers ⋮/tags (11 — precisam vencer a tab bar), acima do conteúdo.
    */
   .shell-timerbar {
     position: sticky;
@@ -226,7 +226,8 @@ a.shell-nav__item:hover {
   .shell-content {
     /* Laterais enxutas no mobile (mais dados por linha — pedido do dono) e
        espaço embaixo pra bottom bar não cobrir o fim do conteúdo. */
-    padding: var(--space-4) var(--space-3) calc(var(--space-8) + 3rem);
+    padding: var(--space-4) var(--space-3)
+      calc(var(--space-8) + 3rem + env(safe-area-inset-bottom, 0));
   }
 
   .shell-tabs {
@@ -236,6 +237,8 @@ a.shell-nav__item:hover {
     z-index: 10;
     background-color: var(--color-surface);
     border-top: 1px solid var(--color-border);
+    /* Home indicator do iPhone não cobre os tabs (exige viewport-fit=cover no meta). */
+    padding-bottom: env(safe-area-inset-bottom, 0);
   }
 
   .shell-tabs__item {
@@ -284,7 +287,7 @@ a.shell-nav__item:hover {
        os itens; abre acima da barra. */
     position: fixed;
     right: var(--space-2);
-    bottom: calc(2.75rem + var(--space-2));
+    bottom: calc(2.75rem + var(--space-2) + env(safe-area-inset-bottom, 0));
     min-width: 12rem;
     display: flex;
     flex-direction: column;

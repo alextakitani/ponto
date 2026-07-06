@@ -52,6 +52,12 @@
   white-space: nowrap;
 }
 
+/* min-width:0 — descrição longa trunca em vez de estourar o grid da barra
+   (o mesmo princípio das linhas do tracker). */
+.timer-bar__context {
+  min-width: 0;
+}
+
 .timer-bar__title {
   display: flex;
   flex-wrap: wrap;

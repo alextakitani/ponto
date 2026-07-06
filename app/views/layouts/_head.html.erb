@@ -2,7 +2,9 @@
     Título/meta/CSS/importmap num lugar só, sem duplicação. %>
 <title><%= content_for(:title) || "Ponto" %></title>
 <meta name="description" content="<%= content_for(:description) || t("shell.meta.description") %>">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<%# viewport-fit=cover: sem ele, env(safe-area-inset-*) resolve pra 0 em iPhone
+    com notch — a tab bar e o botão ⌘K precisam do inset real. %>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="application-name" content="Ponto">
 <meta name="mobile-web-app-capable" content="yes">

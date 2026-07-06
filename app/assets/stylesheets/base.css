@@ -177,6 +177,15 @@ svg {
   animation: toast-in 0.18s ease;
 }
 
+/* No mobile o topo empilha header da marca (~3rem) + barra do timer (~4rem):
+   o offset de desktop deixava o toast EM CIMA da barra. Continua no topo
+   (decisão do dono: embaixo passava batido), só desce pra baixo da pilha. */
+@media (max-width: 48rem) {
+  #flash {
+    top: calc(7rem + var(--space-2));
+  }
+}
+
 /* O check no acento marca "deu certo" — presença por conteúdo, sem moldura. */
 .flash--notice .icon {
   color: var(--color-accent);

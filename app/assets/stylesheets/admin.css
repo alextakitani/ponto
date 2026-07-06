@@ -74,6 +74,16 @@
   list-style: none;
 }
 
+/* Mobile: as tabelas (pedidos/usuários, 5 colunas) rolam na horizontal em vez
+   de estourar o viewport — mesmo padrão da .data-table do catálogo. */
+@media (max-width: 48rem) {
+  .admin__table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 .admin__menu summary::-webkit-details-marker,
 .admin__confirm summary::-webkit-details-marker {
   display: none;
