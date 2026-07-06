@@ -355,6 +355,23 @@ class TrackerUiTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  # Regressão: o Cancelar da edição (GET do frame isolado) MANTÉM o badge de
+  # sobreposição — antes o render solo vinha sem overlapping_ids e o badge sumia
+  # com o conflito ainda de pé.
+  test "cancelar a edição mantém o badge de sobreposição da entry" do
+    first = @user.time_entries.build(description: "A", started_at: Time.utc(2026, 7, 2, 9), ended_at: Time.utc(2026, 7, 2, 10))
+    first.allow_overlap = true
+    first.save!
+    second = @user.time_entries.build(description: "B", started_at: Time.utc(2026, 7, 2, 9, 30), ended_at: Time.utc(2026, 7, 2, 10, 30))
+    second.allow_overlap = true
+    second.save!
+
+    get time_entry_path(first), headers: turbo_frame_headers(first)
+
+    assert_response :success
+    assert_select ".tag-badge--danger"
+  end
+
   private
     def turbo_headers(frame_id)
       {

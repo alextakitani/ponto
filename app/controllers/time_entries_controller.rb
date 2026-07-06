@@ -24,7 +24,13 @@ class TimeEntriesController < ApplicationController
     respond_to do |format|
       format.html do
         if turbo_frame_request?
-          render partial: "time_entries/frame", locals: { time_entry: @time_entry }, layout: false
+          # Render isolado da linha (ex.: Cancelar da edição): fora do grupo do dia
+          # não há overlapping_ids calculado — consulta a sobreposição DESTA entry
+          # direto (exists?, barato), senão o badge sumia com o conflito de pé.
+          overlapping = @time_entry.overlapping_entries.exists? ? Set[@time_entry.id] : Set.new
+          render partial: "time_entries/frame",
+                 locals: { time_entry: @time_entry, overlapping_ids: overlapping },
+                 layout: false
         end
       end
       format.json { render :show }
