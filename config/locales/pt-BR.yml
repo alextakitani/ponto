@@ -131,6 +131,7 @@ pt-BR:
       unparseable_date: "O arquivo %{file}, linha %{row}, tem data/hora inválida em %{field}: %{value}."
       ended_before_started: "O arquivo %{file}, linha %{row}, termina antes de começar."
       divergent_project_rate: "O projeto %{project} tem valores por hora divergentes no CSV."
+      unexpected: "Ocorreu um erro inesperado. Os arquivos foram mantidos para nova tentativa."
   access_requests:
     form:
       email_label: "E-mail"

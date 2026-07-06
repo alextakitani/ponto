@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_06_102231) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_06_110000) do
   create_table "access_requests", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -72,6 +72,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_102231) do
     t.integer "user_id", null: false
     t.index ["user_id", "name"], name: "index_clients_on_user_id_and_name", unique: true
     t.index ["user_id"], name: "index_clients_on_user_id"
+  end
+
+  create_table "clockify_imports", force: :cascade do |t|
+    t.integer "clients_created", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.text "error_message"
+    t.boolean "files_purged", default: false, null: false
+    t.integer "projects_created", default: 0, null: false
+    t.string "status", default: "pending", null: false
+    t.integer "tags_created", default: 0, null: false
+    t.integer "tasks_created", default: 0, null: false
+    t.integer "time_entries_created", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id"], name: "index_clockify_imports_on_user_id"
   end
 
   create_table "projects", force: :cascade do |t|
@@ -178,6 +193,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_102231) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "clients", "users"
+  add_foreign_key "clockify_imports", "users"
   add_foreign_key "projects", "clients"
   add_foreign_key "projects", "users"
   add_foreign_key "sessions", "users"

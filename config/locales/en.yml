@@ -132,6 +132,7 @@ en:
       unparseable_date: "File %{file}, row %{row}, has an invalid date/time in %{field}: %{value}."
       ended_before_started: "File %{file}, row %{row}, ends before it starts."
       divergent_project_rate: "Project %{project} has divergent hourly rates in the CSV."
+      unexpected: "An unexpected error occurred. Files were kept for a manual retry."
   access_requests:
     form:
       email_label: "Email"
