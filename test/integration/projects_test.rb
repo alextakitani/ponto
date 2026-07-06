@@ -178,6 +178,23 @@ class ProjectsTest < ActionDispatch::IntegrationTest
     assert_no_match %r{target="timer_bar"}, response.body
   end
 
+  # Regressão: mudar o padrão NÃO pode reordenar a lista (name é cifrado — ORDER BY
+  # SQL bateria no ciphertext). A ordem tem que ser a MESMA da index (Ruby, downcase).
+  test "definir padrão mantém a ordem alfabética da lista estável" do
+    %w[Charlie alpha Bravo].each { |n| @user.projects.create!(name: n) }
+    expected = %w[alpha Bravo Charlie] # downcase alfabético, como a index
+
+    get projects_path
+    index_order = css_select("#projects_list a").map(&:text).select { |t| expected.include?(t) }
+    assert_equal expected, index_order, "sanidade: a index já ordena assim"
+
+    post project_default_path(@user.projects.find_by(name: "Charlie")), as: :turbo_stream
+
+    stream_order = css_select("turbo-stream[target=projects_list] a")
+      .map(&:text).select { |t| expected.include?(t) }
+    assert_equal expected, stream_order, "a ordem após mudar o padrão deve ser idêntica à index"
+  end
+
   # --- Hard-delete restrito do Client pela via web (Q7) -----------------------
 
   test "deletar cliente COM projeto falha com mensagem amigável (restrict Q7)" do
