@@ -3,7 +3,10 @@
       data-entry-id="<%= time_entry.id %>" data-running="<%= !time_entry.ended_at? %>">
     <div class="tracker-entry__main">
       <div class="tracker-entry__summary">
-        <span class="tracker-entry__description"><%= tracker_entry_description(time_entry) %></span>
+        <%# title = tooltip nativo: a descrição longa trunca com ellipsis (CSS) e o
+            mouseover mostra o texto inteiro. nil (sem descrição) omite o atributo. %>
+        <%= tag.span tracker_entry_description(time_entry), class: "tracker-entry__description",
+              title: time_entry.description.presence %>
         <span class="tracker-entry__separator" aria-hidden="true">·</span>
         <span class="tracker-entry__project">
           <% if time_entry.project %>
