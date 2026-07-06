@@ -192,7 +192,9 @@ pt-BR:
       short: "%d/%m %H:%M"
       numeric: "%d/%m/%Y"
       day_month: "%d/%m"
-      bar_day: "%a %d/%m"
+      # Eixo X do gráfico de barras: só a segunda de cada semana é rotulada, então
+      # o dia-da-semana seria sempre "seg" (redundante) — mostra só dia/mês.
+      bar_day: "%d/%m"
   time:
     formats:
       short: "%d/%m %H:%M"

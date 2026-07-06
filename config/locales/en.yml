@@ -193,7 +193,9 @@ en:
       short: "%m/%d %H:%M"
       numeric: "%m/%d/%Y"
       day_month: "%m/%d"
-      bar_day: "%a %m/%d"
+      # X axis of the bars chart: only each week's Monday is labeled, so the weekday
+      # would always read "Mon" (redundant) — show just month/day.
+      bar_day: "%m/%d"
   time:
     formats:
       short: "%m/%d %H:%M"

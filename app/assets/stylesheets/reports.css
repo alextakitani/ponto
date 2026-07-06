@@ -233,38 +233,64 @@
   white-space: nowrap;
 }
 
+/* Gráfico de barras estilo Clockify: eixo Y de horas + grade à esquerda, barras
+   diárias, datas esparsas (só segundas) embaixo. --bars-gutter reserva a coluna do
+   eixo pros dois blocos (plot e datas) ficarem alinhados sob as mesmas barras. */
 .report-bars {
   flex: 1;
   min-width: 12rem;
   margin: 0;
+  --bars-height: 8rem;
+  --bars-gutter: 2.5rem;
+}
+
+.report-bars__plot {
+  position: relative;
+  height: var(--bars-height);
+  padding-left: var(--bars-gutter);
+}
+
+/* Eixo Y: ocupa a área da plot; cada gridline é posicionada por bottom %. */
+.report-bars__axis {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.report-bars__gridline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed var(--color-border);
+  opacity: 0.6;
+}
+
+.report-bars__axis-label {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  transform: translateY(50%);
+  width: calc(var(--bars-gutter) - 0.4rem);
+  padding-right: 0.4rem;
+  text-align: right;
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .report-bars__track {
+  position: relative;
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   gap: 2px;
+  height: 100%;
 }
 
 .report-bars__col {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
   min-width: 0;
-  overflow: visible;
-}
-
-.report-bars__col-hours {
-  min-height: 1rem;
-  font-size: var(--text-xs);
-  color: var(--color-text-subtle);
-  font-variant-numeric: tabular-nums;
-  text-align: center;
-  white-space: nowrap;
-}
-
-.report-bars__bar-zone {
-  height: 6rem;
+  height: 100%;
   display: flex;
   align-items: flex-end;
 }
@@ -272,20 +298,30 @@
 .report-bars__bar {
   width: 100%;
   min-height: 1px;
-  flex-shrink: 0;
   background-color: var(--color-accent);
   border-radius: 2px 2px 0 0;
   opacity: 0.85;
 }
 
-.report-bars__col-date {
-  min-height: 2.5rem;
+/* Datas: mesma grade flex do track (gutter + gap iguais) pra cada rótulo cair sob
+   sua coluna. Só as segundas têm texto; as demais células reservam a largura. */
+.report-bars__dates {
+  display: flex;
+  gap: 2px;
+  margin-top: 0.35rem;
+  padding-left: var(--bars-gutter);
+}
+
+.report-bars__date {
+  flex: 1;
+  min-width: 0;
   font-size: var(--text-xs);
   color: var(--color-text-subtle);
-  text-align: center;
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  transform: rotate(-45deg);
-  transform-origin: top center;
+  /* O rótulo pode ser mais largo que a coluna estreita — transborda pra direita
+     (centrado na segunda) sem empurrar o layout nem quebrar linha. */
+  overflow: visible;
 }
 
 /* --- Tabelas Summary/Detailed ----------------------------------------------- */

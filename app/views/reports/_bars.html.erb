@@ -1,16 +1,37 @@
 <%# Barras por DIA (Q6/Q21): uma barra por dia do período, altura = horas do dia.
     Materializa a Q6 (o corte de dia no fuso do user). SVG-livre: divs com height %
-    (server-rendered, zero JS). Dias sem entry = barra vazia (o eixo é o período). %>
+    (server-rendered, zero JS). Dias sem entry = barra vazia (o eixo é o período).
+
+    Estilo Clockify: eixo Y de horas à esquerda com linhas de grade; datas embaixo
+    só nas segundas (início da semana) pra não empilhar ~30 rótulos num mês. As horas
+    do dia vivem no tooltip (title) de cada barra — o eixo dá a escala. %>
 <% peak = daily_series.map(&:duration_seconds).max.to_i %>
+<% axis = report_bar_axis(peak) %>
 <figure class="report-bars" aria-label="<%= t("reports.bars.aria") %>">
-  <div class="report-bars__track">
-    <% daily_series.each do |bucket| %>
-      <div class="report-bars__col" title="<%= l(bucket.date, format: :day_month) %> — <%= report_duration(bucket.duration_seconds) %>">
-        <div class="report-bars__col-hours"><%= report_bar_hours(bucket) %></div>
-        <div class="report-bars__bar-zone">
-          <div class="report-bars__bar" style="height: <%= report_bar_height(bucket, peak) %>%"></div>
+  <div class="report-bars__plot">
+    <%# Eixo Y: rótulos de hora + linha de grade em cada tick (posicionados por bottom %). %>
+    <div class="report-bars__axis" aria-hidden="true">
+      <% axis[:ticks].each do |tick| %>
+        <div class="report-bars__gridline" style="bottom: <%= tick[:percent] %>%">
+          <span class="report-bars__axis-label"><%= report_axis_hours(tick[:hours]) %></span>
         </div>
-        <div class="report-bars__col-date"><%= l(bucket.date, format: :bar_day) %></div>
+      <% end %>
+    </div>
+
+    <div class="report-bars__track">
+      <% daily_series.each do |bucket| %>
+        <div class="report-bars__col" title="<%= l(bucket.date, format: :day_month) %> — <%= report_duration(bucket.duration_seconds) %>">
+          <div class="report-bars__bar" style="height: <%= report_bar_height(bucket, axis[:max_seconds]) %>%"></div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Datas SÓ nas segundas — alinhadas sob as colunas (mesma grade flex do track). %>
+  <div class="report-bars__dates" aria-hidden="true">
+    <% daily_series.each do |bucket| %>
+      <div class="report-bars__date">
+        <% if bucket.date.monday? %><%= l(bucket.date, format: :bar_day) %><% end %>
       </div>
     <% end %>
   </div>
