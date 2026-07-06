@@ -26,14 +26,16 @@ class ReportsController < ApplicationController
     @period = build_period
     exporter = Report::Export.new(build_report)
 
-    respond_to do |format|
-      format.xlsx do
-        send_data exporter.to_xlsx,
-          type: Mime[:xlsx], filename: export_filename("xlsx")
-      end
-      format.csv do
-        send_data exporter.to_csv,
-          type: "text/csv", filename: export_filename("csv")
+    I18n.with_locale(resolve_export_locale) do
+      respond_to do |format|
+        format.xlsx do
+          send_data exporter.to_xlsx,
+            type: Mime[:xlsx], filename: export_filename("xlsx")
+        end
+        format.csv do
+          send_data exporter.to_csv,
+            type: "text/csv", filename: export_filename("csv")
+        end
       end
     end
   end
@@ -53,7 +55,15 @@ class ReportsController < ApplicationController
     # Nome do anexo com o período (ex.: ponto-relatorio-2026-07.xlsx). Mês → AAAA-MM;
     # qualquer outra janela → intervalo AAAA-MM-DD_AAAA-MM-DD (legível na fatura).
     def export_filename(extension)
-      "ponto-relatorio-#{export_period_slug}.#{extension}"
+      "ponto-#{I18n.t("reports.export.filename_prefix")}-#{export_period_slug}.#{extension}"
+    end
+
+    def resolve_export_locale
+      export_locale_from_params || Current.user.export_locale.presence || I18n.locale
+    end
+
+    def export_locale_from_params
+      params[:export_locale].to_s.presence_in(User::LOCALES)
     end
 
     def export_period_slug

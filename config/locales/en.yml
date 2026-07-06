@@ -694,6 +694,8 @@ en:
       tag: "(no tag)"
       description: "(no description)"
     export:
+      filename_prefix: "report"
+      locale_label: "Export language"
       sheet_name: "Report"
       headers:
         project: "Project"

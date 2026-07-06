@@ -68,6 +68,17 @@ class PreferencesTest < ActionDispatch::IntegrationTest
     assert_nil @user.reload.locale
   end
 
+  test "update persiste export_locale e volta para return_to interno" do
+    return_to = reports_path(period: "custom", from: "2026-07-08", to: "2026-07-12", rounding: "on")
+
+    patch preferences_path(return_to: return_to), params: {
+      user: { export_locale: "en" }
+    }
+
+    assert_redirected_to return_to
+    assert_equal "en", @user.reload.export_locale
+  end
+
   test "update com locale forjado re-renderiza 422" do
     assert_no_changes -> { @user.reload.locale } do
       patch preferences_path, params: {

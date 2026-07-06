@@ -181,7 +181,8 @@
   color: var(--color-text-subtle);
 }
 
-/* Ajustes rápidos da welcome: pares label + grupo de botões-toggle (idioma, tema). */
+/* Ajustes rápidos da welcome/export: pares label + <select> nativo (idioma, tema).
+   Os selects herdam a aparência global de forms.css (legíveis nos dois temas). */
 .quick-settings {
   display: flex;
   flex-wrap: wrap;
@@ -194,39 +195,16 @@
   gap: var(--space-1);
 }
 
-.quick-settings__label {
-  font-size: var(--text-xs);
-  color: var(--color-text-subtle);
-}
-
-.quick-settings__options {
-  display: inline-flex;
+.quick-settings__group form {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-1);
 }
 
-/* Cada opção é um button_to (form) — reseta o form-wrapper e estiliza o botão. */
-.quick-settings__options form {
-  margin: 0;
-}
-
-.quick-settings__option {
-  padding: var(--space-1) var(--space-3);
-  font-size: var(--text-sm);
+.quick-settings__label {
+  font-size: var(--text-xs);
   color: var(--color-text-subtle);
-  background: transparent;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-}
-
-.quick-settings__option:hover {
-  color: var(--color-text);
-  border-color: var(--color-text-subtle);
-}
-
-.quick-settings__option.is-active {
-  color: var(--color-accent);
-  border-color: var(--color-accent);
 }
 
 /* --- Formulários de domínio ------------------------------------------------- */

@@ -61,7 +61,9 @@ class WelcomeTest < ActionDispatch::IntegrationTest
 
       assert_response :success
       assert_select ".quick-settings[data-controller=theme]"
-      assert_select ".quick-settings__option", minimum: 5 # 2 idiomas + 3 temas
+      # idioma + tema como <select> nativos (submetem no change)
+      assert_select "select[name='user[locale]']"
+      assert_select "select[name='user[theme]']"
       assert_select "a[href=?]", preferences_path
     end
   end

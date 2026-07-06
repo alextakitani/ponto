@@ -1,0 +1,35 @@
+<%# Conteúdo do frame export_options: seletor de idioma + links de download.
+    O form de idioma submete DENTRO do frame (escopo padrão do Turbo Frame) — o
+    PreferencesController grava User.export_locale e redireciona pro return_to
+    (/reports), de onde o Turbo extrai este mesmo frame já com o novo idioma
+    selecionado e os links de download refletindo a escolha. O popup (<details>,
+    fora do frame) não fecha. O settings_select só submete o form no change. %>
+<% current_export_locale = Current.user.export_locale.presence || I18n.locale.to_s %>
+<section class="quick-settings">
+  <div class="quick-settings__group">
+    <%= form_with url: preferences_path, method: :patch,
+          data: { controller: "settings-select", action: "change->settings-select#submit" } do |form| %>
+      <%= form.hidden_field :return_to, value: request.fullpath %>
+      <%= form.label "user[export_locale]", t("reports.export.locale_label"), class: "quick-settings__label" %>
+      <%= form.select "user[export_locale]",
+            options_for_select(
+              [ [ t("preferences.show.profile.locales.pt_BR"), "pt-BR" ], [ t("preferences.show.profile.locales.en"), "en" ] ],
+              current_export_locale
+            ) %>
+    <% end %>
+  </div>
+</section>
+
+<%# Download: navegação real (arquivo), não visita Turbo Drive — e sai FORA do
+    frame (target _top) pra o browser tratar como download normal. O idioma vem do
+    User.export_locale salvo; report_export_url herda o recorte da URL. %>
+<%= link_to report_export_url(format: :xlsx), class: "btn btn--quiet",
+      data: { turbo: false, turbo_frame: "_top" } do %>
+  <%= icon("download") %>
+  Excel (.xlsx)
+<% end %>
+<%= link_to report_export_url(format: :csv), class: "btn btn--quiet",
+      data: { turbo: false, turbo_frame: "_top" } do %>
+  <%= icon("download") %>
+  CSV
+<% end %>

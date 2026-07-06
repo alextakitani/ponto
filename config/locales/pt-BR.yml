@@ -693,6 +693,8 @@ pt-BR:
       tag: "(sem tag)"
       description: "(sem descrição)"
     export:
+      filename_prefix: "relatorio"
+      locale_label: "Idioma do export"
       sheet_name: "Relatório"
       headers:
         project: "Projeto"

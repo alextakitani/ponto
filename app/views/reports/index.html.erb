@@ -15,15 +15,13 @@
       <%= t(".export") %>
     </summary>
     <div class="row-menu__items">
-      <%# turbo: false — download de arquivo é navegação real, não visita Turbo Drive
-          (senão o Turbo tentaria renderizar os bytes do xlsx/csv como HTML). %>
-      <%= link_to report_export_url(format: :xlsx), class: "btn btn--quiet", data: { turbo: false } do %>
-        <%= icon("download") %>
-        Excel (.xlsx)
-      <% end %>
-      <%= link_to report_export_url(format: :csv), class: "btn btn--quiet", data: { turbo: false } do %>
-        <%= icon("download") %>
-        CSV
+      <%# Turbo Frame: trocar o idioma do export re-renderiza SÓ este frame (o
+          PreferencesController volta pro return_to = /reports; o Turbo extrai o
+          frame de mesmo id de lá). O <details> fica FORA do frame → o popup de
+          export NÃO fecha ao trocar o idioma. Persiste User.export_locale de
+          quebra (é um PATCH real, CSRF automático — sem fetch/JS extra). %>
+      <%= turbo_frame_tag "export_options" do %>
+        <%= render "reports/export_options" %>
       <% end %>
     </div>
   </details>

@@ -1,36 +1,37 @@
-<%# Ajustes rápidos na welcome: idioma e tema, imediatos e salvos na conta.
-    Ambos vão por PATCH /preferences (mesma rota das Preferências) com return_to
-    de volta pra cá. O idioma recarrega no novo locale; o tema aplica na hora via
-    o theme_controller (data-theme no body) e persiste em paralelo. %>
+<%# Ajustes rápidos na welcome: idioma e tema como <select> nativos (legíveis e
+    acessíveis por construção). Cada select submete NO CHANGE via settings_select
+    (sem botão), fazendo PATCH /preferences com return_to de volta pra cá. O idioma
+    recarrega no novo locale; o tema aplica NA HORA (theme_controller aplica o
+    data-theme no body antes do submit) e persiste em paralelo. %>
 <section class="quick-settings" data-controller="theme" data-theme-current-value="<%= Current.user.theme %>">
-  <div class="quick-settings__group" role="group" aria-label="<%= t("welcome.quick.language") %>">
-    <span class="quick-settings__label"><%= t("welcome.quick.language") %></span>
-    <div class="quick-settings__options">
-      <% { "pt-BR" => t("preferences.show.profile.locales.pt_BR"), "en" => t("preferences.show.profile.locales.en") }.each do |locale, label| %>
-        <%= button_to preferences_path(return_to: welcome_path(locale: locale)),
-              method: :patch,
-              params: { user: { locale: locale } },
-              class: class_names("quick-settings__option", "is-active" => I18n.locale.to_s == locale),
-              "aria-pressed": (I18n.locale.to_s == locale ? "true" : "false") do %>
-          <%= label %>
-        <% end %>
-      <% end %>
-    </div>
+  <div class="quick-settings__group">
+    <%= form_with url: preferences_path, method: :patch,
+          data: { controller: "settings-select", action: "change->settings-select#submit" } do |form| %>
+      <%= form.hidden_field :return_to, value: welcome_path %>
+      <%= form.label :locale, t("welcome.quick.language"), class: "quick-settings__label" %>
+      <%# O locale muda a URL de retorno (return_to) pra a página recarregar já no idioma novo. %>
+      <%= form.select "user[locale]",
+            options_for_select(
+              [ [ t("preferences.show.profile.locales.pt_BR"), "pt-BR" ], [ t("preferences.show.profile.locales.en"), "en" ] ],
+              I18n.locale.to_s
+            ),
+            {},
+            data: { settings_select_target: "localeField" } %>
+    <% end %>
   </div>
 
-  <div class="quick-settings__group" role="group" aria-label="<%= t("welcome.quick.theme") %>">
-    <span class="quick-settings__label"><%= t("welcome.quick.theme") %></span>
-    <div class="quick-settings__options">
-      <% { "system" => t("preferences.show.profile.themes.system"), "light" => t("preferences.show.profile.themes.light"), "dark" => t("preferences.show.profile.themes.dark") }.each do |theme, label| %>
-        <%= button_to preferences_path(return_to: welcome_path),
-              method: :patch,
-              params: { user: { theme: theme } },
-              class: class_names("quick-settings__option", "is-active" => Current.user.theme == theme),
-              data: { theme_target: "option", action: "theme#apply", theme_theme_param: theme },
-              "aria-pressed": (Current.user.theme == theme ? "true" : "false") do %>
-          <%= label %>
-        <% end %>
-      <% end %>
-    </div>
+  <div class="quick-settings__group">
+    <%= form_with url: preferences_path, method: :patch,
+          data: { controller: "settings-select", action: "change->settings-select#submit" } do |form| %>
+      <%= form.hidden_field :return_to, value: welcome_path %>
+      <%= form.label :theme, t("welcome.quick.theme"), class: "quick-settings__label" %>
+      <%= form.select "user[theme]",
+            options_for_select(
+              [ [ t("preferences.show.profile.themes.system"), "system" ], [ t("preferences.show.profile.themes.light"), "light" ], [ t("preferences.show.profile.themes.dark"), "dark" ] ],
+              Current.user.theme
+            ),
+            {},
+            data: { action: "theme#apply", theme_target: "select" } %>
+    <% end %>
   </div>
 </section>

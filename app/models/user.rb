@@ -21,11 +21,13 @@ class User < ApplicationRecord
 
   normalizes :email, with: ->(value) { value.strip.downcase.presence }
   normalizes :locale, with: ->(value) { value.to_s.presence }
+  normalizes :export_locale, with: ->(value) { value.to_s.presence }
 
   validates :email, presence: true, uniqueness: true,
                     format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :theme, inclusion: { in: THEMES, message: :invalid }
   validates :locale, inclusion: { in: LOCALES, allow_nil: true }
+  validates :export_locale, inclusion: { in: LOCALES, allow_nil: true }
 
   # Invariante ≥1 admin ATIVO (Q34c). Admin suspenso NÃO conta como ativo.
   # - rebaixar (admin: true -> false) o último admin ativo: falha na validação;
