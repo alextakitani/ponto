@@ -3,10 +3,13 @@
       data-entry-id="<%= time_entry.id %>" data-running="<%= !time_entry.ended_at? %>">
     <div class="tracker-entry__main">
       <div class="tracker-entry__summary">
-        <%# title = tooltip nativo: a descrição longa trunca com ellipsis (CSS) e o
-            mouseover mostra o texto inteiro. nil (sem descrição) omite o atributo. %>
+        <%# Descrição longa trunca com ellipsis (CSS). Pra ler inteira: title =
+            tooltip nativo no mouseover (desktop); tabindex = tap/Tab foca o span
+            e o :focus desfaz a truncagem (mobile, onde title não existe).
+            Sem descrição, nenhum dos dois atributos é renderizado. %>
         <%= tag.span tracker_entry_description(time_entry), class: "tracker-entry__description",
-              title: time_entry.description.presence %>
+              title: time_entry.description.presence,
+              tabindex: ("0" if time_entry.description.present?) %>
         <span class="tracker-entry__separator" aria-hidden="true">·</span>
         <span class="tracker-entry__project">
           <% if time_entry.project %>

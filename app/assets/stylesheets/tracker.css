@@ -209,6 +209,14 @@
   font-weight: var(--weight-medium);
 }
 
+/* Descrição truncada expande no FOCO (tap no mobile — onde o title do span não
+   existe —, Tab no teclado): o próprio texto abrindo é o indicador de foco. */
+.tracker-entry__description:focus {
+  white-space: normal;
+  overflow: visible;
+  outline: none;
+}
+
 .tracker-entry__separator {
   color: var(--color-text-subtle);
 }
