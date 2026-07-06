@@ -12,7 +12,11 @@
     </summary>
 
     <%= form_with model: time_entry, url: time_entries_path,
-          data: { controller: "duration-fields" },
+          data: {
+            controller: "duration-fields dirty-form",
+            dirty_form_message_value: t("time_entries.form.unsaved_warning"),
+            action: "change->dirty-form#markDirty input->dirty-form#markDirty submit->dirty-form#allowLeave"
+          },
           class: "manual-entry__form" do |form| %>
       <% if time_entry.errors.any? %>
         <div class="form-errors" role="alert">

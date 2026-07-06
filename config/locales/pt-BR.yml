@@ -609,6 +609,8 @@ pt-BR:
       start: "Iniciar"
       stop: "Parar"
   time_entries:
+    form:
+      unsaved_warning: "Há alterações não salvas nesta entrada. Sair e descartar?"
     create:
       created: "Entrada criada."
     update:

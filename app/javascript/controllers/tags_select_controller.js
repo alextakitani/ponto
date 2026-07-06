@@ -22,6 +22,9 @@ export default class extends Controller {
 
     this.inputTarget.value = ""
     this.inputTarget.focus()
+
+    // Dispara change no elemento raiz para o dirty-form perceber que o form mudou.
+    this.element.dispatchEvent(new Event("change", { bubbles: true }))
   }
 
   buildOption(name) {

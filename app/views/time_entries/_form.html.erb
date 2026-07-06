@@ -1,4 +1,10 @@
-<%= form_with model: time_entry, class: "tracker-entry tracker-entry--editing" do |form| %>
+<%# dirty-form: avisa antes de perder edição não salva (Cancelar/navegar/fechar). %>
+<%= form_with model: time_entry, class: "tracker-entry tracker-entry--editing",
+      data: {
+        controller: "dirty-form",
+        dirty_form_message_value: t("time_entries.form.unsaved_warning"),
+        action: "change->dirty-form#markDirty input->dirty-form#markDirty submit->dirty-form#allowLeave"
+      } do |form| %>
   <% if time_entry.errors.any? %>
     <div class="form-errors" role="alert">
       <ul>
@@ -55,6 +61,7 @@
 
   <div class="form-actions">
     <%= form.submit t("common.actions.save"), class: "btn btn--sm" %>
-    <%= link_to t("common.actions.cancel"), time_entry_path(time_entry), class: "btn btn--quiet btn--sm" %>
+    <%= link_to t("common.actions.cancel"), time_entry_path(time_entry), class: "btn btn--quiet btn--sm",
+          data: { action: "dirty-form#confirmLeave" } %>
   </div>
 <% end %>

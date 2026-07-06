@@ -610,6 +610,8 @@ en:
       start: "Start"
       stop: "Stop"
   time_entries:
+    form:
+      unsaved_warning: "This entry has unsaved changes. Leave and discard them?"
     create:
       created: "Entry created."
     update:
