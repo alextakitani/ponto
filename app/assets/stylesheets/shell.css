@@ -4,14 +4,17 @@
  * hierarquia por tipografia/peso/espaço, chrome quieto, UM acento.
  */
 
-/* Desktop: grid sidebar + conteúdo. A row explícita 1fr leva TODA a altura:
-   sem ela, filhos extras do <body> (ex.: o wrapper do command palette) criam rows
-   implícitas que dividem a sobra do 100dvh — e a sidebar parava antes do rodapé. */
+/* Desktop: grid sidebar + conteúdo. ALTURA FIXA na viewport (100dvh, não min-):
+   a página não rola inteira — a sidebar fica fixa e SÓ o conteúdo (.shell-main)
+   rola. Sem isso, uma lista longa (tracker) estica o .app inteiro e a sidebar vai
+   junto, jogando o rodapé (Preferências/Sair) lá pro fim da página. A row 1fr leva
+   toda a altura mesmo com filhos extras do <body> (wrapper do command palette). */
 .app {
   display: grid;
   grid-template-columns: 15rem 1fr;
   grid-template-rows: 1fr;
-  min-height: 100dvh;
+  height: 100dvh;
+  overflow: hidden; /* o scroll mora em .shell-main, não no grid */
 }
 
 /* --- Sidebar (desktop) ------------------------------------------------------ */
@@ -129,9 +132,13 @@ a.shell-nav__item:hover {
   display: flex;
   flex-direction: column;
   min-width: 0; /* deixa tabelas largas encolherem em vez de estourar o grid */
+  min-height: 0; /* permite que o filho que rola (.shell-content) encolha no grid */
+  overflow-y: auto; /* o SCROLL da página mora aqui — a sidebar fica fixa */
 }
 
-/* Barra fina reservada pra futura barra do timer (Fase 3) — placeholder discreto. */
+/* Barra do timer — a assinatura (Q63): fica GRUDADA no topo enquanto o conteúdo
+   rola por baixo (agora que o scroll mora em .shell-main), pro Stop estar sempre
+   acessível. z-index acima do conteúdo que rola sob ela. */
 .shell-timerbar {
   display: flex;
   align-items: center;
@@ -140,6 +147,9 @@ a.shell-nav__item:hover {
   font-size: var(--text-xs);
   border-bottom: 1px solid var(--color-border);
   background-color: var(--color-surface);
+  position: sticky;
+  top: 0;
+  z-index: 3;
 }
 
 .shell-content {
