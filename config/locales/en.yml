@@ -646,6 +646,7 @@ en:
       title: "Nothing in this period"
     filters:
       title: "Filters"
+      active: "Filters applied"
       description_contains: "Description contains"
       search_placeholder: "search…"
       group_by: "Group by"

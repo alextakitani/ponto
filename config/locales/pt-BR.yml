@@ -645,6 +645,7 @@ pt-BR:
       title: "Nada neste período"
     filters:
       title: "Filtros"
+      active: "Filtros aplicados"
       description_contains: "Descrição contém"
       search_placeholder: "buscar…"
       group_by: "Agrupar por"

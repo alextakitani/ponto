@@ -15,6 +15,14 @@ class Report
       new
     end
 
+    # Há algum filtro de DADOS aplicado? (as 6 dimensões que reduzem o conjunto —
+    # não conta agrupamento/rounding, que são formatação, não filtro). Usado pra
+    # sinalizar visualmente "filtro ativo" no botão Filtros.
+    def any?
+      client_ids.any? || project_ids.any? || task_ids.any? || tag_ids.any? ||
+        !billable.nil? || description.present?
+    end
+
     def initialize(client_ids: [], project_ids: [], task_ids: [], tag_ids: [], billable: nil, description: nil)
       @client_ids = Array(client_ids).map(&:to_s).reject(&:blank?)
       @project_ids = Array(project_ids).map(&:to_s).reject(&:blank?)

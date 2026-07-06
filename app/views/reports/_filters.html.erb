@@ -4,8 +4,17 @@
 <%= form_with url: reports_path, method: :get, class: "report-filters" do |form| %>
   <%= form.hidden_field :view, value: view %>
 
+  <%# Indicador de filtro ativo (Q54): quando alguma das 6 dimensões está aplicada,
+      o botão ganha um ponto de acento + o estado --active. Só formatação (agrupamento/
+      rounding) NÃO acende — é filtro de dados que conta. %>
   <details class="report-filters__group">
-    <summary class="report-filters__summary"><%= t("reports.filters.title") %></summary>
+    <summary class="report-filters__summary<%= " report-filters__summary--active" if report.filters.any? %>"
+             aria-label="<%= report.filters.any? ? t("reports.filters.active") : t("reports.filters.title") %>">
+      <%= t("reports.filters.title") %>
+      <% if report.filters.any? %>
+        <span class="report-filters__indicator" aria-hidden="true"></span>
+      <% end %>
+    </summary>
     <div class="report-filters__body">
       <label class="report-filters__field">
         <span class="muted"><%= t("common.labels.client") %></span>
