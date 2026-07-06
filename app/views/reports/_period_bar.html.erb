@@ -12,7 +12,7 @@
   </div>
 
   <div class="report-period__presets">
-    <% { "today" => t("reports.period.presets.today"), "week" => t("reports.period.presets.week"), "month" => t("reports.period.presets.month"), "year" => t("reports.period.presets.year") }.each do |preset, label| %>
+    <% { "today" => t("reports.period.presets.today"), "week" => t("reports.period.presets.week"), "month" => t("reports.period.presets.month"), "last_month" => t("reports.period.presets.last_month"), "year" => t("reports.period.presets.year"), "last_year" => t("reports.period.presets.last_year") }.each do |preset, label| %>
       <%= link_to label, report_url(period: preset, nav: nil, from: nil, to: nil),
             class: class_names("report-preset", "report-preset--active": period.preset == preset && !period.custom?) %>
     <% end %>

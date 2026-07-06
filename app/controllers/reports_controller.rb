@@ -57,7 +57,7 @@ class ReportsController < ApplicationController
     end
 
     def export_period_slug
-      if @period.preset == "month" && !@period.custom?
+      if @period.preset.in?(%w[month last_month]) && !@period.custom?
         @period.first_date.strftime("%Y-%m")
       elsif @period.first_date == @period.last_date
         @period.first_date.iso8601

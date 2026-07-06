@@ -8,7 +8,7 @@ class Report
   # presets são atalhos que derivam esse par de `today`; custom recebe o par direto.
   # As setas devolvem um NOVO Period deslocado pelo tamanho da janela (imutável).
   class Period
-    PRESETS = %w[today week month year custom].freeze
+    PRESETS = %w[today week month year last_month last_year custom].freeze
     DEFAULT_PRESET = "month"
     DEFAULT_TIME_ZONE = "America/Sao_Paulo"
 
@@ -66,6 +66,13 @@ class Report
           reanchored(first_date.advance(months: direction))
         when "year"
           reanchored(first_date.advance(years: direction))
+        # last_month/last_year já são uma janela de mês/ano deslocada; navegar re-ancora
+        # como o preset BASE (month/year) — assim o rótulo deixa de dizer "passado"
+        # quando o usuário anda pra outro mês/ano e a janela vira a unidade normal.
+        when "last_month"
+          reanchored_as("month", first_date.advance(months: direction))
+        when "last_year"
+          reanchored_as("year", first_date.advance(years: direction))
         when "custom"
           span = (last_date - first_date).to_i + 1
           shifted(first_date + direction * span, last_date + direction * span)
@@ -77,6 +84,11 @@ class Report
       # nas bordas do calendário sozinho (junho tem 30, julho 31).
       def reanchored(new_anchor)
         Period.new(preset: @preset, today: new_anchor, time_zone: @time_zone)
+      end
+
+      # Como reanchored, mas troca o preset (last_month → month ao navegar).
+      def reanchored_as(preset, new_anchor)
+        Period.new(preset: preset, today: new_anchor, time_zone: @time_zone)
       end
 
       # Custom não tem calendário: desloca as duas datas cruas e continua custom.
@@ -93,19 +105,23 @@ class Report
 
       def preset_first(today)
         case @preset
-        when "today" then today
-        when "week"  then today.beginning_of_week # segunda-feira, fixo (Q53)
-        when "month" then today.beginning_of_month
-        when "year"  then today.beginning_of_year
+        when "today"      then today
+        when "week"       then today.beginning_of_week # segunda-feira, fixo (Q53)
+        when "month"      then today.beginning_of_month
+        when "year"       then today.beginning_of_year
+        when "last_month" then today.advance(months: -1).beginning_of_month
+        when "last_year"  then today.advance(years: -1).beginning_of_year
         end
       end
 
       def preset_last(today)
         case @preset
-        when "today" then today
-        when "week"  then today.end_of_week
-        when "month" then today.end_of_month
-        when "year"  then today.end_of_year
+        when "today"      then today
+        when "week"       then today.end_of_week
+        when "month"      then today.end_of_month
+        when "year"       then today.end_of_year
+        when "last_month" then today.advance(months: -1).end_of_month
+        when "last_year"  then today.advance(years: -1).end_of_year
         end
       end
   end
