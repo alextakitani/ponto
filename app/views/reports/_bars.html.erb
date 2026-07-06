@@ -5,8 +5,12 @@
 <figure class="report-bars" aria-label="<%= t("reports.bars.aria") %>">
   <div class="report-bars__track">
     <% daily_series.each do |bucket| %>
-      <div class="report-bars__col" title="<%= bucket.date.strftime(t("date.formats.day_month")) %> — <%= report_duration(bucket.duration_seconds) %>">
-        <div class="report-bars__bar" style="height: <%= report_bar_height(bucket, peak) %>%"></div>
+      <div class="report-bars__col" title="<%= l(bucket.date, format: :day_month) %> — <%= report_duration(bucket.duration_seconds) %>">
+        <div class="report-bars__col-hours"><%= report_bar_hours(bucket) %></div>
+        <div class="report-bars__bar-zone">
+          <div class="report-bars__bar" style="height: <%= report_bar_height(bucket, peak) %>%"></div>
+        </div>
+        <div class="report-bars__col-date"><%= l(bucket.date, format: :bar_day) %></div>
       </div>
     <% end %>
   </div>

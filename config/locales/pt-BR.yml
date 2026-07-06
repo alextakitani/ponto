@@ -192,6 +192,7 @@ pt-BR:
       short: "%d/%m %H:%M"
       numeric: "%d/%m/%Y"
       day_month: "%d/%m"
+      bar_day: "%a %d/%m"
   time:
     formats:
       short: "%d/%m %H:%M"
@@ -625,6 +626,7 @@ pt-BR:
       export: "Exportar"
     bars:
       aria: "Horas por dia"
+    bar_hours: "%{hours}h"
     donut:
       aria: "Distribuição do tempo por projeto"
     detailed:
@@ -660,7 +662,9 @@ pt-BR:
         today: "Hoje"
         week: "Esta semana"
         month: "Este mês"
+        last_month: "Mês passado"
         year: "Este ano"
+        last_year: "Ano passado"
     metrics:
       aria: "Totais do período"
       total: "Total"

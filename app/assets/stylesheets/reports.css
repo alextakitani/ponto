@@ -27,6 +27,7 @@
 
 .report-period__presets {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-1);
 }
 
@@ -240,14 +241,30 @@
 
 .report-bars__track {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 2px;
-  height: 6rem;
 }
 
 .report-bars__col {
   flex: 1;
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
+  overflow: visible;
+}
+
+.report-bars__col-hours {
+  min-height: 1rem;
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.report-bars__bar-zone {
+  height: 6rem;
   display: flex;
   align-items: flex-end;
 }
@@ -255,9 +272,20 @@
 .report-bars__bar {
   width: 100%;
   min-height: 1px;
+  flex-shrink: 0;
   background-color: var(--color-accent);
   border-radius: 2px 2px 0 0;
   opacity: 0.85;
+}
+
+.report-bars__col-date {
+  min-height: 2.5rem;
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+  text-align: center;
+  white-space: nowrap;
+  transform: rotate(-45deg);
+  transform-origin: top center;
 }
 
 /* --- Tabelas Summary/Detailed ----------------------------------------------- */

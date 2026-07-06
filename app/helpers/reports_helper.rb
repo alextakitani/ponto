@@ -58,6 +58,13 @@ module ReportsHelper
     ((bucket.duration_seconds.to_f / peak_seconds) * 100).round(2)
   end
 
+  # Rótulo curto de horas para o topo de uma barra diária.
+  def report_bar_hours(bucket)
+    return if bucket.duration_seconds.to_i.zero?
+
+    t("reports.bar_hours", hours: format("%.1f", bucket.hours))
+  end
+
   # Rótulo humano de uma dimensão de agrupamento (pro cabeçalho da tabela do Summary).
   def report_group_dimension_label(dimension)
     t("reports.group_dimensions.#{dimension}", default: t("reports.group_dimensions.group"))
