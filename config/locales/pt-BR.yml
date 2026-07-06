@@ -61,8 +61,8 @@ pt-BR:
     stack:
       heading: "Leve de operar no seu homelab"
       backup:
-        key: "Backup = 1 arquivo"
-        value_html: "SQLite: fazer backup é copiar um único <code>.sqlite3</code>."
+        key: "Backup = copiar uma pasta"
+        value_html: "SQLite: os dados são arquivos <code>.sqlite3</code> numa pasta — backup é copiá-la (ou um snapshot do volume). Sem servidor de banco pra administrar."
       no_node:
         key: "Zero Node, zero build"
         value: "Rails 8 + Hotwire com importmap. Sem pipeline de JavaScript."

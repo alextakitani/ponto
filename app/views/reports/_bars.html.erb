@@ -27,11 +27,13 @@
     </div>
   </div>
 
-  <%# Datas SÓ nas segundas — alinhadas sob as colunas (mesma grade flex do track). %>
+  <%# Datas nas segundas (início da semana) + SEMPRE o 1º dia do período (a borda
+      esquerda) — senão a borda fica sem marca quando o mês não começa na segunda.
+      Alinhadas sob as colunas (mesma grade flex do track). %>
   <div class="report-bars__dates" aria-hidden="true">
-    <% daily_series.each do |bucket| %>
+    <% daily_series.each_with_index do |bucket, index| %>
       <div class="report-bars__date">
-        <% if bucket.date.monday? %><%= l(bucket.date, format: :bar_day) %><% end %>
+        <% if index.zero? || bucket.date.monday? %><%= l(bucket.date, format: :bar_day) %><% end %>
       </div>
     <% end %>
   </div>
