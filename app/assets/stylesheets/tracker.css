@@ -2,13 +2,11 @@
  * Tracker UI (Fatia 3.2): barra do timer + lista diária + edição inline.
  */
 
-/* A ASSINATURA (Q63): borda GROSSA de acento no topo da barra do timer — uma linha
-   só, sem degradê (decisão do dono). Marca o timer em toda tela. */
+/* A linha-assinatura mora no topo do .app (shell.css) — aqui só o layout da barra. */
 .shell-timerbar {
   min-height: auto;
   padding: var(--space-3) var(--space-5);
   background-color: var(--color-surface);
-  border-top: 3px solid var(--color-accent);
 }
 
 .shell-timerbar turbo-frame {

@@ -15,6 +15,9 @@
   grid-template-rows: 1fr;
   height: 100dvh;
   overflow: hidden; /* o scroll mora em .shell-main, não no grid */
+  /* A ASSINATURA: uma barra de acento ÚNICA no topo do app inteiro — fora da
+     sidebar e do tracker, sem emenda entre os dois. */
+  border-top: 3px solid var(--color-accent);
 }
 
 /* --- Sidebar (desktop) ------------------------------------------------------ */
@@ -26,8 +29,6 @@
   /* Crust: um degrau mais fundo que o conteúdo — a sidebar é moldura, não página. */
   background-color: var(--color-surface-deep);
   border-right: 1px solid var(--color-border);
-  /* A mesma linha-assinatura da barra do timer, correndo pelo topo inteiro do app. */
-  border-top: 3px solid var(--color-accent);
 }
 
 /* Header mobile (marca acima do timer): invisível no desktop — lá a marca é da sidebar. */
@@ -198,12 +199,7 @@ a.shell-nav__item:hover {
     font-weight: var(--weight-semibold);
     letter-spacing: -0.01em;
     background-color: var(--color-surface-deep);
-    border-top: 3px solid var(--color-accent);
     border-bottom: 1px solid var(--color-border);
-  }
-
-  .shell-timerbar {
-    border-top: none;
   }
 
   /*
