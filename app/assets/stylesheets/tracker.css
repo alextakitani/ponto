@@ -475,9 +475,12 @@
     margin-top: 2px;
   }
 
+  /* flex-start (não center): centralizar contra o ⋮ (44px de alvo de toque)
+     deixava a duração flutuando ENTRE as linhas de texto. Com start, a duração
+     casa a baseline com a 1ª linha (descrição) — mesma fonte/line-height. */
   .tracker-entry__actions {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--space-1);
   }
 
