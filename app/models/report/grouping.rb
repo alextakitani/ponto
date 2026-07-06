@@ -4,8 +4,8 @@ class Report
   # subtotais por moeda — Q43) e, se houver 2º nível, seus subgroups. Baldes "(sem X)"
   # explícitos. Ordenação por duração desc (maior primeiro).
   #
-  # Roda em Ruby sobre Rows já decriptadas/arredondadas (Q58) — GROUP BY no banco não
-  # serve (nomes/description criptografados — Q25).
+  # Roda em Ruby sobre Rows já arredondadas (Q58): o relatório agrupa por dimensões
+  # derivadas e precisa respeitar os baldes "(sem X)" da tela/export.
   class Grouping
     # Dimensões suportadas → como extrair a chave de agrupamento de uma Row. A chave é
     # um par [valor_de_ordenação_estável, título_exibido]; nil vira o balde "(sem X)".

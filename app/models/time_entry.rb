@@ -11,7 +11,6 @@ class TimeEntry < ApplicationRecord
   has_many :taggings, dependent: :destroy
   has_many :tags, through: :taggings
 
-  encrypts :description
   monetize :rate_cents, allow_nil: true, with_model_currency: :currency
 
   validates :started_at, presence: true

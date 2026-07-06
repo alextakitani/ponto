@@ -5,7 +5,7 @@ class TagsTest < ActionDispatch::IntegrationTest
     @user = sign_in_as("dono@example.com")
   end
 
-  test "index lista só as tags ativas e busca por nome em ruby" do
+  test "index lista só as tags ativas e busca por nome normalizado" do
     ativa = @user.tags.create!(name: "Urgente")
     arquivada = @user.tags.create!(name: "Legado")
     arquivada.archive!

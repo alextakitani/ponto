@@ -2,8 +2,8 @@ require "test_helper"
 
 # Lógica NOSSA do TimeEntry (Fatia 3.1): invariantes de tempo, snapshot de rate,
 # integridade task↔project, default de billable, cálculo faturável, descarte de
-# duração-zero, isolamento por user e criptografia da descrição. Não testamos
-# belongs_to/monetize/dependent (framework/gem).
+# duração-zero e isolamento por user. Não testamos belongs_to/monetize/dependent
+# (framework/gem).
 class TimeEntryTest < ActiveSupport::TestCase
   setup do
     @user = create_user(email: "dono@example.com")
@@ -212,18 +212,6 @@ class TimeEntryTest < ActiveSupport::TestCase
       @user.time_entries.create!(started_at: Time.current)
       other.time_entries.create!(started_at: Time.current)
     end
-  end
-
-  test "descrição não aparece em claro no SQL cru" do
-    @user.time_entries.create!(
-      description: "Segredo do timer",
-      started_at: Time.current - 1.hour,
-      ended_at: Time.current
-    )
-
-    raw = ActiveRecord::Base.connection.select_value("SELECT description FROM time_entries LIMIT 1")
-    assert_not_nil raw
-    assert_not_includes raw, "Segredo do timer"
   end
 
   # --- Split (Q48): quebra um entry finalizado em dois no ponto de corte. ---

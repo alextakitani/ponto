@@ -36,7 +36,7 @@ module TrackerHelper
   end
 
   def tracker_entry_tags(time_entry)
-    time_entry.tags.to_a.sort_by { |tag| [ tag.archived? ? 1 : 0, tag.name.downcase ] }
+    time_entry.tags.to_a.sort_by { |tag| [ tag.archived? ? 1 : 0, tag.name_normalized ] }
   end
 
   def tracker_billable_amount(time_entry)
@@ -75,7 +75,7 @@ module TrackerHelper
 
   def tracker_grouped_project_options
     Current.user.projects.active.includes(:client).to_a
-      .sort_by { |project| [ project.client&.name.to_s.downcase, project.name.downcase ] }
+      .sort_by { |project| [ project.client&.name_normalized.to_s, project.name_normalized ] }
       .group_by { |project| project.client&.name || t("tracker.no_client") }
       .map do |client_name, projects|
         [ client_name, projects.map { |project| [ project.name, project.id ] } ]
@@ -85,7 +85,7 @@ module TrackerHelper
   def tracker_available_tags_for(time_entry)
     tags = Current.user.tags.active.to_a
     tags += time_entry.tags.archived.to_a if time_entry.persisted?
-    tags.uniq.sort_by(&:name)
+    tags.uniq.sort_by(&:name_normalized)
   end
 
   def tracker_local_time(timestamp)

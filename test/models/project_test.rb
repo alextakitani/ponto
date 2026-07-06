@@ -2,8 +2,8 @@ require "test_helper"
 
 # Lógica NOSSA do Project (Fatia 2.3): rate efetiva com override/herança (Q22), cor
 # da paleta fixa + auto-atribuição da menos-usada (Q52), unicidade por user incluindo
-# arquivados (Q44), cliente-do-mesmo-user (Q23) e a criptografia do name (Q25c). Não
-# testamos belongs_to/monetize/dependent (framework/gem).
+# arquivados (Q44) e cliente-do-mesmo-user (Q23). Não testamos
+# belongs_to/monetize/dependent (framework/gem).
 class ProjectTest < ActiveSupport::TestCase
   setup do
     @user = create_user(email: "dono@example.com")
@@ -124,14 +124,5 @@ class ProjectTest < ActiveSupport::TestCase
 
   test "projeto sem cliente é válido (Q2)" do
     assert @user.projects.build(name: "Avulso").valid?
-  end
-
-  # --- Encryption sanity (Q25c) -----------------------------------------------
-
-  test "name não aparece em claro no SQL cru" do
-    @user.projects.create!(name: "SegredoDoProjeto")
-    raw = ActiveRecord::Base.connection.select_value("SELECT name FROM projects LIMIT 1")
-    assert_not_nil raw
-    assert_not_includes raw, "SegredoDoProjeto"
   end
 end

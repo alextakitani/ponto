@@ -1,8 +1,7 @@
 class Report
   # Filtros finos (Q54): 6 dimensões, OR dentro da dimensão / AND entre dimensões.
-  # Value object imutável montado dos params. Os filtros por ID (client/project/task)
-  # e billable rodam no SQL (baratos, colunas em claro); Description roda em Ruby
-  # (coluna criptografada — Q25). Tag fica preparada mas NÃO implementada (fase Tags).
+  # Value object imutável montado dos params. Filtros por ID, billable e descrição
+  # rodam no SQL.
   #
   # Baldes "(sem X)": o sentinela `NONE` numa lista de ids significa "inclua os sem
   # projeto/cliente" — filtrável junto com ids reais (Q2/Q15).
@@ -33,26 +32,30 @@ class Report
       @description = description.to_s.strip.presence
     end
 
-    # Aplica no SQL os filtros que SÃO seguros no banco (ids em claro + billable).
-    # Client é join em projects; os baldes "(sem X)" viram OR ... IS NULL.
+    # Aplica no SQL os filtros de dados. Client é join em projects; os baldes
+    # "(sem X)" viram OR ... IS NULL.
     def apply_sql(relation)
       relation = filter_by_ids(relation, :project_id, @project_ids)
       relation = filter_by_ids(relation, :task_id, @task_ids)
       relation = filter_by_client(relation, @client_ids)
       relation = filter_by_tag(relation, @tag_ids)
       relation = relation.where(billable: @billable) unless @billable.nil?
+      relation = filter_by_description(relation)
       relation
     end
 
-    # Description contains, case-insensitive, EM RUBY (decrypt já rodou no load).
-    # Sem termo → passa reto.
-    def description_match?(entry)
-      return true if @description.blank?
-
-      entry.description.to_s.downcase.include?(@description.downcase)
+    def description_match?(_entry)
+      true
     end
 
     private
+      def filter_by_description(relation)
+        return relation if @description.blank?
+
+        pattern = "%#{ActiveRecord::Base.sanitize_sql_like(@description.downcase)}%"
+        relation.where("LOWER(time_entries.description) LIKE ? ESCAPE '\\'", pattern)
+      end
+
       def filter_by_ids(relation, column, ids)
         return relation if ids.empty?
 

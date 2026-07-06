@@ -1,8 +1,7 @@
 require "test_helper"
 
 # Lógica NOSSA do Client (Fatia 2.2): unicidade de nome por user INCLUINDO
-# arquivados (Q44), normalização/validação de currency, e a sanidade da
-# criptografia (Q25c — name não vaza em claro no SQL). Não testamos o
+# arquivados (Q44) e normalização/validação de currency. Não testamos o
 # `belongs_to`/`monetize` (framework/gem).
 class ClientTest < ActiveSupport::TestCase
   setup do
@@ -35,13 +34,14 @@ class ClientTest < ActiveSupport::TestCase
     assert outro.clients.build(name: "Acme").valid?
   end
 
-  # A unicidade também é garantida no BANCO (índice único sobre o ciphertext
-  # deterministic) — não só na validação.
+  # A unicidade também é garantida no BANCO (índice único sobre name_normalized) —
+  # não só na validação.
   test "índice único do banco barra duplicata quando a validação é pulada" do
     @user.clients.create!(name: "Acme")
 
     assert_raises ActiveRecord::RecordNotUnique do
       dup = @user.clients.build(name: "Acme")
+      dup.name_normalized = Client.normalize_name(dup.name)
       dup.save!(validate: false)
     end
   end
@@ -199,15 +199,5 @@ class ClientTest < ActiveSupport::TestCase
     assert_difference -> { Client.count }, -1 do
       assert client.destroy
     end
-  end
-
-  # --- Encryption sanity (Q25c) -----------------------------------------------
-
-  test "name não aparece em claro no SQL cru (criptografado at rest)" do
-    @user.clients.create!(name: "SegredoIndustrial")
-
-    raw = ActiveRecord::Base.connection.select_value("SELECT name FROM clients LIMIT 1")
-    assert_not_nil raw
-    assert_not_includes raw, "SegredoIndustrial"
   end
 end

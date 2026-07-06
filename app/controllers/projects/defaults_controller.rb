@@ -33,11 +33,8 @@ module Projects
       # select pré-selecionar o novo padrão. Com timer rodando a barra mostra o
       # cronômetro (sem select) e não deve ser tocada (não reinicia o relógio).
       def render_default_change(notice)
-        # MESMA ordenação da index (ProjectsController#index): em Ruby por name
-        # downcase — `name` é criptografado (Q25c), então ORDER BY SQL bateria no
-        # ciphertext e reordenaria a lista (listagem tem que ser ESTÁVEL).
-        @projects = authorized_scope(Project.all).active.includes(:client).to_a
-          .sort_by { |p| p.name.downcase }
+        # MESMA ordenação da index (ProjectsController#index): Nameable.alphabetical.
+        @projects = authorized_scope(Project.all).active.includes(:client).alphabetical
         @running_timer = authorized_scope(TimeEntry.all).exists?(ended_at: nil)
         flash.now[:notice] = notice
         render "projects/defaults/update"

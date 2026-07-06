@@ -68,7 +68,7 @@ pt-BR:
         value: "Rails 8 + Hotwire com importmap. Sem pipeline de JavaScript."
       your_data:
         key: "Seus dados são seus"
-        value: "Criptografados em disco — nem o administrador da instância enxerga o seu conteúdo."
+        value: "Cada conta é uma bolha isolada — o admin gerencia acessos, mas não tem tela para ver seus clientes, projetos ou lançamentos. E como é self-hosted, o servidor é seu."
       portability:
         key: "Portabilidade sempre"
         value: "Exporte tudo o que é seu, quando quiser — nada fica preso aqui."

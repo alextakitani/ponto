@@ -15,11 +15,7 @@ class ClientsController < ApplicationController
 
     scope = authorized_scope(Client.all)
     scope = @showing_archived ? scope.archived : scope.active
-    # Busca por nome EM RUBY: `name` é criptografado (Q25c) → o ciphertext no banco
-    # não casa com LIKE do valor em claro. O catálogo de clientes é pequeno (Q39/Q50),
-    # então filtrar a coleção já carregada em memória é barato e correto (mesmo
-    # racional da Q54). Ordenamos também em Ruby pelo mesmo motivo (name cifrado).
-    @clients = filter_by_name(scope.to_a, params[:q]).sort_by { |c| c.name.downcase }
+    @clients = scope.name_matching(params[:q]).alphabetical
 
     respond_to do |format|
       format.html
@@ -105,15 +101,6 @@ class ClientsController < ApplicationController
       # `rate` = accessor Money (form HTML manda "150,00"; money-rails parseia p/ cents).
       # `rate_cents` = escalar int (superfície JSON/CLI — Q73). Só um vem preenchido.
       params.require(:client).permit(:name, :currency, :rate, :rate_cents, :note)
-    end
-
-    def filter_by_name(clients, query)
-      if query.present?
-        needle = query.strip.downcase
-        clients.select { |c| c.name.downcase.include?(needle) }
-      else
-        clients
-      end
     end
 
     def render_errors(client)

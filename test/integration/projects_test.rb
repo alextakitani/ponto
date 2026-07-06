@@ -178,11 +178,11 @@ class ProjectsTest < ActionDispatch::IntegrationTest
     assert_no_match %r{target="timer_bar"}, response.body
   end
 
-  # Regressão: mudar o padrão NÃO pode reordenar a lista (name é cifrado — ORDER BY
-  # SQL bateria no ciphertext). A ordem tem que ser a MESMA da index (Ruby, downcase).
+  # Regressão: mudar o padrão NÃO pode reordenar a lista. A ordem tem que ser a MESMA
+  # da index (Nameable.alphabetical).
   test "definir padrão mantém a ordem alfabética da lista estável" do
     %w[Charlie alpha Bravo].each { |n| @user.projects.create!(name: n) }
-    expected = %w[alpha Bravo Charlie] # downcase alfabético, como a index
+    expected = %w[alpha Bravo Charlie] # forma normalizada, como a index
 
     get projects_path
     index_order = css_select("#projects_list a").map(&:text).select { |t| expected.include?(t) }

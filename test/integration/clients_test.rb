@@ -2,8 +2,8 @@ require "test_helper"
 
 # Fluxo de controle NOSSO do ClientsController (Fatia 2.2): CRUD feliz, isolamento
 # por bolha (Q23), archive/unarchive, a UX da colisão-com-arquivado (Q44) e a busca
-# EM RUBY (name é criptografado — LIKE não funciona). Não testamos view string a
-# string nem o CRUD do framework.
+# por nome via SQL normalizado. Não testamos view string a string nem o CRUD do
+# framework.
 class ClientsTest < ActionDispatch::IntegrationTest
   include ActiveJob::TestHelper
 
@@ -153,13 +153,13 @@ class ClientsTest < ActionDispatch::IntegrationTest
     assert_match(/desarquiv/i, response.body)
   end
 
-  # --- Busca EM RUBY (name criptografado, LIKE não funciona) -------------------
+  # --- Busca por nome ----------------------------------------------------------
 
-  test "busca por nome acha por substring case-insensitive" do
+  test "busca por nome acha por substring case-insensitive e sem acento" do
     @user.clients.create!(name: "Padaria do João")
     @user.clients.create!(name: "Mercado Central")
 
-    get clients_path(q: "padaria")
+    get clients_path(q: "joao")
     assert_select "body", text: /Padaria do João/
     assert_select "body", { text: /Mercado Central/, count: 0 }
   end

@@ -14,11 +14,8 @@ class ProjectsController < ApplicationController
     scope = authorized_scope(Project.all).includes(:client)
     scope = @showing_archived ? scope.archived : scope.active
     scope = scope.where(client_id: params[:client_id]) if params[:client_id].present?
-    # Busca por nome EM RUBY: `name` é criptografado (Q25c) → LIKE não casa o
-    # ciphertext. Catálogo pequeno (Q39/Q50); ordenar/filtrar em memória é barato.
-    @projects = filter_by_name(scope.to_a, params[:q]).sort_by { |p| p.name.downcase }
-    # Clientes ATIVOS pro select de filtro (label pt-BR ordenado em Ruby — name cifrado).
-    @clients = authorized_scope(Client.all).active.to_a.sort_by { |c| c.name.downcase }
+    @projects = scope.name_matching(params[:q]).alphabetical
+    @clients = authorized_scope(Client.all).active.alphabetical
 
     respond_to do |format|
       format.html
@@ -109,16 +106,7 @@ class ProjectsController < ApplicationController
       active = authorized_scope(Client.all).active.to_a
       current = @project.client
       clients = current && current.archived? ? active + [ current ] : active
-      @client_options = clients.uniq.sort_by { |c| c.name.downcase }
-    end
-
-    def filter_by_name(projects, query)
-      if query.present?
-        needle = query.strip.downcase
-        projects.select { |p| p.name.downcase.include?(needle) }
-      else
-        projects
-      end
+      @client_options = clients.uniq.sort_by(&:name_normalized)
     end
 
     def render_errors(project)

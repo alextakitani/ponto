@@ -218,12 +218,22 @@ class ReportTest < ActiveSupport::TestCase
     assert_equal [ nonbill.id ], only_non.rows.map { |r| r.entry.id }
   end
 
-  test "filtro Description contains roda em Ruby, case-insensitive (Q54)" do
+  test "filtro Description contains roda no SQL, case-insensitive (Q54)" do
     match = entry(started: Time.utc(2026, 7, 10, 12, 0), ended: Time.utc(2026, 7, 10, 13, 0), description: "Refatorar o Backoffice")
     entry(started: Time.utc(2026, 7, 11, 12, 0), ended: Time.utc(2026, 7, 11, 13, 0), description: "Deploy do site")
 
     report = Report.new(user: @user, period: month_period,
       filters: Report::Filters.new(description: "backoffice"))
+
+    assert_equal [ match.id ], report.rows.map { |r| r.entry.id }
+  end
+
+  test "filtro Description escapa curingas de LIKE" do
+    match = entry(started: Time.utc(2026, 7, 10, 12, 0), ended: Time.utc(2026, 7, 10, 13, 0), description: "100% pronto")
+    entry(started: Time.utc(2026, 7, 11, 12, 0), ended: Time.utc(2026, 7, 11, 13, 0), description: "1000 pronto")
+
+    report = Report.new(user: @user, period: month_period,
+      filters: Report::Filters.new(description: "100%"))
 
     assert_equal [ match.id ], report.rows.map { |r| r.entry.id }
   end

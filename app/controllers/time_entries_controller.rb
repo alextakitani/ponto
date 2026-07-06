@@ -161,7 +161,10 @@ class TimeEntriesController < ApplicationController
       new_tag_names
         .map { |name| name.to_s.strip }
         .reject(&:blank?)
-        .uniq
-        .map { |name| Current.user.tags.find_or_create_by!(name: name) }
+        .uniq { |name| Tag.normalize_name(name) }
+        .map do |name|
+          Current.user.tags.find_by(name_normalized: Tag.normalize_name(name)) ||
+            Current.user.tags.create!(name: name)
+        end
     end
 end

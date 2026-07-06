@@ -6,7 +6,6 @@ class CreateTasks < ActiveRecord::Migration[8.1]
     create_table :tasks do |t|
       t.references :user, null: false, foreign_key: true
       t.references :project, null: false, foreign_key: true
-      # `name` TEXT porque é criptografado (Q25c). Índice único bate no ciphertext.
       t.text :name, null: false
       t.datetime :archived_at  # soft delete (Q7)
 

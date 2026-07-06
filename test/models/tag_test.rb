@@ -23,11 +23,12 @@ class TagTest < ActiveSupport::TestCase
     assert other.tags.build(name: "Urgente").valid?
   end
 
-  test "nome não fica em claro no SQL cru" do
-    @user.tags.create!(name: "Segredo")
+  test "nome duplicado com caixa diferente é barrado" do
+    @user.tags.create!(name: "Urgente")
 
-    raw = ActiveRecord::Base.connection.select_value("SELECT name FROM tags LIMIT 1")
-    assert_not_nil raw
-    assert_not_includes raw, "Segredo"
+    duplicate = @user.tags.build(name: "urgente")
+
+    assert_not duplicate.valid?
+    assert_includes duplicate.errors[:name], "já está em uso"
   end
 end

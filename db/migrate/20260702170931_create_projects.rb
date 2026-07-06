@@ -9,8 +9,6 @@ class CreateProjects < ActiveRecord::Migration[8.1]
       # client_id NULÁVEL (Q2). FK garante integridade; a validação custom no model
       # exige que o cliente seja do MESMO user (a FK não sabe de bolhas).
       t.references :client, null: true, foreign_key: true
-      # `name` é TEXT porque é criptografado (Q25c) — o ciphertext é maior que o claro,
-      # como no Client. O índice único bate no blob determinístico.
       t.text :name, null: false
       t.string :color, null: false            # hex #RRGGBB da paleta fixa (Q52)
       t.integer :rate_cents                    # override nulável (Q22); nula = herda
@@ -19,7 +17,8 @@ class CreateProjects < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    # Nome ÚNICO por user, INCLUINDO arquivados (Q44). Bate no ciphertext determinístico.
+    # Nome ÚNICO por user, INCLUINDO arquivados (Q44). Substituído por
+    # name_normalized na migração de Nameable.
     add_index :projects, [ :user_id, :name ], unique: true
   end
 end

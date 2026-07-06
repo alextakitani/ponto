@@ -69,7 +69,7 @@ en:
         value: "Rails 8 + Hotwire with importmap. No JavaScript pipeline."
       your_data:
         key: "Your data is yours"
-        value: "Encrypted on disk — not even the instance admin can see your content."
+        value: "Each account is an isolated bubble — the admin manages access but has no screen to see your clients, projects, or entries. And since it's self-hosted, the server is yours."
       portability:
         key: "Portable, always"
         value: "Export everything that's yours, whenever you want — nothing is locked in here."

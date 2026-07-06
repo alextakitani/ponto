@@ -12,7 +12,7 @@
 </header>
 
 <div class="page-toolbar">
-  <%# Busca por nome (filtra EM RUBY no controller — name é criptografado). %>
+  <%# Busca por nome via Nameable.name_matching no SQL. %>
   <%= form_with url: projects_path, method: :get, class: "page-search" do |form| %>
     <%= icon("search") %>
     <% if @showing_archived %><%= form.hidden_field :archived, value: "1" %><% end %>

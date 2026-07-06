@@ -1,6 +1,5 @@
-# Tags (Fatia 6) — catálogo irmão de Clients. Busca/ordenação por nome rodam em Ruby
-# porque `name` é criptografado deterministic e o LIKE/ORDER do banco operariam no
-# ciphertext, não no valor em claro.
+# Tags (Fatia 6) — catálogo irmão de Clients. Busca/ordenação por nome usam a forma
+# normalizada persistida pelo concern Nameable.
 class TagsController < ApplicationController
   layout "app"
 
@@ -12,7 +11,7 @@ class TagsController < ApplicationController
 
     scope = authorized_scope(Tag.all)
     scope = @showing_archived ? scope.archived : scope.active
-    @tags = filter_by_name(scope.to_a, params[:q]).sort_by { |tag| tag.name.downcase }
+    @tags = scope.name_matching(params[:q]).alphabetical
 
     respond_to do |format|
       format.html
@@ -87,15 +86,6 @@ class TagsController < ApplicationController
 
     def tag_params
       params.require(:tag).permit(:name)
-    end
-
-    def filter_by_name(tags, query)
-      if query.present?
-        needle = query.strip.downcase
-        tags.select { |tag| tag.name.downcase.include?(needle) }
-      else
-        tags
-      end
     end
 
     def destroy_error_message(tag)

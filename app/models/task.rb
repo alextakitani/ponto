@@ -7,21 +7,19 @@ class Task < ApplicationRecord
   belongs_to :project
 
   include Archivable
-
-  # Criptografia at rest (Q25c). deterministic pela unicidade por projeto (o índice
-  # único bate no ciphertext), como Client/Project.
-  encrypts :name, deterministic: true
+  include Nameable
+  name_uniqueness_scope :project_id
 
   validates :name, presence: true
-  # Nome ÚNICO por PROJETO, incluindo arquivados (Q44). UX de colisão no form inline.
-  validates :name, uniqueness: { scope: :project_id, message: :taken }
+  # Nome ÚNICO por PROJETO, incluindo arquivados (Q44), pela forma normalizada.
+  # UX de colisão no form inline.
   validate :project_belongs_to_user
 
   # A colisão de nome bateu numa task ARQUIVADA do mesmo projeto? A UI troca o erro
   # cru pela dica de desarquivar (Q44), como Client/Project.
   def name_conflicts_with_archived?
     errors.include?(:name) &&
-      project&.tasks&.archived&.exists?(name: name)
+      project&.tasks&.archived&.exists?(name_normalized: name_normalized)
   end
 
   private

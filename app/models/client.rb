@@ -5,6 +5,9 @@ class Client < ApplicationRecord
   belongs_to :user
 
   include Archivable
+  include Nameable
+  name_uniqueness_scope :user_id
+
   # Rate faturável/hora + parser pt-BR (Ruby puro, independente de locale) — Q11/Q42.
   # O writer `rate=`, o parser e a resolução amount→cents (independente de ORDEM de
   # atribuição rate×currency) moram no concern, compartilhados com Project.
@@ -16,19 +19,12 @@ class Client < ApplicationRecord
   # erro do restrict numa mensagem amigável (não some silenciosamente).
   has_many :projects, dependent: :restrict_with_error
 
-  # Criptografia at rest (Q25c). `name` é deterministic PORQUE a unicidade/lookup por
-  # igualdade precisam comparar ciphertext (o índice único bate no blob cifrado);
-  # `note` é aleatório (mais forte, sem necessidade de igualdade).
-  encrypts :name, deterministic: true
-  encrypts :note
-
   # Moeda: normaliza pra upcase ANTES de validar (o form pode mandar "brl").
   normalizes :currency, with: ->(value) { value.to_s.strip.upcase.presence }
 
   validates :name, presence: true
-  # Nome ÚNICO por user, INCLUINDO arquivados (Q44 — sem condição de archived_at).
-  # A colisão-com-arquivado ganha UX própria no controller (não o erro cru).
-  validates :name, uniqueness: { scope: :user_id, message: :taken }
+  # Nome ÚNICO por user, INCLUINDO arquivados (Q44 — sem condição de archived_at),
+  # comparando a forma normalizada (case/acento-insensitive).
   validates :currency, presence: true
   validate :currency_must_be_known
 
@@ -36,7 +32,7 @@ class Client < ApplicationRecord
   # o erro cru de unicidade pela mensagem "desarquive em vez de criar outro" (Q44).
   def name_conflicts_with_archived?
     errors.include?(:name) &&
-      user&.clients&.archived&.exists?(name: name)
+      user&.clients&.archived&.exists?(name_normalized: name_normalized)
   end
 
   private

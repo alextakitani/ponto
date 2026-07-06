@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_06_130254) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_06_140000) do
   create_table "access_requests", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -66,11 +66,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_130254) do
     t.datetime "created_at", null: false
     t.string "currency", default: "BRL", null: false
     t.text "name", null: false
+    t.string "name_normalized", null: false
     t.text "note"
     t.integer "rate_cents"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
-    t.index ["user_id", "name"], name: "index_clients_on_user_id_and_name", unique: true
+    t.index ["name_normalized"], name: "index_clients_on_name_normalized"
+    t.index ["user_id", "name_normalized"], name: "index_clients_on_user_id_and_name_normalized", unique: true
     t.index ["user_id"], name: "index_clients_on_user_id"
   end
 
@@ -95,11 +97,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_130254) do
     t.string "color", null: false
     t.datetime "created_at", null: false
     t.text "name", null: false
+    t.string "name_normalized", null: false
     t.integer "rate_cents"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["client_id"], name: "index_projects_on_client_id"
-    t.index ["user_id", "name"], name: "index_projects_on_user_id_and_name", unique: true
+    t.index ["name_normalized"], name: "index_projects_on_name_normalized"
+    t.index ["user_id", "name_normalized"], name: "index_projects_on_user_id_and_name_normalized", unique: true
     t.index ["user_id"], name: "index_projects_on_user_id"
   end
 
@@ -137,9 +141,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_130254) do
     t.datetime "archived_at"
     t.datetime "created_at", null: false
     t.string "name", null: false
+    t.string "name_normalized", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
-    t.index ["user_id", "name"], name: "index_tags_on_user_id_and_name", unique: true
+    t.index ["name_normalized"], name: "index_tags_on_name_normalized"
+    t.index ["user_id", "name_normalized"], name: "index_tags_on_user_id_and_name_normalized", unique: true
     t.index ["user_id"], name: "index_tags_on_user_id"
   end
 
@@ -147,10 +153,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_130254) do
     t.datetime "archived_at"
     t.datetime "created_at", null: false
     t.text "name", null: false
+    t.string "name_normalized", null: false
     t.integer "project_id", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
-    t.index ["project_id", "name"], name: "index_tasks_on_project_id_and_name", unique: true
+    t.index ["name_normalized"], name: "index_tasks_on_name_normalized"
+    t.index ["project_id", "name_normalized"], name: "index_tasks_on_project_id_and_name_normalized", unique: true
     t.index ["project_id"], name: "index_tasks_on_project_id"
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end

@@ -4,17 +4,16 @@ class Tag < ApplicationRecord
   belongs_to :user
 
   include Archivable
+  include Nameable
+  name_uniqueness_scope :user_id
 
   has_many :taggings, dependent: :restrict_with_error
   has_many :time_entries, through: :taggings
 
-  encrypts :name, deterministic: true
-
   validates :name, presence: true
-  validates :name, uniqueness: { scope: :user_id, message: :taken }
 
   def name_conflicts_with_archived?
     errors.include?(:name) &&
-      user&.tags&.archived&.exists?(name: name)
+      user&.tags&.archived&.exists?(name_normalized: name_normalized)
   end
 end

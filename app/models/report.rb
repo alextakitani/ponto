@@ -2,11 +2,10 @@
 # NÃO é um Active Record: é um objeto de consulta que orquestra 1 query SQL base +
 # um pipeline em Ruby, e expõe `groups`/`rows`/`totals`/`daily_series`.
 #
-# Por que Ruby e não SQL? A Q25 criptografa description/nomes (LIKE não roda no banco)
-# e o corte do dia é no fuso do user (Q6/Q23b — SQLite não tem AT TIME ZONE). Então o
-# SQL só faz o que é barato e seguro (período + filtros por ID), e o resto (decrypt,
-# busca em description, rounding, corte de dia, agrupamento, totais) roda em memória.
-# Volume single-user (um ano ≈ milhares de linhas) torna isso trivial (Q58).
+# O SQL faz o recorte base e os filtros de colunas; o Ruby segue responsável por
+# rounding, corte de dia no fuso do user (Q6/Q23b — SQLite não tem AT TIME ZONE),
+# agrupamento e totais. Volume single-user (um ano ≈ milhares de linhas) torna isso
+# trivial (Q58).
 #
 # Uma estrutura, três consumidores (Q58): Summary (`groups`), Detailed (`rows`,
 # started_at DESC), export xlsx/CSV (mesma matriz — Fatia 5.2). Tela e export batem
@@ -48,8 +47,8 @@ class Report
 
   private
     # 1 query SQL base (Q58): bolha do user, SÓ finalizados (Q57), dentro do período,
-    # filtros por ID no banco, includes contra N+1. O decrypt/description/rounding/
-    # corte-de-dia/agrupamento acontece depois, em Ruby.
+    # filtros no banco, includes contra N+1. Rounding/corte-de-dia/agrupamento
+    # acontecem depois, em Ruby.
     def base_relation
       relation = user.time_entries
         .where.not(ended_at: nil)
@@ -58,11 +57,10 @@ class Report
       filters.apply_sql(relation)
     end
 
-    # Pipeline em Ruby: carrega (decrypt) → filtra Description em memória → embrulha
-    # em Row (aplica rounding por entry). Materializa em array (some N+1 do includes).
+    # Pipeline em Ruby: materializa a query e embrulha em Row (aplica rounding por
+    # entry). Materializa em array (some N+1 do includes).
     def pipeline
       @pipeline ||= base_relation.to_a
-        .select { |entry| filters.description_match?(entry) }
         .map { |entry| Row.new(entry, rounding: rounding, time_zone: time_zone) }
     end
 

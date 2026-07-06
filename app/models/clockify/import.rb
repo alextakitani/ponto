@@ -156,8 +156,8 @@ class Clockify::Import
 
       rows.each do |row|
         entry = user.time_entries.create!(
-          project: projects[row.project_name],
-          task: tasks[[ row.project_name, row.task_name ]],
+          project: projects[project_key(row.project_name)],
+          task: tasks[[ project_key(row.project_name), Task.normalize_name(row.task_name) ]],
           description: row.description,
           billable: row.billable,
           started_at: row.started_at,
@@ -165,7 +165,7 @@ class Clockify::Import
         )
 
         row.tag_names.each do |tag_name|
-          Tagging.create!(time_entry: entry, tag: tags.fetch(tag_name))
+          Tagging.create!(time_entry: entry, tag: tags.fetch(Tag.normalize_name(tag_name)))
         end
       end
 
@@ -179,8 +179,8 @@ class Clockify::Import
     end
 
     def create_clients(rows, currency)
-      rows.filter_map(&:client_name).uniq.index_with do |name|
-        user.clients.create!(name:, currency:)
+      rows.filter_map(&:client_name).uniq { |name| Client.normalize_name(name) }.to_h do |name|
+        [ client_key(name), user.clients.create!(name:, currency:) ]
       end
     end
 
@@ -188,32 +188,32 @@ class Clockify::Import
       rows_with_project = rows.select { |row| row.project_name.present? }
       ensure_project_rates_are_stable!(rows_with_project)
 
-      rows_with_project.group_by(&:project_name).transform_values do |project_rows|
+      rows_with_project.group_by { |row| Project.normalize_name(row.project_name) }.transform_values do |project_rows|
         first_row = project_rows.first
         user.projects.create!(
           name: first_row.project_name,
-          client: clients[first_row.client_name],
+          client: clients[client_key(first_row.client_name)],
           rate_cents: first_row.rate_cents
         )
       end
     end
 
     def ensure_project_rates_are_stable!(rows)
-      rows.group_by(&:project_name).each do |project_name, project_rows|
+      rows.group_by { |row| Project.normalize_name(row.project_name) }.each do |_project_key, project_rows|
         next if project_rows.map(&:rate_cents).uniq.one?
 
-        raise_error(:divergent_project_rate, project: project_name)
+        raise_error(:divergent_project_rate, project: project_rows.first.project_name)
       end
     end
 
     def create_tasks(rows, projects)
       rows.select { |row| row.project_name.present? && row.task_name.present? }
-        .uniq { |row| [ row.project_name, row.task_name ] }
+        .uniq { |row| [ Project.normalize_name(row.project_name), Task.normalize_name(row.task_name) ] }
         .to_h do |row|
-          key = [ row.project_name, row.task_name ]
+          key = [ Project.normalize_name(row.project_name), Task.normalize_name(row.task_name) ]
           task = user.tasks.create!(
             name: row.task_name,
-            project: projects.fetch(row.project_name)
+            project: projects.fetch(project_key(row.project_name))
           )
 
           [ key, task ]
@@ -221,9 +221,17 @@ class Clockify::Import
     end
 
     def create_tags(rows)
-      rows.flat_map(&:tag_names).uniq.index_with do |name|
-        user.tags.create!(name:)
+      rows.flat_map(&:tag_names).uniq { |name| Tag.normalize_name(name) }.to_h do |name|
+        [ Tag.normalize_name(name), user.tags.create!(name:) ]
       end
+    end
+
+    def project_key(name)
+      Project.normalize_name(name)
+    end
+
+    def client_key(name)
+      name.present? ? Client.normalize_name(name) : nil
     end
 
     def time_zone

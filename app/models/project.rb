@@ -12,14 +12,13 @@ class Project < ApplicationRecord
   has_many :tasks, dependent: :destroy
 
   include Archivable
+  include Nameable
+  name_uniqueness_scope :user_id
+
   # Rate + parser pt-BR compartilhados com o Client (Ruby puro, independente de
   # locale E de ordem de atribuição — Q11/Q22). O writer `rate=` e o `rate_cents`
   # override vivem no concern.
   include MonetizableRate
-
-  # Criptografia at rest (Q25c). `name` deterministic pela unicidade/lookup por
-  # igualdade (o índice único bate no ciphertext), como no Client.
-  encrypts :name, deterministic: true
 
   # Paleta fixa curada (Q52) — 12 cores com contraste sobre fundo claro E escuro
   # (Q64: dark automático). Tons ~Tailwind 500/600, evitando muito claro/escuro.
@@ -39,8 +38,8 @@ class Project < ApplicationRecord
   FALLBACK_CURRENCY = "BRL"
 
   validates :name, presence: true
-  # Nome ÚNICO por user, INCLUINDO arquivados (Q44). UX de colisão-com-arquivado no form.
-  validates :name, uniqueness: { scope: :user_id, message: :taken }
+  # Nome ÚNICO por user, INCLUINDO arquivados (Q44), comparando a forma normalizada.
+  # UX de colisão-com-arquivado no form.
   validates :color, presence: true, format: {
     with: /\A#\h{6}\z/, message: :invalid_color
   }
@@ -50,11 +49,10 @@ class Project < ApplicationRecord
   # dos relatórios (Q21) nasce sem fatias de cor repetida sem o usuário pensar nisso.
   before_validation :assign_least_used_color, on: :create, if: -> { color.blank? }
 
-  # Tasks ATIVAS ordenadas por nome (case-insensitive), materializadas em memória —
-  # `name` é criptografado (Q25c), então o ORDER BY do SQLite bateria no ciphertext.
+  # Tasks ATIVAS ordenadas pela forma normalizada do nome.
   # Fonte única do "tasks.active ordenado" que os controllers e o partial `_section` usam.
   def active_tasks
-    tasks.active.to_a.sort_by { |t| t.name.downcase }
+    tasks.active.alphabetical
   end
 
   # Rate EFETIVA (Q22): override do projeto, senão a do cliente, senão nil.
@@ -91,7 +89,7 @@ class Project < ApplicationRecord
   # unicidade pela mensagem "desarquive em vez de criar outro" (Q44), como no Client.
   def name_conflicts_with_archived?
     errors.include?(:name) &&
-      user&.projects&.archived&.exists?(name: name)
+      user&.projects&.archived&.exists?(name_normalized: name_normalized)
   end
 
   private
