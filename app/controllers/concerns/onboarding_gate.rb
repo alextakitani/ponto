@@ -24,7 +24,7 @@ module OnboardingGate
     end
 
     def onboarding_exempt_controller?
-      controller_path.in?(%w[welcome onboarding_skips sessions]) ||
+      controller_path.in?(%w[welcome onboarding_skips clockify_imports sessions]) ||
         controller_path.start_with?("admin/")
     end
 end

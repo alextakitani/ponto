@@ -1,0 +1,73 @@
+<% content_for :title, t(".title") %>
+
+<%= turbo_stream_from @import %>
+
+<header class="page-header">
+  <div>
+    <h1><%= t(".title") %></h1>
+    <p class="muted"><%= t(".lede") %></p>
+  </div>
+</header>
+
+<% if @import.pending? || @import.processing? %>
+  <section class="empty-state"
+      aria-labelledby="clockify-import-processing-heading"
+      data-controller="clockify-import-watchdog">
+    <%= icon("timer", size: 24, class: "icon--lg") %>
+    <h2 id="clockify-import-processing-heading"><%= t(".processing.title") %></h2>
+    <p class="muted"><%= t(".processing.description") %></p>
+    <p class="form-hint" hidden data-clockify-import-watchdog-target="hint">
+      <%= t(".processing.watchdog_hint") %>
+    </p>
+  </section>
+<% elsif @import.completed? %>
+  <section class="empty-state" aria-labelledby="clockify-import-completed-heading">
+    <%= icon("check", size: 24, class: "icon--lg") %>
+    <h2 id="clockify-import-completed-heading"><%= t(".completed.title") %></h2>
+
+    <dl class="clockify-import-summary">
+      <div>
+        <dt><%= t(".completed.counts.clients") %></dt>
+        <dd><%= number_with_delimiter(@import.clients_created) %></dd>
+      </div>
+      <div>
+        <dt><%= t(".completed.counts.projects") %></dt>
+        <dd><%= number_with_delimiter(@import.projects_created) %></dd>
+      </div>
+      <%# Tarefas só aparecem se o CSV tinha alguma — "0 tarefas" é ruído no resumo. %>
+      <% if @import.tasks_created.positive? %>
+        <div>
+          <dt><%= t(".completed.counts.tasks") %></dt>
+          <dd><%= number_with_delimiter(@import.tasks_created) %></dd>
+        </div>
+      <% end %>
+      <div>
+        <dt><%= t(".completed.counts.tags") %></dt>
+        <dd><%= number_with_delimiter(@import.tags_created) %></dd>
+      </div>
+      <div>
+        <dt><%= t(".completed.counts.time_entries") %></dt>
+        <dd><%= number_with_delimiter(@import.time_entries_created) %></dd>
+      </div>
+      <% if @year_range.present? %>
+        <div>
+          <dt><%= t(".completed.counts.years") %></dt>
+          <dd><%= @year_range %></dd>
+        </div>
+      <% end %>
+    </dl>
+
+    <% if @import.files_purged? %>
+      <p class="muted"><%= t(".completed.files_purged") %></p>
+    <% end %>
+
+    <%= button_to t(".completed.go_tracker"), onboarding_skip_path, class: "btn" %>
+  </section>
+<% elsif @import.failed? %>
+  <section class="empty-state" aria-labelledby="clockify-import-failed-heading">
+    <%= icon("x", size: 24, class: "icon--lg") %>
+    <h2 id="clockify-import-failed-heading"><%= t(".failed.title") %></h2>
+    <p class="muted"><%= @import.error_message %></p>
+    <%= link_to t(".failed.retry"), new_clockify_import_path, class: "btn btn--quiet" %>
+  </section>
+<% end %>

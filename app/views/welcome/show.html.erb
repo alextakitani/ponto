@@ -19,8 +19,7 @@
   <p class="muted"><%= t("welcome.extension_cli") %></p>
 
   <div class="form-actions">
-    <%# TODO(Fatia 4/issue #9): trocar stub pela rota real do importador Clockify. %>
-    <%= link_to t("welcome.actions.import_clockify"), "#", class: "btn" %>
+    <%= link_to t("welcome.actions.import_clockify"), new_clockify_import_path, class: "btn" %>
     <%= button_to t("welcome.actions.start_empty"), onboarding_skip_path, class: "btn btn--quiet" %>
   </div>
 </section>

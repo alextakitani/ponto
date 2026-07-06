@@ -32,6 +32,7 @@ Rails.application.routes.draw do
 
   resource :welcome, only: :show, controller: :welcome
   resource :onboarding_skip, only: :create
+  resources :clockify_imports, only: %i[new create show]
 
   resource :preferences, only: %i[show update] do
     resources :access_tokens, only: %i[create destroy], shallow: true

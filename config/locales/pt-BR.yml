@@ -132,6 +132,43 @@ pt-BR:
       ended_before_started: "O arquivo %{file}, linha %{row}, termina antes de começar."
       divergent_project_rate: "O projeto %{project} tem valores por hora divergentes no CSV."
       unexpected: "Ocorreu um erro inesperado. Os arquivos foram mantidos para nova tentativa."
+  clockify_imports:
+    create:
+      non_empty_bubble: "Importação recusada: sua conta já tem dados. O importador do Clockify só roda em uma bolha vazia."
+    new:
+      title: "Importar do Clockify"
+      lede: "Envie um ou mais CSVs de User Data Export do Clockify para preencher sua conta vazia."
+      form:
+        files_label: "Arquivos CSV"
+        files_hint: "Você pode selecionar vários anos de uma vez. O importador valida tudo antes de gravar."
+        files_blank: "Selecione pelo menos um arquivo CSV."
+        submit: "Importar arquivos"
+        cancel: "Voltar"
+      blocked:
+        title: "Sua conta já tem dados"
+        description: "O importador do Clockify só roda antes de criar clientes, projetos, tarefas, tags ou lançamentos."
+        back: "Ir pro tracker"
+    show:
+      title: "Importação do Clockify"
+      lede: "Você pode fechar esta aba e voltar depois; o status fica salvo."
+      processing:
+        title: "Importando seus lançamentos"
+        description: "Estamos lendo os CSVs, criando o catálogo e gravando as entradas na sua conta."
+        watchdog_hint: "Está demorando mais que o normal. Recarregue a página para conferir o status se ela não atualizar sozinha."
+      completed:
+        title: "Importação concluída"
+        files_purged: "Os arquivos enviados foram apagados. Não guardamos seus CSVs depois do sucesso."
+        go_tracker: "Ir pro tracker"
+        counts:
+          clients: "Clientes"
+          projects: "Projetos"
+          tasks: "Tarefas"
+          tags: "Tags"
+          time_entries: "Entradas"
+          years: "Período"
+      failed:
+        title: "Importação falhou"
+        retry: "Enviar outro CSV"
   access_requests:
     form:
       email_label: "E-mail"

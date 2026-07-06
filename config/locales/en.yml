@@ -133,6 +133,43 @@ en:
       ended_before_started: "File %{file}, row %{row}, ends before it starts."
       divergent_project_rate: "Project %{project} has divergent hourly rates in the CSV."
       unexpected: "An unexpected error occurred. Files were kept for a manual retry."
+  clockify_imports:
+    create:
+      non_empty_bubble: "Import refused: your account already has data. The Clockify importer only runs in an empty bubble."
+    new:
+      title: "Import from Clockify"
+      lede: "Upload one or more Clockify User Data Export CSVs to fill your empty account."
+      form:
+        files_label: "CSV files"
+        files_hint: "You can select several years at once. The importer validates everything before writing."
+        files_blank: "Select at least one CSV file."
+        submit: "Import files"
+        cancel: "Back"
+      blocked:
+        title: "Your account already has data"
+        description: "The Clockify importer only runs before clients, projects, tasks, tags, or time entries exist."
+        back: "Go to tracker"
+    show:
+      title: "Clockify import"
+      lede: "You can close this tab and come back later; the status is saved."
+      processing:
+        title: "Importing your time entries"
+        description: "We are reading the CSVs, creating the catalog, and saving entries to your account."
+        watchdog_hint: "This is taking longer than usual. Reload the page to check the status if it does not update automatically."
+      completed:
+        title: "Import completed"
+        files_purged: "Uploaded files were deleted. We do not keep your CSVs after a successful import."
+        go_tracker: "Go to tracker"
+        counts:
+          clients: "Clients"
+          projects: "Projects"
+          tasks: "Tasks"
+          tags: "Tags"
+          time_entries: "Entries"
+          years: "Period"
+      failed:
+        title: "Import failed"
+        retry: "Upload another CSV"
   access_requests:
     form:
       email_label: "Email"

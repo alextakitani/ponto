@@ -13,6 +13,7 @@ class User < ApplicationRecord
   has_many :projects, dependent: :destroy
   has_many :time_entries, dependent: :destroy
   has_many :tags, dependent: :destroy
+  has_many :clockify_imports, dependent: :destroy
   # `tasks` também pende direto do user (isolamento DIRETO Q23 — a Task carrega
   # user_id além de project_id), pra a deleção da conta levar a bolha inteira.
   has_many :tasks, dependent: :destroy
@@ -121,6 +122,14 @@ class User < ApplicationRecord
     if default_project&.active?
       default_project
     end
+  end
+
+  def empty_bubble?
+    clients.none? &&
+      projects.none? &&
+      tasks.none? &&
+      tags.none? &&
+      time_entries.none?
   end
 
   # Deletar conta = apagar a BOLHA inteira do usuário (Q33/Q33a). Hoje a bolha é
