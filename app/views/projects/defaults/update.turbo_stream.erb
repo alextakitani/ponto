@@ -1,0 +1,19 @@
+<%# Troca de projeto padrão sem refresh (Turbo Stream):
+    1. Reescreve a lista de projetos → a badge "Padrão" migra pro projeto certo.
+    2. SÓ se não houver timer rodando, troca a barra do timer → o select
+       pré-seleciona o novo padrão. Com timer rodando a barra é o cronômetro
+       (sem select) e NÃO é tocada (não reinicia o relógio).
+    3. Flash. %>
+<%= turbo_stream.update "projects_list" do %>
+  <%= render partial: "projects/project", collection: @projects, as: :project %>
+<% end %>
+
+<% unless @running_timer %>
+  <%= turbo_stream.replace "timer_bar" do %>
+    <%= render "timers/frame", time_entry: nil, form_time_entry: TimeEntry.new %>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.replace "flash" do %>
+  <div id="flash"><%= render "shared/flash" %></div>
+<% end %>

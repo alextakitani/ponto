@@ -155,6 +155,29 @@ class ProjectsTest < ActionDispatch::IntegrationTest
     assert_nil @user.reload.default_project_id
   end
 
+  test "definir padrão via turbo_stream atualiza a barra do timer (sem timer rodando)" do
+    project = @user.projects.create!(name: "Padrão")
+
+    post project_default_path(project), as: :turbo_stream
+
+    assert_response :success
+    # reescreve a lista de projetos E a barra do timer (pra o select pré-selecionar)
+    assert_match %r{turbo-stream action="update" target="projects_list"}, response.body
+    assert_match %r{turbo-stream action="replace" target="timer_bar"}, response.body
+  end
+
+  test "definir padrão com timer RODANDO não toca a barra do timer" do
+    project = @user.projects.create!(name: "Padrão")
+    @user.time_entries.create!(description: "rodando", started_at: Time.current) # sem ended_at
+
+    post project_default_path(project), as: :turbo_stream
+
+    assert_response :success
+    assert_match %r{target="projects_list"}, response.body
+    # a barra NÃO é substituída — o cronômetro em andamento fica intocado
+    assert_no_match %r{target="timer_bar"}, response.body
+  end
+
   # --- Hard-delete restrito do Client pela via web (Q7) -----------------------
 
   test "deletar cliente COM projeto falha com mensagem amigável (restrict Q7)" do
