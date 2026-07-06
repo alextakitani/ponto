@@ -2,8 +2,14 @@ require "csv"
 
 class Clockify::Import
   Source = Data.define(:name, :content) do
+    # O conteúdo pode chegar ASCII-8BIT (bytes crus) — o Active Storage#download
+    # entrega assim. O CSV do Clockify é UTF-8; re-etiqueta e limpa bytes inválidos
+    # AQUI, na entrada única, pra toda string derivada (description, nomes, tags) já
+    # nascer UTF-8. Sem isso, o insert no SQLite estoura em acento
+    # (Encoding::UndefinedConversionError ASCII-8BIT→UTF-8). File.read (console) já
+    # vinha UTF-8 e mascarava o bug — só a UI via Active Storage disparava.
     def read
-      content
+      content.to_s.dup.force_encoding(Encoding::UTF_8).scrub
     end
   end
 

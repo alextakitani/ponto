@@ -198,6 +198,20 @@ class Clockify::ImportTest < ActiveSupport::TestCase
     assert_empty_bubble(user)
   end
 
+  # Regressão (06/07): o Active Storage#download entrega o CSV como ASCII-8BIT; com
+  # acento na descrição, o insert estourava Encoding::UndefinedConversionError ao
+  # gravar em claro (a cripto antiga mascarava). Source#read re-etiqueta pra UTF-8.
+  test "importa conteúdo ASCII-8BIT com acento (caminho do Active Storage)" do
+    user = create_user
+    content = csv(row(description: "migração do ingress", project: "Ácaro"))
+    ascii_8bit = content.dup.force_encoding(Encoding::ASCII_8BIT)
+
+    import(user, ascii_8bit).run!
+
+    assert_equal "migração do ingress", user.time_entries.sole.description
+    assert_equal "Ácaro", user.projects.sole.name
+  end
+
   private
     def import(user, content, name: "clockify.csv")
       Clockify::Import.new(user:, sources: [ source(name, content) ])
