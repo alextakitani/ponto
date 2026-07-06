@@ -121,6 +121,17 @@ en:
     actions:
       import_clockify: "Import from Clockify"
       start_empty: "Start from scratch"
+  clockify_import:
+    errors:
+      non_empty_bubble: "Import refused: your account already has data. The Clockify importer only runs in an empty bubble."
+      header_mismatch: "The file %{file} does not look like a Clockify export CSV."
+      all_files_empty: "Import refused: all uploaded files have no time entry rows."
+      divergent_currency: "The file %{file} mixes currencies in the billable amount headers."
+      cross_file_currency: "Import refused: files %{file1} and %{file2} use different currencies."
+      timer_running: "File %{file}, row %{row}, has an entry without an end time — stop the timer in Clockify and export again."
+      unparseable_date: "File %{file}, row %{row}, has an invalid date/time in %{field}: %{value}."
+      ended_before_started: "File %{file}, row %{row}, ends before it starts."
+      divergent_project_rate: "Project %{project} has divergent hourly rates in the CSV."
   access_requests:
     form:
       email_label: "Email"

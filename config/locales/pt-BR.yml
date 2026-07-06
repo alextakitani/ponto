@@ -120,6 +120,17 @@ pt-BR:
     actions:
       import_clockify: "Importar do Clockify"
       start_empty: "Começar do zero"
+  clockify_import:
+    errors:
+      non_empty_bubble: "Importação recusada: sua conta já tem dados. O importador do Clockify só roda em uma bolha vazia."
+      header_mismatch: "O arquivo %{file} não parece ser um CSV de exportação do Clockify."
+      all_files_empty: "Importação recusada: todos os arquivos enviados estão sem linhas de lançamento."
+      divergent_currency: "O arquivo %{file} mistura moedas no cabeçalho de valor faturável."
+      cross_file_currency: "Importação recusada: os arquivos %{file1} e %{file2} usam moedas diferentes."
+      timer_running: "O arquivo %{file}, linha %{row}, tem uma entrada sem horário de fim — pare o timer no Clockify e exporte de novo."
+      unparseable_date: "O arquivo %{file}, linha %{row}, tem data/hora inválida em %{field}: %{value}."
+      ended_before_started: "O arquivo %{file}, linha %{row}, termina antes de começar."
+      divergent_project_rate: "O projeto %{project} tem valores por hora divergentes no CSV."
   access_requests:
     form:
       email_label: "E-mail"
