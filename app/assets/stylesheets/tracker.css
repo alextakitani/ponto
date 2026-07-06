@@ -407,9 +407,12 @@
      start/stop" (PRODUCT.md). A linha mostra descrição / projeto·horário /
      duração + ⋮; o € por entry e as tags são metadados que vivem no relatório e
      na edição (mostrar tudo deixava "muita informação junta"). */
+  /* align-items: start (não center): a coluna direita (duração + ⋮) ancora no
+     TOPO da linha — centralizar fazia os números flutuarem em alturas diferentes
+     conforme a linha tem tags (3 linhas) ou não (2 linhas). */
   .tracker-entry {
     grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
+    align-items: start;
   }
 
   /* EDIÇÃO inline no mobile: coluna única (o grid [info | números] da linha de

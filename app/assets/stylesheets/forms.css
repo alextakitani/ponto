@@ -171,6 +171,13 @@ button:disabled {
     min-height: 2.75rem;
   }
 
+  /* Inputs acompanham a altura dos botões (mesmo alvo de toque) — senão o
+     Iniciar sai mais alto que o campo de descrição na barra do timer. */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
+  select {
+    min-height: 2.75rem;
+  }
+
   .btn.btn--sm {
     min-height: 2.75rem;
     padding: var(--space-2) var(--space-3);
