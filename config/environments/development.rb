@@ -67,8 +67,9 @@ Rails.application.configure do
   # Highlight code that enqueued background job in logs.
   config.active_job.verbose_enqueue_logs = true
 
-  # Roda jobs (incl. deliver_later) inline no dev — sem precisar do worker do solid_queue.
-  config.active_job.queue_adapter = :inline
+  # Roda jobs (incl. deliver_later) em thread no mesmo processo — sem precisar
+  # do worker do solid_queue em desenvolvimento.
+  config.active_job.queue_adapter = :async
 
   # Highlight code that triggered redirect in logs.
   config.action_dispatch.verbose_redirect_logs = true

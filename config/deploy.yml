@@ -52,8 +52,9 @@ env:
   secret:
     - RAILS_MASTER_KEY
   clear:
-    # Jobs rodam :async dentro do Puma (production.rb) — sem SOLID_QUEUE_IN_PUMA,
-    # o plugin do supervisor nem carrega (menos 2 processos Rails forkados).
+    # Jobs rodam no Solid Queue embutido no Puma (production.rb) — mantém um
+    # container só e persiste jobs longos como o importador Clockify.
+    SOLID_QUEUE_IN_PUMA: 'true'
 
     # Host público (links dos e-mails de magic code) e remetente (Resend — 04/07).
     APP_HOST: ponto.takitani.net

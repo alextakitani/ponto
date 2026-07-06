@@ -31,6 +31,9 @@ Rails.application.configure do
   # Store uploaded files on the local file system in a temporary directory.
   config.active_storage.service = :test
 
+  # Jobs ficam capturáveis por perform_enqueued_jobs nos testes.
+  config.active_job.queue_adapter = :test
+
   # Tell Action Mailer not to deliver emails to the real world.
   # The :test delivery method accumulates sent emails in the
   # ActionMailer::Base.deliveries array.

@@ -49,12 +49,11 @@ Rails.application.configure do
   # Replace the default in-process memory cache store with a durable alternative.
   config.cache_store = :solid_cache_store
 
-  # Jobs em THREAD do próprio Puma (decisão 04/07 — servidor de baixíssimo uso):
-  # o Solid Queue forka dispatcher+worker (~2 cópias do Rails, maior fatia da
-  # memória) pra uma fila que só manda e-mail de magic code. Com :async, um
-  # e-mail EM VOO durante restart se perde — o usuário pede outro código.
-  # Se um dia houver job crítico/agendado, voltar pro Solid Queue.
-  config.active_job.queue_adapter = :async
+  # Jobs persistidos no SQLite separado: o importador Clockify é longo demais
+  # para :async e precisa sobreviver a restart. O worker roda embutido no Puma
+  # quando SOLID_QUEUE_IN_PUMA=true no deploy.
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
 
   # O magic code é o ÚNICO caminho de login — falha de entrega tem que estourar
   # no log, não sumir em silêncio.
