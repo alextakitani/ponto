@@ -16,6 +16,11 @@ class ClockifyImportJob < ApplicationJob
       tags_created: result.tags_created,
       time_entries_created: result.time_entries_created
     )
+    # Onboarding grava NO SUCESSO do import (Q4), não só no clique "Ir pro tracker":
+    # quem completa o import mas sai do resumo antes de clicar ficava preso no
+    # /welcome (bolha cheia, onboarded_at nil). O guard onboarded_at? preserva um
+    # timestamp anterior. O botão da tela vira só navegação pro /home.
+    import.user.update!(onboarded_at: Time.current) unless import.user.onboarded_at?
     purge_files(import)
   rescue Clockify::Import::Error => error
     import.update!(status: "failed", error_message: error.message)

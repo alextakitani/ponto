@@ -26,6 +26,26 @@ class ClockifyImportJobTest < ActiveSupport::TestCase
     assert_not import.files.attached?
   end
 
+  # Regressão (06/07): import completava mas onboarded_at ficava nil porque só o
+  # botão "Ir pro tracker" gravava — quem saía do resumo sem clicar ficava preso
+  # no /welcome com bolha cheia. Q4: onboarded grava NO SUCESSO do import.
+  test "success path marks the user as onboarded" do
+    import = create_import_with_file(csv(row), user: create_user(onboarded_at: nil))
+    assert_nil import.user.onboarded_at
+
+    ClockifyImportJob.new.perform(import)
+
+    assert_not_nil import.user.reload.onboarded_at
+  end
+
+  test "failure path does not onboard the user" do
+    import = create_import_with_file("Nome,Valor\nx,1\n", user: create_user(onboarded_at: nil))
+
+    ClockifyImportJob.new.perform(import)
+
+    assert_nil import.user.reload.onboarded_at
+  end
+
   test "import errors fail and keep attached files" do
     import = create_import_with_file("Nome,Valor\nx,1\n")
 
