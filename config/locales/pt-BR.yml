@@ -107,6 +107,19 @@ pt-BR:
         result1: " timer correndo · Kubernetes homelab"
         cmd2: "ponto timer show --jq .data.elapsed"
         out2: '"01:47:12"'
+  welcome:
+    title: "Bem-vindo ao Ponto"
+    lede: "Ponto é o seu tracker de horas para registrar trabalho, organizar entregas e fechar o mês."
+    summary:
+      title: "Comece com o essencial"
+      bullets:
+        - "Cronômetro de um clique"
+        - "Organize por cliente e projeto"
+        - "Relatório mensal com exportação"
+    extension_cli: "A extensão de Chrome e a CLI usam a mesma conta para iniciar e parar timers fora do app."
+    actions:
+      import_clockify: "Importar do Clockify"
+      start_empty: "Começar do zero"
   access_requests:
     form:
       email_label: "E-mail"

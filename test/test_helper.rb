@@ -9,8 +9,8 @@ module ActiveSupport
 
     # Sem fixtures: criamos só os dados que cada teste precisa (single-user, models
     # enxutos). Use os helpers abaixo para reduzir ruído.
-    def create_user(email: "user@example.com")
-      User.create!(email: email)
+    def create_user(email: "user@example.com", onboarded_at: Time.current, **attributes)
+      User.create!(email: email, onboarded_at: onboarded_at, **attributes)
     end
   end
 end
@@ -32,7 +32,10 @@ module ActionDispatch
     # Retorna o user. Limpa as deliveries no fim para que asserts posteriores
     # (convite/aprovação) leiam o PRÓXIMO e-mail, não o código de login.
     def sign_in_as(email, admin: false, user: nil, keep_active_admin: false)
-      user ||= User.find_or_create_by!(email: email) { |u| u.admin = admin }
+      user ||= User.find_or_create_by!(email: email) do |u|
+        u.admin = admin
+        u.onboarded_at = Time.current
+      end
       ensure_active_admin if keep_active_admin
 
       perform_enqueued_jobs { post sign_in_path, params: { email: email } }
@@ -49,7 +52,7 @@ module ActionDispatch
       def ensure_active_admin
         return if User.exists?(admin: true)
 
-        User.create!(email: "background-admin@example.com", admin: true)
+        User.create!(email: "background-admin@example.com", admin: true, onboarded_at: Time.current)
       end
   end
 end

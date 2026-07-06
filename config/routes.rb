@@ -30,6 +30,9 @@ Rails.application.routes.draw do
   # o logado pra cá.
   get "home" => "home#show", as: :home
 
+  resource :welcome, only: :show, controller: :welcome
+  resource :onboarding_skip, only: :create
+
   resource :preferences, only: %i[show update] do
     resources :access_tokens, only: %i[create destroy], shallow: true
   end

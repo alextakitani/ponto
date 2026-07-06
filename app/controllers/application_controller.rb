@@ -2,6 +2,7 @@ class ApplicationController < ActionController::Base
   include Pagy::Backend
 
   include Authentication
+  include OnboardingGate
   include RequestForgeryProtection
   include ActionPolicy::Controller
   include SetLocale

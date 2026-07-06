@@ -54,7 +54,7 @@ class SignInFlowTest < ActionDispatch::IntegrationTest
   # O envio é via deliver_later, então rodamos o job enfileirado. Login é
   # convite-only (Q28): a conta precisa já existir para o código ser emitido.
   def request_code_for(email)
-    User.find_or_create_by!(email: email)
+    create_user(email: email) unless User.exists?(email: email)
     perform_enqueued_jobs { post sign_in_path, params: { email: email } }
     ActionMailer::Base.deliveries.last.subject[/\d{6}/]
   end

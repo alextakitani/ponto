@@ -1,0 +1,26 @@
+<% content_for :title, t("welcome.title") %>
+
+<header class="page-header">
+  <div>
+    <h1><%= t("welcome.title") %></h1>
+    <p class="muted"><%= t("welcome.lede") %></p>
+  </div>
+</header>
+
+<section class="empty-state" aria-labelledby="welcome-heading">
+  <h2 id="welcome-heading"><%= t("welcome.summary.title") %></h2>
+
+  <ul>
+    <% t("welcome.summary.bullets").each do |bullet| %>
+      <li><%= bullet %></li>
+    <% end %>
+  </ul>
+
+  <p class="muted"><%= t("welcome.extension_cli") %></p>
+
+  <div class="form-actions">
+    <%# TODO(Fatia 4/issue #9): trocar stub pela rota real do importador Clockify. %>
+    <%= link_to t("welcome.actions.import_clockify"), "#", class: "btn" %>
+    <%= button_to t("welcome.actions.start_empty"), onboarding_skip_path, class: "btn btn--quiet" %>
+  </div>
+</section>

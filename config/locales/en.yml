@@ -108,6 +108,19 @@ en:
         result1: " timer running · Kubernetes homelab"
         cmd2: "ponto timer show --jq .data.elapsed"
         out2: '"01:47:12"'
+  welcome:
+    title: "Welcome to Ponto"
+    lede: "Ponto is your time tracker for logging work, organizing delivery, and closing out the month."
+    summary:
+      title: "Start with the essentials"
+      bullets:
+        - "One-click timer"
+        - "Organize by client and project"
+        - "Monthly report with export"
+    extension_cli: "The Chrome extension and CLI use the same account to start and stop timers outside the app."
+    actions:
+      import_clockify: "Import from Clockify"
+      start_empty: "Start from scratch"
   access_requests:
     form:
       email_label: "Email"
