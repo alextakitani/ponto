@@ -484,6 +484,15 @@
     gap: var(--space-1);
   }
 
+  /* O ⋮ perde a CAIXA na linha do tracker (a moldura de 44px pendurada ao lado
+     de 3 linhas de texto lia como bagunça): vira ícone quieto, com o alvo de
+     toque de 2.75rem intacto e o ícone centrado na 1ª linha via margens
+     negativas (1lh = a linha da duração ao lado). */
+  .tracker-entry__actions .row-menu > summary {
+    border-color: transparent;
+    margin-block: calc((1lh - 2.75rem) / 2);
+  }
+
   .tracker-entry__duration {
     font-weight: var(--weight-semibold);
   }
@@ -493,9 +502,16 @@
   }
 
   /* Cabeçalho do dia no mobile: data + HORAS (o número do dia). O € do dia sai —
-     dinheiro é assunto do relatório; aqui o olho procura tempo. */
+     dinheiro é assunto do relatório; aqui o olho procura tempo. O padding-right
+     extra reserva a largura do cluster ⋮ da linha (summary 42px + gap), pro
+     total do dia COLUNAR com as durações das entries — uma coluna de números só.
+     (42px = ícone 16 + 2×space-3 + borda; se o .btn--sm mudar, recalibrar.) */
   .tracker-day__amount {
     display: none;
+  }
+
+  .tracker-day__header {
+    padding-right: calc(42px + var(--space-1));
   }
 
   /* Timer RODANDO: título + cronômetro/Parar empilhados, cronômetro protagonista. */
