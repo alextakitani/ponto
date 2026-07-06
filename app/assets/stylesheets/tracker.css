@@ -24,16 +24,15 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--space-3);
-  align-items: end;
+  align-items: center;
 }
 
 .timer-bar__fields {
   display: grid;
-  grid-template-columns: minmax(0, 1.8fr) minmax(13rem, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
 }
 
-.timer-bar__label,
 .timer-bar__eyebrow {
   margin: 0 0 var(--space-1);
   font-size: var(--text-xs);
@@ -41,6 +40,16 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--color-text-subtle);
+}
+
+.timer-bar__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .timer-bar__title {
@@ -372,9 +381,7 @@
     padding: var(--space-2) var(--space-3);
   }
 
-  /* Timer ocioso compacto: descrição em cima (linha própria), projeto + Iniciar
-     dividem a linha de baixo. As labels uppercase saem da tela (o placeholder e o
-     select dizem tudo) mas ficam pra leitores de tela (clip, não display:none). */
+  /* Timer ocioso compacto: descrição e Iniciar ficam na mesma linha. */
   .timer-bar {
     grid-template-columns: 1fr;
     gap: var(--space-2);
@@ -387,17 +394,7 @@
 
   .timer-bar--idle {
     grid-template-columns: minmax(0, 1fr) auto;
-    align-items: end;
-  }
-
-  .timer-bar__label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
+    align-items: center;
   }
 
   .tracker-entry,

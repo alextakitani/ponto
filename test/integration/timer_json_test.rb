@@ -51,6 +51,33 @@ class TimerJsonTest < ActionDispatch::IntegrationTest
     assert_nil body["ended_at"]
   end
 
+  test "POST /timer JSON com project_id explícito respeita o projeto enviado" do
+    default = @user.projects.create!(name: "Default")
+    explicit = @user.projects.create!(name: "Explícito")
+    @user.update!(default_project: default)
+
+    post timer_path, headers: bearer(@write),
+      params: { timer: { project_id: explicit.id, description: "Outro projeto" } },
+      as: :json
+
+    assert_response :created
+    assert_equal explicit.id, response.parsed_body["project_id"]
+    assert_equal explicit.id, @user.time_entries.find_by!(ended_at: nil).project_id
+  end
+
+  test "POST /timer JSON com project_id nil explícito não usa o projeto padrão" do
+    default = @user.projects.create!(name: "Default")
+    @user.update!(default_project: default)
+
+    post timer_path, headers: bearer(@write),
+      params: { timer: { project_id: nil, description: "Sem projeto explícito" } },
+      as: :json
+
+    assert_response :created
+    assert_nil response.parsed_body["project_id"]
+    assert_nil @user.time_entries.find_by!(ended_at: nil).project_id
+  end
+
   test "POST /timer com token read é rejeitado (401)" do
     assert_no_difference -> { @user.time_entries.count } do
       post timer_path, headers: bearer(@read), params: { timer: { description: "Barrado" } }, as: :json

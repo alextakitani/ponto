@@ -56,22 +56,60 @@ class TrackerUiTest < ActionDispatch::IntegrationTest
     assert_select "[data-day='2026-07-02'] [data-entry-id='#{running.id}']", count: 0
   end
 
+  test "barra ociosa renderiza só descrição e iniciar" do
+    get timer_path, headers: turbo_headers("timer_bar")
+
+    assert_response :success
+    assert_select "form.timer-bar--idle", count: 1
+    assert_select "label[for='timer_description']", text: /Descrição/
+    assert_select "input[name='timer[description]']", count: 1
+    assert_select "select[name='timer[project_id]']", count: 0
+  end
+
   test "POST /timer via turbo inicia o timer e renderiza a barra no estado rodando" do
     project = @user.projects.create!(name: "Projeto turbo")
+    @user.update!(default_project: project)
 
     assert_difference -> { @user.time_entries.count }, +1 do
       post timer_path,
-        params: { timer: { project_id: project.id, description: "Escrevendo tracker" } },
+        params: { timer: { description: "Escrevendo tracker" } },
         headers: turbo_headers("timer_bar")
     end
 
     entry = @user.time_entries.find_by!(ended_at: nil)
     assert_response :success
+    assert_equal project.id, entry.project_id
     assert_equal Mime[:turbo_stream], response.media_type
     assert_includes response.body, %(target="timer_bar")
     assert_includes response.body, "Escrevendo tracker"
     assert_includes response.body, "Parar"
     assert_select "[data-entry-id='#{entry.id}'][data-running='true']", count: 1
+  end
+
+  test "POST /timer via turbo sem project_id e sem projeto padrão cria entry sem projeto" do
+    assert_difference -> { @user.time_entries.count }, +1 do
+      post timer_path,
+        params: { timer: { description: "Sem projeto padrão" } },
+        headers: turbo_headers("timer_bar")
+    end
+
+    assert_response :success
+    assert_nil @user.time_entries.find_by!(ended_at: nil).project_id
+  end
+
+  test "POST /timer via turbo sem project_id e padrão arquivado cria entry sem projeto" do
+    project = @user.projects.create!(name: "Arquivado padrão")
+    @user.update!(default_project: project)
+    project.archive!
+
+    assert_difference -> { @user.time_entries.count }, +1 do
+      post timer_path,
+        params: { timer: { description: "Padrão arquivado" } },
+        headers: turbo_headers("timer_bar")
+    end
+
+    assert_response :success
+    assert_nil @user.time_entries.find_by!(ended_at: nil).project_id
   end
 
   test "POST /timer com timer já rodando devolve 409 e re-renderiza a barra no estado real" do

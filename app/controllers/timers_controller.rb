@@ -28,7 +28,12 @@ class TimersController < ApplicationController
       @form_time_entry = nil
       render_timer_conflict
     else
-      @time_entry = authorized_scope(TimeEntry.all).new(timer_params.merge(started_at: Time.current))
+      attrs = timer_params
+      # Sem project_id enviado, a barra web usa o projeto padrão ativo do usuário.
+      unless params.fetch(:timer, {}).key?(:project_id)
+        attrs[:project_id] = Current.user.active_default_project&.id
+      end
+      @time_entry = authorized_scope(TimeEntry.all).new(attrs.merge(started_at: Time.current))
 
       if @time_entry.save
         load_tracker_day_groups
