@@ -146,9 +146,9 @@
   border-radius: var(--radius-sm);
 }
 
-/* A linha responde ao mouse (tem ⋮/edição): lavagem sutil, sem virar card. */
+/* A linha responde ao mouse (tem ⋮/edição): lavagem sutil de ACENTO, sem virar card. */
 .tracker-entry:hover {
-  background-color: color-mix(in srgb, var(--color-border) 30%, transparent);
+  background-color: color-mix(in srgb, var(--color-accent) 5%, transparent);
 }
 
 /* Coluna esquerda: sumário e tags CORREM INLINE (uma linha só no desktop — tags
@@ -373,55 +373,87 @@
     grid-template-columns: 1fr;
   }
 
-  /* Linha do tracker no mobile: grade [info | números]. Esquerda empilha descrição /
-     projeto·horário / tags; direita alinha duração (forte) sobre valor, com o ⋮
-     centrado ao lado ocupando as duas linhas (alvo de toque confortável). */
+  /* Linha do tracker no mobile: DIVULGAÇÃO PROGRESSIVA — celular é "olhada +
+     start/stop" (PRODUCT.md). A linha mostra descrição / projeto·horário /
+     duração + ⋮; o € por entry e as tags são metadados que vivem no relatório e
+     na edição (mostrar tudo deixava "muita informação junta"). */
   .tracker-entry {
     grid-template-columns: minmax(0, 1fr) auto;
-    align-items: start;
+    align-items: center;
+  }
+
+  /* EDIÇÃO inline no mobile: coluna única (o grid [info | números] da linha de
+     leitura esmagava o form de edição). */
+  .tracker-entry--editing {
+    grid-template-columns: 1fr;
   }
 
   .tracker-entry__main {
     flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-1);
+    align-items: stretch;
+    gap: 2px;
   }
 
+  /* Sumário em DUAS linhas controladas: descrição ocupa a 1ª inteira (trunca);
+     projeto + horário dividem a 2ª (projeto trunca, horário nunca quebra). */
   .tracker-entry__summary {
+    flex-wrap: wrap;
+    min-width: 0;
     row-gap: 2px;
   }
 
-  /* Sem separadores "·" no mobile: com o sumário quebrando em 2 linhas eles viram
-     órfãos no fim da linha; o espaçamento do gap já separa os itens. */
-  .tracker-entry__separator {
+  .tracker-entry__description {
+    flex-basis: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tracker-entry__project {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .tracker-entry__project > span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tracker-entry__range {
+    font-size: var(--text-xs);
+    color: var(--color-text-subtle);
+  }
+
+  /* Sem separadores "·" e sem € por entry no mobile (o valor vive no relatório).
+     As TAGS ficam — linha própria de chips, compacta (pedido do dono). */
+  .tracker-entry__separator,
+  .tracker-entry__amount {
     display: none;
   }
 
+  .tracker-entry__tags {
+    margin-top: 2px;
+  }
+
   .tracker-entry__actions {
-    display: grid;
-    grid-template-columns: auto auto;
-    column-gap: var(--space-2);
-    row-gap: 2px;
-    justify-items: end;
+    display: flex;
     align-items: center;
+    gap: var(--space-1);
   }
 
   .tracker-entry__duration {
-    grid-column: 1;
-    grid-row: 1;
     font-weight: var(--weight-semibold);
   }
 
-  .tracker-entry__amount {
-    grid-column: 1;
-    grid-row: 2;
-    font-size: var(--text-xs);
+  .tracker-entry__actions .row-menu {
+    margin-left: 0;
   }
 
-  .tracker-entry__actions .row-menu {
-    grid-column: 2;
-    grid-row: 1 / 3;
-    margin-left: 0;
+  /* Cabeçalho do dia no mobile: data + HORAS (o número do dia). O € do dia sai —
+     dinheiro é assunto do relatório; aqui o olho procura tempo. */
+  .tracker-day__amount {
+    display: none;
   }
 
   /* Timer RODANDO: título + cronômetro/Parar empilhados, cronômetro protagonista. */

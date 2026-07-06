@@ -86,3 +86,36 @@ body[data-theme="light"] {
 body[data-theme="dark"] {
   color-scheme: dark;
 }
+
+/* ── Seletores de acento por usuário ─────────────────────────────────────
+   Lógica: claro = hue Catppuccin escurecido para contraste AA sobre Base do Latte
+           escuro = acento Mocha puro (já atende AA sobre Surface0 do Mocha)
+   O --color-on-accent não muda: branco (claro) / Crust (escuro) passam AA em todos.
+   teal é o default definido no :root — não precisa de bloco aqui.
+   ──────────────────────────────────────────────────────────────────────── */
+
+body[data-accent="mauve"] {
+  --color-accent:       light-dark(#8839ef, #cba6f7);
+  --color-accent-hover: light-dark(#7326d3, #d7bbf9);
+  --focus-ring:         0 0 0 3px light-dark(rgba(136,57,239,.28), rgba(203,166,247,.35));
+}
+body[data-accent="blue"] {
+  --color-accent:       light-dark(#1a5ce0, #89b4fa);
+  --color-accent-hover: light-dark(#1550c4, #a3c5fb);
+  --focus-ring:         0 0 0 3px light-dark(rgba(26,92,224,.28), rgba(137,180,250,.35));
+}
+body[data-accent="green"] {
+  --color-accent:       light-dark(#2b7222, #a6e3a1);
+  --color-accent-hover: light-dark(#235e1c, #b8eab4);
+  --focus-ring:         0 0 0 3px light-dark(rgba(43,114,34,.28), rgba(166,227,161,.35));
+}
+body[data-accent="peach"] {
+  --color-accent:       light-dark(#b34700, #fab387);
+  --color-accent-hover: light-dark(#9a3d00, #fbc19e);
+  --focus-ring:         0 0 0 3px light-dark(rgba(179,71,0,.30), rgba(250,179,135,.35));
+}
+body[data-accent="pink"] {
+  --color-accent:       light-dark(#b8368f, #f5c2e7);
+  --color-accent-hover: light-dark(#9c2d79, #f8d3ee);
+  --focus-ring:         0 0 0 3px light-dark(rgba(184,54,143,.28), rgba(245,194,231,.35));
+}

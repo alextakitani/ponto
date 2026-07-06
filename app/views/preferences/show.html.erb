@@ -53,6 +53,32 @@
         <p class="form-hint"><%= t(".profile.theme_hint") %></p>
       </div>
 
+      <fieldset class="accent-swatch-field">
+        <legend><%= t(".profile.accent") %></legend>
+        <p class="form-hint"><%= t(".profile.accent_hint") %></p>
+
+        <div class="accent-swatch-list">
+          <% {
+            "teal" => "#0d7379",
+            "mauve" => "#8839ef",
+            "blue" => "#1a5ce0",
+            "green" => "#2b7222",
+            "peach" => "#b34700",
+            "pink" => "#b8368f"
+          }.each do |accent, hex| %>
+            <%= form.radio_button :accent, accent,
+                  class: "accent-swatch__input",
+                  aria: { label: t(".profile.accent_aria", accent: t(".profile.accents.#{accent}")) } %>
+            <%= tag.label for: "user_accent_#{accent}",
+                  class: "accent-swatch__label",
+                  style: "--accent-swatch-color: #{hex};",
+                  title: t(".profile.accents.#{accent}") do %>
+              <span class="accent-swatch__text"><%= t(".profile.accents.#{accent}") %></span>
+            <% end %>
+          <% end %>
+        </div>
+      </fieldset>
+
       <div class="form-actions">
         <%= form.submit t(".profile.submit") %>
       </div>

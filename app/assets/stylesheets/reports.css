@@ -42,13 +42,13 @@
 
 .report-preset:hover {
   color: var(--color-text);
-  background-color: var(--color-surface-sunken);
+  background-color: color-mix(in srgb, var(--color-accent) 7%, transparent);
 }
 
 .report-preset--active {
-  color: var(--color-text);
-  border-color: var(--color-border);
-  background-color: var(--color-surface-sunken);
+  color: var(--color-accent);
+  font-weight: var(--weight-medium);
+  background-color: color-mix(in srgb, var(--color-accent) 12%, transparent);
 }
 
 /* Flui junto dos presets (sem margin-left:auto — órfão na 2ª linha ao quebrar). */

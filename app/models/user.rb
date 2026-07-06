@@ -3,6 +3,7 @@ class User < ApplicationRecord
   LastAdminError = Class.new(StandardError)
   THEMES = %w[system light dark].freeze
   LOCALES = %w[pt-BR en].freeze
+  ACCENTS = %w[teal mauve blue green peach pink].freeze
 
   has_many :sessions, dependent: :destroy
   has_many :sign_in_codes, dependent: :destroy
@@ -28,6 +29,7 @@ class User < ApplicationRecord
   validates :theme, inclusion: { in: THEMES, message: :invalid }
   validates :locale, inclusion: { in: LOCALES, allow_nil: true }
   validates :export_locale, inclusion: { in: LOCALES, allow_nil: true }
+  validates :accent, inclusion: { in: ACCENTS }
 
   # Invariante ≥1 admin ATIVO (Q34c). Admin suspenso NÃO conta como ativo.
   # - rebaixar (admin: true -> false) o último admin ativo: falha na validação;

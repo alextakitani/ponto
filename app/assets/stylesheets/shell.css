@@ -30,11 +30,11 @@
      tingido pro hue do teal — o cinza puro ficava morto); no ESCURO o Crust já
      dá a profundidade certa. */
   background-color: light-dark(
-    color-mix(in srgb, #0d7379 7%, #eff1f5),
+    color-mix(in srgb, var(--color-accent) 7%, #eff1f5),
     var(--color-surface-deep)
   );
   border-right: 1px solid light-dark(
-    color-mix(in srgb, #0d7379 14%, #ccd0da),
+    color-mix(in srgb, var(--color-accent) 14%, #ccd0da),
     var(--color-border)
   );
 }
@@ -90,7 +90,8 @@
 
 a.shell-nav__item:hover {
   color: var(--color-text);
-  background-color: color-mix(in srgb, var(--color-border) 45%, transparent);
+  /* Hover com ACENTO (7%) — "um tom acima" do item atual (12%), nunca cinza. */
+  background-color: color-mix(in srgb, var(--color-accent) 7%, transparent);
 }
 
 /* Item atual: acento contido (o UM acento). */
@@ -127,7 +128,7 @@ a.shell-nav__item:hover {
 .shell-sidebar__footer .shell-nav__item--button:hover,
 .shell-tabs__more-menu .shell-nav__item--button:hover {
   color: var(--color-text);
-  background-color: color-mix(in srgb, var(--color-border) 45%, transparent);
+  background-color: color-mix(in srgb, var(--color-accent) 7%, transparent);
 }
 
 /* button_to embrulha o botão num <form>; tira a margem pra alinhar como item. */
@@ -223,8 +224,9 @@ a.shell-nav__item:hover {
   }
 
   .shell-content {
-    /* Espaço pra bottom bar não cobrir o fim do conteúdo. */
-    padding-bottom: calc(var(--space-8) + 3rem);
+    /* Laterais enxutas no mobile (mais dados por linha — pedido do dono) e
+       espaço embaixo pra bottom bar não cobrir o fim do conteúdo. */
+    padding: var(--space-4) var(--space-3) calc(var(--space-8) + 3rem);
   }
 
   .shell-tabs {

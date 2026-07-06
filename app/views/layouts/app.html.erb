@@ -4,7 +4,7 @@
     <%= render "layouts/head" %>
   </head>
 
-  <body class="app"<% if Current.user.theme.in?(User::THEMES - [ "system" ]) %> data-theme="<%= Current.user.theme %>"<% end %>
+  <body class="app"<% if Current.user.theme.in?(User::THEMES - [ "system" ]) %> data-theme="<%= Current.user.theme %>"<% end %> data-accent="<%= Current.user.accent %>"
       data-controller="command-palette"
       data-action="keydown@window->command-palette#handleGlobalKeydown">
     <%# Sidebar fixa (desktop). Nav de trabalho no topo; rodapé = Preferências/Admin/

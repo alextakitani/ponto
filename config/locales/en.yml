@@ -417,6 +417,16 @@ en:
           system: "System"
           light: "Light"
           dark: "Dark"
+        accent: "Accent color"
+        accent_hint: "Sets the color used for buttons, focus, and navigation."
+        accent_aria: "Accent color: %{accent}"
+        accents:
+          teal: "Teal"
+          mauve: "Mauve"
+          blue: "Blue"
+          green: "Green"
+          peach: "Peach"
+          pink: "Pink"
         submit: "Save profile"
       tokens:
         title: "Extension & CLI"

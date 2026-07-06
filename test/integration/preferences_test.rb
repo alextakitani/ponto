@@ -57,6 +57,15 @@ class PreferencesTest < ActionDispatch::IntegrationTest
     assert_equal "en", @user.reload.locale
   end
 
+  test "update com accent válido persiste" do
+    patch preferences_path, params: {
+      user: { name: "Ana", time_zone: "America/Sao_Paulo", theme: "system", accent: "mauve" }
+    }
+
+    assert_redirected_to preferences_path
+    assert_equal "mauve", @user.reload.accent
+  end
+
   test "update com locale automático grava nil" do
     @user.update!(locale: "en")
 
@@ -99,6 +108,28 @@ class PreferencesTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     assert_match(/Tema/, response.body)
     assert_no_match(/data-theme="hotdog"/, response.body)
+  end
+
+  test "update com accent forjado re-renderiza 422 sem alterar o registro" do
+    @user.update!(accent: "teal")
+
+    assert_no_changes -> { @user.reload.accent } do
+      patch preferences_path, params: {
+        user: { name: "Ana", time_zone: "America/Sao_Paulo", theme: "system", accent: "vermelho" }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_no_match(/data-accent="vermelho"/, response.body)
+  end
+
+  test "layout autenticado renderiza data-accent no body" do
+    @user.update!(accent: "pink")
+
+    get preferences_path
+
+    assert_response :success
+    assert_select "body.app[data-accent='pink']"
   end
 
   test "update rejeita time_zone inválido" do

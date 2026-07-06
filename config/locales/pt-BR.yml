@@ -416,6 +416,16 @@ pt-BR:
           system: "Sistema"
           light: "Claro"
           dark: "Escuro"
+        accent: "Cor de destaque"
+        accent_hint: "Define a cor dos botões, foco e navegação da interface."
+        accent_aria: "Cor de destaque: %{accent}"
+        accents:
+          teal: "Teal"
+          mauve: "Mauve"
+          blue: "Azul"
+          green: "Verde"
+          peach: "Pêssego"
+          pink: "Rosa"
         submit: "Salvar perfil"
       tokens:
         title: "Extensão & CLI"
