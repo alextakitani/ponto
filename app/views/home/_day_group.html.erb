@@ -5,8 +5,9 @@
   </header>
 
   <div id="day-<%= day_group[:date] %>-entries" class="tracker-day__entries">
+    <% overlapping_ids = tracker_overlapping_entry_ids(day_group[:entries]) %>
     <% day_group[:entries].each do |time_entry| %>
-      <%= render "time_entries/time_entry", time_entry: time_entry %>
+      <%= render "time_entries/time_entry", time_entry: time_entry, overlapping_ids: overlapping_ids %>
     <% end %>
   </div>
 </section>

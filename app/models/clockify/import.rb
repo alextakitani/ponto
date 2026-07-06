@@ -161,7 +161,7 @@ class Clockify::Import
       tags = create_tags(rows)
 
       rows.each do |row|
-        entry = user.time_entries.create!(
+        entry = user.time_entries.build(
           project: projects[project_key(row.project_name)],
           task: tasks[[ project_key(row.project_name), Task.normalize_name(row.task_name) ]],
           description: row.description,
@@ -169,6 +169,9 @@ class Clockify::Import
           started_at: row.started_at,
           ended_at: row.ended_at
         )
+        # Q49c/Q22: importador preserva o histórico externo mesmo com sobreposição.
+        entry.allow_overlap = true
+        entry.save!
 
         row.tag_names.each do |tag_name|
           Tagging.create!(time_entry: entry, tag: tags.fetch(Tag.normalize_name(tag_name)))

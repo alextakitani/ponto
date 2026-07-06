@@ -53,6 +53,19 @@ class Clockify::ImportTest < ActiveSupport::TestCase
     assert_equal 0, user.time_entries.order(:id).last.taggings.count
   end
 
+  test "importing overlapping entries still creates all records" do
+    user = create_user
+    content = csv(
+      row(start_time: "09:00:00 AM", end_time: "10:00:00 AM"),
+      row(start_time: "09:30:00 AM", end_time: "10:30:00 AM")
+    )
+
+    result = import(user, content).run!
+
+    assert_equal 2, result.time_entries_created
+    assert_equal 2, user.time_entries.count
+  end
+
   test "billable follows the CSV column" do
     user = create_user
 

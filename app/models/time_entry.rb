@@ -11,11 +11,16 @@ class TimeEntry < ApplicationRecord
   has_many :taggings, dependent: :destroy
   has_many :tags, through: :taggings
 
+  # Escape para caminhos internos que podem conviver com sobreposição: importador,
+  # stop_at e split.
+  attr_accessor :allow_overlap
+
   monetize :rate_cents, allow_nil: true, with_model_currency: :currency
 
   validates :started_at, presence: true
   validates :currency, presence: true
   validate :ended_at_after_started_at
+  validate :no_overlap, if: :validate_overlap?
   validate :project_belongs_to_user
   validate :task_belongs_to_user
   validate :task_matches_project
@@ -45,8 +50,19 @@ class TimeEntry < ApplicationRecord
     if timestamp == started_at
       destroy
     else
+      # Q49c/Q22: parar timer é invariante operacional; nunca deve falhar por overlap.
+      self.allow_overlap = true
       update!(ended_at: timestamp)
     end
+  end
+
+  def overlapping_entries
+    return TimeEntry.none if user_id.blank? || started_at.blank? || ended_at.blank?
+
+    user.time_entries
+      .where.not(id: id)
+      .where.not(ended_at: nil)
+      .where("? < time_entries.ended_at AND time_entries.started_at < ?", started_at, ended_at)
   end
 
   def attributes_for_restart
@@ -77,6 +93,9 @@ class TimeEntry < ApplicationRecord
         started_at: cut,
         ended_at: original_ended_at
       )
+      # Q49c/Q22: split produz metades internas; overlap pré-existente não bloqueia.
+      self.allow_overlap = true
+      second.allow_overlap = true
       update!(ended_at: cut)
       second.save!
       second
@@ -88,6 +107,24 @@ class TimeEntry < ApplicationRecord
       if ended_at.present? && started_at.present? && ended_at <= started_at
         errors.add(:ended_at, :after_started_at)
       end
+    end
+
+    def validate_overlap?
+      ended_at.present? && (started_at_changed? || ended_at_changed?) && !allow_overlap
+    end
+
+    def no_overlap
+      overlapping = overlapping_entries.order(:started_at).first
+      return unless overlapping
+
+      errors.add(:started_at, :overlap, range: overlap_range(overlapping))
+    end
+
+    def overlap_range(overlapping)
+      zone = ActiveSupport::TimeZone[user.time_zone] || Time.zone
+      started = overlapping.started_at.in_time_zone(zone).strftime("%H:%M")
+      ended = overlapping.ended_at.in_time_zone(zone).strftime("%H:%M")
+      "#{started} - #{ended}"
     end
 
     def project_belongs_to_user

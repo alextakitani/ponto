@@ -176,3 +176,15 @@ button:disabled {
     padding: var(--space-2) var(--space-3);
   }
 }
+
+
+/* Header suave de acento no TOPO dos panels de form (pedido do dono: a mesma
+   linha-assinatura do topo do app, versão 2px, só no topo — não nas laterais).
+   Classe dobrada (0,2,0) pra vencer o `border:` shorthand dos arquivos de tela
+   que carregam depois — mesmo truque dos .btn.btn--* (sem !important). */
+.manual-entry__form.manual-entry__form,
+.tracker-entry--editing.tracker-entry--editing,
+.report-filters__body.report-filters__body,
+.card.card {
+  border-top: 2px solid var(--color-accent);
+}

@@ -93,6 +93,12 @@
   border-radius: var(--radius-sm);
 }
 
+.tag-badge--danger {
+  color: var(--color-danger);
+  background-color: color-mix(in srgb, var(--color-danger) 8%, transparent);
+  border-color: color-mix(in srgb, var(--color-danger) 35%, transparent);
+}
+
 /* --- Menu ⋮ por linha (<details> zero-JS, como no admin) -------------------- */
 .row-menu {
   position: relative;

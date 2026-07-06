@@ -609,6 +609,8 @@ pt-BR:
       start: "Iniciar"
       stop: "Parar"
   time_entries:
+    overlap_badge: "⚠ sobrepõe"
+    overlap_badge_title: "Esta entrada se sobrepõe a outra"
     form:
       unsaved_warning: "Há alterações não salvas nesta entrada. Sair e descartar?"
     create:
@@ -756,6 +758,7 @@ pt-BR:
       taken: "já está em uso"
       invalid: "não é válido"
       inclusion: "não está incluído na lista"
+      overlap: "se sobrepõe à entrada %{range}"
   activerecord:
     errors:
       messages:

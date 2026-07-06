@@ -1,3 +1,5 @@
+require "set"
+
 module TrackerHelper
   # Rótulo do cabeçalho de dia. "Hoje"/"Ontem" pros dois grupos mais acessados
   # (evita o usuário calcular a data toda sessão); data completa pros demais. O
@@ -37,6 +39,20 @@ module TrackerHelper
 
   def tracker_entry_tags(time_entry)
     time_entry.tags.to_a.sort_by { |tag| [ tag.archived? ? 1 : 0, tag.name_normalized ] }
+  end
+
+  def tracker_overlapping_entry_ids(entries)
+    finished_entries = entries.select { |entry| entry.id.present? && entry.ended_at.present? }
+    overlapping_ids = Set.new
+
+    finished_entries.combination(2) do |left, right|
+      next unless left.started_at < right.ended_at && right.started_at < left.ended_at
+
+      overlapping_ids << left.id
+      overlapping_ids << right.id
+    end
+
+    overlapping_ids
   end
 
   def tracker_billable_amount(time_entry)

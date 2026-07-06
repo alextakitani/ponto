@@ -45,4 +45,33 @@ class TrackerHelperTest < ActionView::TestCase
     assert_includes multi, "133,18"
     assert_includes multi, "50,00"
   end
+
+  test "tracker_overlapping_entry_ids marca par sobreposto" do
+    first = tracker_entry(1, "2026-07-02 09:00", "2026-07-02 10:00")
+    second = tracker_entry(2, "2026-07-02 09:30", "2026-07-02 10:30")
+    third = tracker_entry(3, "2026-07-02 11:00", "2026-07-02 12:00")
+
+    assert_equal Set[1, 2], tracker_overlapping_entry_ids([ first, second, third ])
+  end
+
+  test "tracker_overlapping_entry_ids devolve vazio sem sobreposição" do
+    first = tracker_entry(1, "2026-07-02 09:00", "2026-07-02 10:00")
+    second = tracker_entry(2, "2026-07-02 10:30", "2026-07-02 11:30")
+
+    assert_empty tracker_overlapping_entry_ids([ first, second ])
+  end
+
+  test "tracker_overlapping_entry_ids ignora toque na borda" do
+    first = tracker_entry(1, "2026-07-02 09:00", "2026-07-02 10:00")
+    second = tracker_entry(2, "2026-07-02 10:00", "2026-07-02 11:00")
+
+    assert_empty tracker_overlapping_entry_ids([ first, second ])
+  end
+
+  private
+    TrackerEntry = Struct.new(:id, :started_at, :ended_at)
+
+    def tracker_entry(id, started_at, ended_at)
+      TrackerEntry.new(id, Time.zone.parse(started_at), Time.zone.parse(ended_at))
+    end
 end

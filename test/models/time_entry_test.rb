@@ -145,19 +145,19 @@ class TimeEntryTest < ActiveSupport::TestCase
 
     billed = @user.time_entries.create!(
       project: billed_project,
-      started_at: Time.current - 1.hour,
-      ended_at: Time.current
+      started_at: Time.utc(2026, 7, 2, 9, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 10, 0, 0)
     )
     free = @user.time_entries.create!(
       project: free_project,
-      started_at: Time.current - 2.hours,
-      ended_at: Time.current - 1.hour
+      started_at: Time.utc(2026, 7, 2, 10, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 11, 0, 0)
     )
     forced = @user.time_entries.create!(
       project: free_project,
       billable: true,
-      started_at: Time.current - 3.hours,
-      ended_at: Time.current - 2.hours
+      started_at: Time.utc(2026, 7, 2, 11, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 12, 0, 0)
     )
 
     assert billed.billable?
@@ -177,8 +177,8 @@ class TimeEntryTest < ActiveSupport::TestCase
     non_billable = @user.time_entries.create!(
       project: project,
       billable: false,
-      started_at: started_at,
-      ended_at: started_at + 20.minutes
+      started_at: started_at + 20.minutes,
+      ended_at: started_at + 40.minutes
     )
     running = @user.time_entries.create!(project: project, started_at: started_at + 1.day)
 
@@ -194,6 +194,66 @@ class TimeEntryTest < ActiveSupport::TestCase
     assert_difference -> { TimeEntry.count }, -1 do
       entry.stop_at(entry.started_at)
     end
+  end
+
+  test "validação de overlap bloqueia update manual que criaria sobreposição" do
+    @user.update!(time_zone: "America/Sao_Paulo")
+    first = @user.time_entries.create!(
+      started_at: Time.utc(2026, 7, 2, 9, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 10, 0, 0)
+    )
+    second = @user.time_entries.create!(
+      started_at: first.ended_at,
+      ended_at: Time.utc(2026, 7, 2, 11, 0, 0)
+    )
+
+    second.started_at = Time.utc(2026, 7, 2, 9, 30, 0)
+
+    assert_not second.valid?
+    assert second.errors[:started_at].any?
+    assert_includes second.errors[:started_at].join, "06:00 - 07:00"
+  end
+
+  test "entradas tocando na borda não são overlap" do
+    first = @user.time_entries.create!(
+      started_at: Time.utc(2026, 7, 2, 9, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 10, 0, 0)
+    )
+    touching = @user.time_entries.build(
+      started_at: first.ended_at,
+      ended_at: Time.utc(2026, 7, 2, 11, 0, 0)
+    )
+
+    assert touching.valid?, touching.errors.full_messages.to_sentence
+  end
+
+  test "editar só descrição em entry já sobreposto não bloqueia" do
+    @user.time_entries.create!(
+      started_at: Time.utc(2026, 7, 2, 9, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 10, 0, 0)
+    )
+    overlapping = @user.time_entries.build(
+      started_at: Time.utc(2026, 7, 2, 9, 30, 0),
+      ended_at: Time.utc(2026, 7, 2, 10, 30, 0)
+    )
+    overlapping.allow_overlap = true
+    overlapping.save!
+
+    overlapping.reload.description = "Ajuste sem mexer em horário"
+
+    assert overlapping.valid?, overlapping.errors.full_messages.to_sentence
+  end
+
+  test "stop_at de timer rodando que sobreporia continua funcionando" do
+    @user.time_entries.create!(
+      started_at: Time.utc(2026, 7, 2, 10, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 11, 0, 0)
+    )
+    running = @user.time_entries.create!(started_at: Time.utc(2026, 7, 2, 9, 30, 0))
+
+    running.stop_at(Time.utc(2026, 7, 2, 10, 30, 0))
+
+    assert_equal Time.utc(2026, 7, 2, 10, 30, 0), running.reload.ended_at
   end
 
   test "índice único parcial barra dois timers rodando para o mesmo user" do

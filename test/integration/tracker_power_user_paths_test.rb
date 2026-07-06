@@ -106,11 +106,14 @@ class TrackerPowerUserPathsTest < ActionDispatch::IntegrationTest
 
   test "command palette recent entries are scoped to the current user and ordered by most recent" do
     own_entries = 6.times.map do |index|
-      @user.time_entries.create!(
+      entry = @user.time_entries.build(
         description: "Própria #{index}",
         started_at: Time.utc(2026, 7, 1, 8, index, 0),
         ended_at: Time.utc(2026, 7, 1, 9, index, 0)
       )
+      entry.allow_overlap = true
+      entry.save!
+      entry
     end
     other = create_user(email: "palette-other@example.com")
     other.time_entries.create!(
@@ -171,11 +174,15 @@ class TrackerPowerUserPathsTest < ActionDispatch::IntegrationTest
 
   private
     def create_entry_at(description, started_at)
-      @user.time_entries.create!(
+      entry = @user.time_entries.build(
         description: description,
         started_at: started_at,
         ended_at: started_at + 30.minutes
       )
+      # Dados compactos de paginação podem repetir janelas; não exercem criação manual.
+      entry.allow_overlap = true
+      entry.save!
+      entry
     end
 
     def turbo_stream_headers

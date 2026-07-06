@@ -55,6 +55,31 @@ class SplitTimeEntriesTest < ActionDispatch::IntegrationTest
     assert_equal Time.utc(2026, 7, 2, 14, 0, 0), entry.reload.ended_at
   end
 
+  test "POST split de entry já sobreposto funciona sem erro" do
+    project = @user.projects.create!(name: "Projeto split")
+    entry = @user.time_entries.create!(
+      project: project,
+      started_at: Time.utc(2026, 7, 2, 12, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 14, 0, 0)
+    )
+    overlapping = @user.time_entries.build(
+      project: project,
+      started_at: Time.utc(2026, 7, 2, 12, 30, 0),
+      ended_at: Time.utc(2026, 7, 2, 13, 30, 0)
+    )
+    overlapping.allow_overlap = true
+    overlapping.save!
+
+    assert_difference -> { @user.time_entries.count }, +1 do
+      post time_entry_split_path(entry),
+        params: { split: { cut: "2026-07-02T10:00" } },
+        headers: turbo_headers("tracker_entries")
+    end
+
+    assert_response :success
+    assert_equal Time.utc(2026, 7, 2, 13, 0, 0), entry.reload.ended_at
+  end
+
   test "split de entry de outro user dá 404 (isolamento Q23)" do
     other = create_user(email: "outro-split@example.com")
     alheio = other.time_entries.create!(

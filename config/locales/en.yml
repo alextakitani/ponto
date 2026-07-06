@@ -610,6 +610,8 @@ en:
       start: "Start"
       stop: "Stop"
   time_entries:
+    overlap_badge: "⚠ overlap"
+    overlap_badge_title: "This entry overlaps another"
     form:
       unsaved_warning: "This entry has unsaved changes. Leave and discard them?"
     create:
@@ -752,6 +754,7 @@ en:
       taken: "has already been taken"
       invalid: "is invalid"
       inclusion: "is not included in the list"
+      overlap: "overlaps entry %{range}"
   activerecord:
     errors:
       messages:

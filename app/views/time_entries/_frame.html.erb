@@ -19,6 +19,17 @@
           <% tracker_entry_tags(time_entry).each do |tag| %>
             <span class="tag-badge"><%= tag.name %></span>
           <% end %>
+          <% if local_assigns[:overlapping_ids]&.include?(time_entry.id) %>
+            <span class="tag-badge tag-badge--danger" title="<%= t('time_entries.overlap_badge_title') %>">
+              <%= t('time_entries.overlap_badge') %>
+            </span>
+          <% end %>
+        </div>
+      <% elsif local_assigns[:overlapping_ids]&.include?(time_entry.id) %>
+        <div class="tracker-entry__tags">
+          <span class="tag-badge tag-badge--danger" title="<%= t('time_entries.overlap_badge_title') %>">
+            <%= t('time_entries.overlap_badge') %>
+          </span>
         </div>
       <% end %>
     </div>

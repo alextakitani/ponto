@@ -175,10 +175,19 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-1);
+  /* Respiro entre o grupo identidade (desc·proj·horário) e os metadados. */
+  margin-left: var(--space-2);
 }
 
 .tracker-entry__tags .tag-badge {
   margin-left: 0;
+}
+
+/* Tags da linha SEM caixa (borda fora, só o fundo sunken) — chips com borda em
+   série viravam um trem confuso. O badge de alerta (--danger) mantém a caixa:
+   é o único que DEVE saltar. */
+.tracker-entry__tags .tag-badge:not(.tag-badge--danger) {
+  border-color: transparent;
 }
 
 .tracker-entry__description {
@@ -189,8 +198,12 @@
   color: var(--color-text-subtle);
 }
 
+/* Horário recua (xs, subtle) — a linha hierarquiza: descrição forte, projeto
+   normal, horário e tags quietos, badge de alerta como único elemento alto. */
 .tracker-entry__range {
   white-space: nowrap;
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
 }
 
 /*
@@ -304,12 +317,27 @@
   border-radius: var(--radius);
 }
 
+/* Duas linhas por design: descrição (campo de captura) ocupa a LINHA inteira;
+   projeto·início·fim·duração dividem a linha 2 em colunas com teto — o `auto`
+   antigo deixava os datetime-local (largura varia com o locale, ex. AM/PM)
+   incharem até esmagar a descrição pra ~6px. Áreas por nth-child (markup intacto). */
 .manual-entry__grid {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(12rem, 1fr) repeat(3, minmax(9rem, auto));
+  grid-template-columns: minmax(11rem, 1.4fr) minmax(10rem, 1fr) minmax(10rem, 1fr) minmax(7rem, 0.8fr);
+  grid-template-areas:
+    "desc  desc  desc desc"
+    "proj  start end  dur"
+    "bill  bill  bill bill";
   gap: var(--space-3);
   align-items: end;
 }
+
+.manual-entry__grid > :nth-child(1) { grid-area: desc; }
+.manual-entry__grid > :nth-child(2) { grid-area: proj; }
+.manual-entry__grid > :nth-child(3) { grid-area: start; }
+.manual-entry__grid > :nth-child(4) { grid-area: end; }
+.manual-entry__grid > :nth-child(5) { grid-area: dur; }
+.manual-entry__grid > .tracker-billable { grid-area: bill; margin: 0; }
 
 /* --- Form de corte do split, dentro do menu ⋮ ------------------------------- */
 .row-menu__split > summary {
@@ -333,6 +361,11 @@
 @media (max-width: 48rem) {
   .manual-entry__grid {
     grid-template-columns: 1fr;
+    grid-template-areas: none;
+  }
+
+  .manual-entry__grid > * {
+    grid-area: auto;
   }
 
   .shell-timerbar {
