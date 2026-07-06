@@ -73,6 +73,9 @@
 
       <div class="form-actions">
         <%= form.submit t("common.actions.add"), class: "btn btn--sm" %>
+        <button type="button" class="btn btn--quiet btn--sm" data-action="dirty-form#cancel">
+          <%= t("common.actions.cancel") %>
+        </button>
       </div>
     <% end %>
   </details>

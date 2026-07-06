@@ -34,6 +34,18 @@ export default class extends Controller {
     this.dirty = false
   }
 
+  // Cancelar de form em <details> (entry manual): confirma se sujo, aí reseta o
+  // form e FECHA o details — descarte explícito, nunca silencioso.
+  cancel(event) {
+    if (this.dirty && !window.confirm(this.messageValue)) {
+      event.preventDefault()
+      return
+    }
+    this.dirty = false
+    this.element.reset()
+    this.element.closest("details")?.removeAttribute("open")
+  }
+
   // O link Cancelar (dentro do form) pede confirmação quando há mudanças.
   confirmLeave(event) {
     if (this.dirty && !window.confirm(this.messageValue)) {
