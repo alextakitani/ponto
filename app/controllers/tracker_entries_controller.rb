@@ -7,6 +7,7 @@ class TrackerEntriesController < ApplicationController
     load_tracker_day_groups
     @last_rendered_date = parse_last_rendered_date
     @continuing_day_total_seconds = tracker_day_total_seconds(@last_rendered_date)
+    @continuing_day_amounts = tracker_day_total_amounts(@last_rendered_date)
 
     respond_to do |format|
       format.turbo_stream

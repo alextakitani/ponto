@@ -34,9 +34,25 @@ module TrackerData
           {
             date: date,
             entries: sorted_entries,
-            total_seconds: sorted_entries.sum { |entry| tracker_elapsed_seconds(entry, now:) }
+            total_seconds: sorted_entries.sum { |entry| tracker_elapsed_seconds(entry, now:) },
+            amounts: tracker_day_amounts(sorted_entries)
           }
         end
+    end
+
+    # Somatória de valores faturáveis do dia, POR MOEDA (Q43): nunca soma moedas
+    # diferentes — devolve um Hash currency => cents. O amount de uma entry já respeita
+    # billable + rate presente (billable_amount é nil fora disso). Entry rodando não
+    # entra (billable_amount só existe com ended_at, como no report — Q57).
+    def tracker_day_amounts(entries)
+      amounts = Hash.new(0)
+
+      entries.each do |entry|
+        money = entry.billable_amount
+        amounts[money.currency.iso_code] += money.cents if money&.positive?
+      end
+
+      amounts
     end
 
     def tracker_next_page_params(day_group = @tracker_day_groups.last)
@@ -51,14 +67,22 @@ module TrackerData
     def tracker_day_total_seconds(date, now: Time.current)
       return unless date
 
+      tracker_entries_on(date, now:).sum { |entry| tracker_elapsed_seconds(entry, now:) }
+    end
+
+    # Amounts do dia INTEIRO (não só a página) — usado pelo "Carregar mais" pra
+    # reatualizar o valor do cabeçalho do dia contínuo junto com o total de horas.
+    def tracker_day_total_amounts(date, now: Time.current)
+      return {} unless date
+
+      tracker_day_amounts(tracker_entries_on(date, now:))
+    end
+
+    def tracker_entries_on(date, now: Time.current)
       time_zone = ActiveSupport::TimeZone[Current.user.time_zone] || Time.zone
 
-      authorized_scope(TimeEntry.all).where(user: Current.user).sum do |entry|
-        if tracker_group_date(entry, time_zone, now:) == date
-          tracker_elapsed_seconds(entry, now:)
-        else
-          0
-        end
+      authorized_scope(TimeEntry.all).where(user: Current.user).select do |entry|
+        tracker_group_date(entry, time_zone, now:) == date
       end
     end
 

@@ -48,6 +48,16 @@ module TrackerHelper
     end
   end
 
+  # Total de valores de um dia, POR MOEDA (Q43). Recebe o Hash currency => cents do
+  # day_group e devolve "€ 133,18" (ou "R$ X · € Y" com várias moedas). Vazio → nil
+  # (o cabeçalho do dia só mostra o valor quando há faturável — não polui com "—").
+  def tracker_day_amounts(amounts)
+    return if amounts.blank?
+
+    parts = amounts.map { |currency, cents| Money.new(cents, currency).format }
+    safe_join(parts, content_tag(:span, t("common.middle_dot"), class: "muted", "aria-hidden": true))
+  end
+
   def tracker_datetime_local_value(timestamp)
     return if timestamp.blank?
 

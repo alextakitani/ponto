@@ -105,6 +105,18 @@
   font-size: var(--text-base);
 }
 
+/* Totais do dia à direita do cabeçalho: valor (faturável, mais discreto) + horas. */
+.tracker-day__totals {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.tracker-day__amount {
+  font-size: var(--text-sm);
+  color: var(--color-text-subtle);
+}
+
 .tracker-day__total {
   font-size: var(--text-sm);
   color: var(--color-text-subtle);

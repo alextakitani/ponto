@@ -1,0 +1,10 @@
+<%# Totais do cabeçalho do dia: valor faturável (por moeda, Q43) + total de horas.
+    Extraído num partial porque o "Carregar mais" reatualiza este bloco inteiro
+    (valor + horas) via turbo_stream quando funde um dia na borda da paginação —
+    atualizar só o span de horas deixaria o valor defasado (só a 1ª página). %>
+<div id="day-<%= date %>-totals" class="tracker-day__totals">
+  <% if (amount = tracker_day_amounts(amounts)) %>
+    <span class="tracker-day__amount tabular-nums"><%= amount %></span>
+  <% end %>
+  <span class="tracker-day__total tabular-nums"><%= tracker_duration(total_seconds) %></span>
+</div>

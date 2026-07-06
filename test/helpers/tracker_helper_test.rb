@@ -30,4 +30,19 @@ class TrackerHelperTest < ActionView::TestCase
       assert_equal "ter, 30/06/2026", tracker_day_label(Date.new(2026, 6, 30))
     end
   end
+
+  # Total de valores do dia (Q43): soma por moeda, NUNCA mistura; vazio → nil (o
+  # cabeçalho não mostra "—" quando não há faturável).
+  test "tracker_day_amounts soma cents por moeda e formata" do
+    assert_nil tracker_day_amounts({})
+    assert_nil tracker_day_amounts(nil)
+
+    single = tracker_day_amounts({ "EUR" => 13_318 })
+    assert_includes single, "133,18"
+
+    # Duas moedas: subtotais separados, unidos pelo middle-dot — nunca somados.
+    multi = tracker_day_amounts({ "EUR" => 13_318, "BRL" => 5_000 })
+    assert_includes multi, "133,18"
+    assert_includes multi, "50,00"
+  end
 end

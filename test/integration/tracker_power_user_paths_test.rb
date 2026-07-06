@@ -68,7 +68,7 @@ class TrackerPowerUserPathsTest < ActionDispatch::IntegrationTest
     get tracker_entries_path(page: 2, last_date: "2026-07-02"), headers: turbo_stream_headers
 
     assert_response :success
-    assert_includes response.body, %(action="update" target="day-2026-07-02-total")
+    assert_includes response.body, %(action="replace" target="day-2026-07-02-totals")
     assert_includes response.body, "01:30:00"
   end
 
@@ -84,7 +84,7 @@ class TrackerPowerUserPathsTest < ActionDispatch::IntegrationTest
       headers: turbo_stream_headers
 
     assert_response :success
-    assert_includes response.body, %(action="update" target="day-2026-07-02-total")
+    assert_includes response.body, %(action="replace" target="day-2026-07-02-totals")
     assert_includes response.body, "01:30:00"
     assert_not_includes response.body, "277:46:39"
   end

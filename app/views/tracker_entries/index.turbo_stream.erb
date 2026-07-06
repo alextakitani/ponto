@@ -13,8 +13,13 @@
     <% end %>
   <% end %>
 
-  <%= turbo_stream.update "day-#{continuing_group[:date]}-total" do %>
-    <%= tracker_duration(continuing_total_seconds) %>
+  <%# Reatualiza valor + horas do dia contínuo (não só horas) — o valor do
+      cabeçalho tem que refletir o dia INTEIRO, não só a primeira página. %>
+  <%= turbo_stream.replace "day-#{continuing_group[:date]}-totals" do %>
+    <%= render "home/day_totals",
+          date: continuing_group[:date],
+          amounts: @continuing_day_amounts,
+          total_seconds: continuing_total_seconds %>
   <% end %>
 <% end %>
 
