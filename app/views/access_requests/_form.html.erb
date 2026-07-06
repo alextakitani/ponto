@@ -1,7 +1,9 @@
 <%# Form público "pedir acesso" (Q24). E-mail obrigatório; nome e observação opcionais.
     i18n (Q79): labels/botão via t(). Compartilhado com telas PT — como o default é
     pt-BR, elas seguem idênticas. %>
-<%= form_with url: access_requests_path, method: :post, class: "landing__form" do |f| %>
+<%# scope: obrigatório — o controller faz params.require(:access_request); sem o
+    wrapper os campos vão soltos e o POST morre em ParameterMissing (bug 06/07). %>
+<%= form_with scope: :access_request, url: access_requests_path, method: :post, class: "landing__form" do |f| %>
   <div class="field">
     <%= f.label :email, t("access_requests.form.email_label") %>
     <%= f.email_field :email,

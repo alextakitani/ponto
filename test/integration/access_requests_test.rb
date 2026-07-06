@@ -9,6 +9,20 @@ class AccessRequestsTest < ActionDispatch::IntegrationTest
   # não a copy. Sem locale no request, resolve no default pt-BR.
   GENERIC = I18n.t("access_requests.create.received")
 
+  # Regressão (06/07): o form da landing enviava campos SOLTOS (sem scope) e o
+  # controller exige o wrapper access_request → ParameterMissing 400 silencioso,
+  # pedido nunca gravado. O contrato do form (atributo name) é o seam que trava isso.
+  test "form da landing aninha os campos no wrapper access_request" do
+    create_user # bootstrap feito — senão a landing mostra o aviso de operador, não o form
+    get root_path
+
+    assert_select "form[action=?]", access_requests_path do
+      assert_select "input[name=?]", "access_request[email]"
+      assert_select "input[name=?]", "access_request[name]"
+      assert_select "textarea[name=?]", "access_request[note]"
+    end
+  end
+
   test "pedido novo cria um AccessRequest pending" do
     assert_difference -> { AccessRequest.pending.count }, +1 do
       post access_requests_path, params: { access_request: { email: "novo@example.com" } }
