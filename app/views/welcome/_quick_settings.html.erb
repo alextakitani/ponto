@@ -1,0 +1,36 @@
+<%# Ajustes rápidos na welcome: idioma e tema, imediatos e salvos na conta.
+    Ambos vão por PATCH /preferences (mesma rota das Preferências) com return_to
+    de volta pra cá. O idioma recarrega no novo locale; o tema aplica na hora via
+    o theme_controller (data-theme no body) e persiste em paralelo. %>
+<section class="quick-settings" data-controller="theme" data-theme-current-value="<%= Current.user.theme %>">
+  <div class="quick-settings__group" role="group" aria-label="<%= t("welcome.quick.language") %>">
+    <span class="quick-settings__label"><%= t("welcome.quick.language") %></span>
+    <div class="quick-settings__options">
+      <% { "pt-BR" => t("preferences.show.profile.locales.pt_BR"), "en" => t("preferences.show.profile.locales.en") }.each do |locale, label| %>
+        <%= button_to preferences_path(return_to: welcome_path(locale: locale)),
+              method: :patch,
+              params: { user: { locale: locale } },
+              class: class_names("quick-settings__option", "is-active" => I18n.locale.to_s == locale),
+              "aria-pressed": (I18n.locale.to_s == locale ? "true" : "false") do %>
+          <%= label %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="quick-settings__group" role="group" aria-label="<%= t("welcome.quick.theme") %>">
+    <span class="quick-settings__label"><%= t("welcome.quick.theme") %></span>
+    <div class="quick-settings__options">
+      <% { "system" => t("preferences.show.profile.themes.system"), "light" => t("preferences.show.profile.themes.light"), "dark" => t("preferences.show.profile.themes.dark") }.each do |theme, label| %>
+        <%= button_to preferences_path(return_to: welcome_path),
+              method: :patch,
+              params: { user: { theme: theme } },
+              class: class_names("quick-settings__option", "is-active" => Current.user.theme == theme),
+              data: { theme_target: "option", action: "theme#apply", theme_theme_param: theme },
+              "aria-pressed": (Current.user.theme == theme ? "true" : "false") do %>
+          <%= label %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</section>

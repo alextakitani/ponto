@@ -118,6 +118,11 @@ en:
         - "Organize by client and project"
         - "Monthly report with export"
     extension_cli: "The Chrome extension and CLI use the same account to start and stop timers outside the app."
+    quick:
+      language: "Language"
+      theme: "Theme"
+    preferences_hint_html: "Time zone, extension and CLI integration, and more live in %{link}."
+    preferences_link: "Preferences"
     actions:
       import_clockify: "Import from Clockify"
       start_empty: "Start from scratch"

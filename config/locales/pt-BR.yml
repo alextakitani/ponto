@@ -117,6 +117,11 @@ pt-BR:
         - "Organize por cliente e projeto"
         - "Relatório mensal com exportação"
     extension_cli: "A extensão de Chrome e a CLI usam a mesma conta para iniciar e parar timers fora do app."
+    quick:
+      language: "Idioma"
+      theme: "Tema"
+    preferences_hint_html: "Fuso horário, integração com a extensão e a CLI e mais ficam em %{link}."
+    preferences_link: "Preferências"
     actions:
       import_clockify: "Importar do Clockify"
       start_empty: "Começar do zero"

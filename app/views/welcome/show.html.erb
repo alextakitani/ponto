@@ -18,6 +18,12 @@
 
   <p class="muted"><%= t("welcome.extension_cli") %></p>
 
+  <%= render "welcome/quick_settings" %>
+
+  <p class="muted">
+    <%= t("welcome.preferences_hint_html", link: link_to(t("welcome.preferences_link"), preferences_path)) %>
+  </p>
+
   <div class="form-actions">
     <%= link_to t("welcome.actions.import_clockify"), new_clockify_import_path, class: "btn" %>
     <%= button_to t("welcome.actions.start_empty"), onboarding_skip_path, class: "btn btn--quiet" %>
