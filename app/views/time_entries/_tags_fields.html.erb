@@ -20,7 +20,7 @@
         </div>
       <% end %>
 
-      <div class="tags-field__options">
+      <div class="tags-field__options" data-tags-select-target="options">
         <% tracker_available_tags_for(time_entry).each do |tag| %>
           <label class="tags-field__option">
             <%= check_box_tag "time_entry[tag_ids][]", tag.id, time_entry.tag_ids.include?(tag.id), id: nil %>
@@ -44,7 +44,6 @@
             <%= t("common.actions.add") %>
           </button>
         </div>
-        <div class="tags-field__chips" data-tags-select-target="pending"></div>
         <datalist id="tag-suggestions">
           <% Current.user.tags.active.order(:created_at).each do |tag| %>
             <option value="<%= tag.name %>">
