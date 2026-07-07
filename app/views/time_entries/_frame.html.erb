@@ -5,11 +5,15 @@
       <div class="tracker-entry__summary">
         <%# Descrição longa trunca com ellipsis (CSS). Pra ler inteira: title =
             tooltip nativo no mouseover (desktop); tabindex = tap/Tab foca o span
-            e o :focus desfaz a truncagem (mobile, onde title não existe).
-            Sem descrição, nenhum dos dois atributos é renderizado. %>
+            e o :focus desfaz a truncagem (mobile, onde title não existe); o 2º
+            clique reverte (focus-toggle). Sem descrição, nada disso é renderizado. %>
         <%= tag.span tracker_entry_description(time_entry), class: "tracker-entry__description",
               title: time_entry.description.presence,
-              tabindex: ("0" if time_entry.description.present?) %>
+              tabindex: ("0" if time_entry.description.present?),
+              data: (if time_entry.description.present?
+                       { controller: "focus-toggle",
+                         action: "pointerdown->focus-toggle#pointerdown click->focus-toggle#click" }
+                     end) %>
         <span class="tracker-entry__project">
           <% if time_entry.project %>
             <span class="project-dot" style="background-color: <%= time_entry.project.color %>" aria-hidden="true"></span>
@@ -43,10 +47,14 @@
           do dia e aqui, como tooltip do decorrido (só entry parada — a rodando
           teria um valor defasado). title = mouseover no desktop; tabindex = o tap
           foca no mobile e o :focus desenha o tooltip via attr(title) (CSS puro,
-          mesmo padrão da descrição truncada). %>
+          mesmo padrão da descrição truncada); o 2º clique reverte (focus-toggle). %>
       <% billable_tooltip = (time_entry.billable_amount&.format if time_entry.ended_at?) %>
       <%= tag.span class: "tracker-entry__duration tabular-nums",
-            title: billable_tooltip, tabindex: ("0" if billable_tooltip) do %>
+            title: billable_tooltip, tabindex: ("0" if billable_tooltip),
+            data: (if billable_tooltip
+                     { controller: "focus-toggle",
+                       action: "pointerdown->focus-toggle#pointerdown click->focus-toggle#click" }
+                   end) do %>
         <% if time_entry.ended_at? %>
           <%= tracker_duration(time_entry.duration_seconds) %>
         <% else %>
