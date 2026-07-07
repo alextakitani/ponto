@@ -124,6 +124,9 @@
   column-gap: var(--space-3);
   align-items: baseline;
   padding: var(--space-2) var(--space-3);
+  /* Zero à direita, casado com o padding-right:0 da entry — o ::after (pseudo-
+     coluna do ⋮) é quem afasta o total da borda. */
+  padding-right: 0;
   background-color: var(--color-surface-sunken);
   border-bottom: 1px solid var(--color-border);
   /* -1px: raio interno de um container com borda de 1px. */
@@ -138,12 +141,13 @@
 }
 
 /* Placeholder do ⋮: sem markup novo, mas reserva a mesma trilha de ações das
-   entries para o total do dia colunar com as durações. A largura é a MESMA do
-   summary do row-menu (2.75rem, ver abaixo) — se uma mudar, mudar a outra. */
+   entries para o total do dia colunar com as durações. Largura = a TRILHA do
+   summary do row-menu (2.75rem menos a margin-left negativa dele) — se uma
+   mudar, mudar a outra. */
 .tracker-day__header::after {
   content: "";
   grid-area: menu;
-  width: 2.75rem;
+  width: calc(2.75rem - var(--space-2));
 }
 
 /* Os spans do partial entram direto no grid do header; o wrapper continua como
@@ -210,6 +214,11 @@
   row-gap: var(--space-2);
   align-items: baseline;
   padding: var(--space-3);
+  /* ⋮ no LIMITE direito do card (pedido do dono 07/07): o padding interno do
+     botão (~space-3) já afasta o ícone da borda — zerar o padding do card aqui
+     empurra a coluna toda pra direita e a 1ª linha ganha esse espaço. O header
+     zera junto (mesmo eixo), senão as colunas desalinham. */
+  padding-right: 0;
 }
 
 /* A linha responde ao mouse (tem ⋮/edição): lavagem sutil de ACENTO, sem virar card. */
@@ -322,12 +331,15 @@
 
 /* Largura FIXA (2.75rem = alvo de toque) casada com o ::after do header — é o que
    faz o decorrido e o total do dia caírem na mesma coluna, sem depender de 1lh
-   (que varia com o font-size do contexto). */
+   (que varia com o font-size do contexto). A margin-left negativa encolhe a
+   TRILHA (o alvo de toque fica inteiro): o botão invade o gap e o decorrido chega
+   mais perto do ⋮ — pareada com o ::after do header (largura - space-2). */
 .tracker-entry__actions .row-menu > summary {
   border-color: transparent;
   min-width: 2.75rem;
   min-height: 2.75rem;
   margin-block: calc((1lh - 2.75rem) / 2);
+  margin-left: calc(-1 * var(--space-2));
 }
 
 .tracker-entry--running .tracker-entry__description,
