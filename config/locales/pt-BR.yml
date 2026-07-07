@@ -35,7 +35,32 @@ pt-BR:
       cli:
         title: "CLI"
         badge: "em breve"
-        text: "Comandos no terminal e saída JSON para agentes de IA, como o Claude. Usa o mesmo token da extensão."
+        badge_available: "disponível"
+        text: "Comandos no terminal e saída JSON para agentes de IA, como o Claude. Já disponível — compile do código e conecte à sua instância com o mesmo token da extensão."
+    gallery:
+      heading: "Veja por dentro"
+      sub: "As telas reais do Ponto — do timer no topo ao relatório que vira fatura."
+      shots:
+        tracker:
+          title: "Tracker"
+          text: "O timer no topo de tudo; o histórico do dia logo abaixo, agrupado e somado."
+          alt: "Tela do tracker do Ponto com o timer e a lista de lançamentos do dia"
+        reports:
+          title: "Relatórios"
+          text: "Resumo com gráficos e o detalhado agrupado por dia — pronto pra exportar."
+          alt: "Tela de relatórios do Ponto com donut, barras por dia e a lista detalhada"
+        projects:
+          title: "Projetos"
+          text: "Cada projeto com sua cor, cliente, horas registradas e valor-hora."
+          alt: "Tela de projetos do Ponto com a lista de projetos e horas registradas"
+        export:
+          title: "Exportação"
+          text: "O relatório do mês em .xlsx ou CSV, pronto pra anexar à fatura."
+          alt: "Menu de exportação do relatório do Ponto em xlsx e CSV"
+        preferences:
+          title: "Preferências"
+          text: "Perfil, fuso, tema e os tokens da extensão e da CLI num lugar só."
+          alt: "Tela de preferências do Ponto com perfil, fuso e tema"
     frozen:
       heading: "Histórico sempre mantido"
       sub: "Cada lançamento guarda o valor-hora do dia em que foi registrado. Reajustou um cliente? O novo valor vale só daqui para a frente — o histórico permanece intacto e as faturas antigas continuam corretas."
@@ -255,6 +280,10 @@ pt-BR:
     manifest:
       description: "Time tracker self-hosted, no espírito Clockify/Toggl mas enxuto — cada conta na própria bolha isolada."
   shell:
+    confirm:
+      title: "Tem certeza?"
+      cancel: "Cancelar"
+      confirm: "Confirmar"
     meta:
       description: "Ponto — time tracker self-hosted"
     timer_loading: "Carregando timer…"

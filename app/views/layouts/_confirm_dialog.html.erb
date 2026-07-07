@@ -1,0 +1,29 @@
+<%# Dialog de confirmação com o estilo do app (técnica boringrails): o
+    confirm_dialog_controller registra Turbo.config.forms.confirm apontando pra cá,
+    então todo turbo_confirm abre este <dialog> em vez do confirm() nativo. A
+    mensagem vem do próprio turbo_confirm (já i18n na origem). Confirmar = o form
+    method="dialog" seta returnValue "confirm"; Cancelar/Esc/clique-fora = cancelado.
+    Todos os usos hoje são destrutivos (delete/revoke) → botão em danger. %>
+<dialog id="confirm_dialog" class="confirm-dialog"
+    data-controller="confirm-dialog"
+    aria-labelledby="confirm_dialog_title">
+  <div class="confirm-dialog__panel">
+    <header class="confirm-dialog__header">
+      <h2 id="confirm_dialog_title" class="confirm-dialog__title"><%= t("shell.confirm.title") %></h2>
+    </header>
+
+    <p class="confirm-dialog__message" data-confirm-dialog-target="message"></p>
+
+    <footer class="confirm-dialog__actions">
+      <%# Cancelar fecha SEM setar returnValue (formmethod=dialog num botão sem
+          value) → a Promise resolve false. %>
+      <form method="dialog">
+        <button type="submit" class="btn btn--quiet"><%= t("shell.confirm.cancel") %></button>
+      </form>
+      <form method="dialog">
+        <button type="submit" value="confirm" class="btn btn--danger"
+            data-confirm-dialog-target="confirm"><%= t("shell.confirm.confirm") %></button>
+      </form>
+    </footer>
+  </div>
+</dialog>

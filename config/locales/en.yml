@@ -36,7 +36,32 @@ en:
       cli:
         title: "CLI"
         badge: "coming soon"
-        text: "Terminal commands and JSON output for AI agents, like Claude. Uses the same token as the extension."
+        badge_available: "available"
+        text: "Terminal commands and JSON output for AI agents, like Claude. Available now — build from source and connect to your instance with the same token as the extension."
+    gallery:
+      heading: "See inside"
+      sub: "Ponto's real screens — from the timer up top to the report that becomes an invoice."
+      shots:
+        tracker:
+          title: "Tracker"
+          text: "The timer on top of everything; the day's history right below, grouped and totaled."
+          alt: "Ponto tracker screen with the timer and the day's time entries"
+        reports:
+          title: "Reports"
+          text: "Summary with charts and the detailed view grouped by day — ready to export."
+          alt: "Ponto reports screen with donut, per-day bars and the detailed list"
+        projects:
+          title: "Projects"
+          text: "Each project with its color, client, logged hours and hourly rate."
+          alt: "Ponto projects screen with the project list and logged hours"
+        export:
+          title: "Export"
+          text: "The month's report in .xlsx or CSV, ready to attach to the invoice."
+          alt: "Ponto report export menu in xlsx and CSV"
+        preferences:
+          title: "Preferences"
+          text: "Profile, time zone, theme and the extension and CLI tokens in one place."
+          alt: "Ponto preferences screen with profile, time zone and theme"
     frozen:
       heading: "History always preserved"
       sub: "Every entry keeps the hourly rate from the day it was logged. Raised a client's rate? The new rate applies from here on out — history stays intact and old invoices stay correct."
@@ -256,6 +281,10 @@ en:
     manifest:
       description: "Self-hosted time tracker in the spirit of Clockify/Toggl, but lean — each account in its own isolated bubble."
   shell:
+    confirm:
+      title: "Are you sure?"
+      cancel: "Cancel"
+      confirm: "Confirm"
     meta:
       description: "Ponto — self-hosted time tracker"
     timer_loading: "Loading timer…"

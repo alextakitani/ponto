@@ -485,6 +485,17 @@
   white-space: nowrap;
 }
 
+/* Badge "disponível" do CLI: é um link pro repo (07/07) — herda o visual do badge
+   mas ganha affordance de clique (hover preenche mais). */
+.lp-badge--live {
+  text-decoration: none;
+  transition: background-color 0.12s ease;
+}
+
+.lp-badge--live:hover {
+  background-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
+}
+
 /* Mockup 1: relatório (donut SVG + barras) */
 .lp-report {
   display: flex;
@@ -888,4 +899,62 @@
   display: flex;
   gap: var(--space-4);
   font-size: var(--text-sm);
+}
+
+/* ── Galeria "Veja por dentro" (07/07) ────────────────────────────────────────
+   Screenshots reais numa grade responsiva. As imagens têm sombra e borda suave
+   pra descolar do fundo; o primeiro item (Tracker) spanna as 2 colunas no desktop
+   — é a tela-assinatura. Mobile empilha. */
+.lp-gallery__head {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.lp-gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-5);
+}
+
+.lp-gallery__item {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* A primeira tela (Tracker) ocupa a largura toda — abre a galeria com impacto. */
+.lp-gallery__item:first-child {
+  grid-column: 1 / -1;
+}
+
+.lp-gallery__img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+  display: block;
+}
+
+.lp-gallery__cap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--text-sm);
+}
+
+.lp-gallery__cap strong {
+  font-weight: var(--weight-semibold);
+}
+
+@media (max-width: 48rem) {
+  .lp-gallery__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  .lp-gallery__item:first-child {
+    grid-column: auto;
+  }
 }
