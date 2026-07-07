@@ -187,7 +187,7 @@ pt-BR:
       lede: "Você pode fechar esta aba e voltar depois; o status fica salvo."
       processing:
         title: "Importando seus lançamentos"
-        description: "Estamos lendo os CSVs, criando o catálogo e gravando as entradas na sua conta."
+        description: "Estamos lendo os CSVs, criando o catálogo e gravando as entradas na sua conta. Isso pode levar alguns minutos — a página atualiza sozinha quando terminar; você pode fechar a aba e voltar depois."
         watchdog_hint: "Está demorando mais que o normal. Recarregue a página para conferir o status se ela não atualizar sozinha."
       completed:
         title: "Importação concluída"

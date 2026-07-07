@@ -343,6 +343,20 @@
   white-space: nowrap;
 }
 
+/* Spinner do import em andamento (07/07): o ícone girando deixa óbvio que está
+   trabalhando — o timer estático lia como travado. O app ignora reduced-motion
+   de propósito (ver base.css), então gira sempre; o acento reforça "ativo". */
+/* Classe dobrada (.icon.clockify-import__spinner, 0,2,0) pra vencer a cor subtle
+   do `.empty-state > .icon` — o spinner é acento, não cinza (é estado ativo). */
+.icon.clockify-import__spinner {
+  color: var(--color-accent);
+  animation: clockify-import-spin 0.9s linear infinite;
+}
+
+@keyframes clockify-import-spin {
+  to { transform: rotate(360deg); }
+}
+
 .clockify-import-summary {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));

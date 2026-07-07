@@ -13,7 +13,10 @@
   <section class="empty-state"
       aria-labelledby="clockify-import-processing-heading"
       data-controller="clockify-import-watchdog">
-    <%= icon("timer", size: 24, class: "icon--lg") %>
+    <%# Ícone girando (spinner) — feedback de "está trabalhando"; o ícone estático
+        lia como travado (feedback do dono 07/07). A copy reforça que atualiza
+        sozinha e pode fechar a aba. %>
+    <%= icon("loader-circle", size: 24, class: "icon--lg clockify-import__spinner") %>
     <h2 id="clockify-import-processing-heading"><%= t(".processing.title") %></h2>
     <p class="muted"><%= t(".processing.description") %></p>
     <p class="form-hint" hidden data-clockify-import-watchdog-target="hint">
