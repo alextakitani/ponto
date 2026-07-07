@@ -73,6 +73,7 @@
   --color-accent-hover: light-dark(#0a5d62, #a9e9de);     /* hover do acento */
   --color-on-accent: light-dark(#ffffff, #11111b);        /* texto sobre o acento */
   --color-danger: light-dark(#d20f39, #f38ba8);           /* Red do Catppuccin (AA) */
+  --color-weekend: light-dark(#fe640b, #fab387);          /* Peach — barras de sáb/dom no report (pedido 07/07) */
   --color-on-danger: light-dark(#ffffff, #11111b);
 
   /* Anel de foco (acento translúcido) */

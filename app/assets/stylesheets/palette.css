@@ -32,7 +32,7 @@
 }
 
 .command-palette::backdrop {
-  background: rgba(0, 0, 0, 0.32);
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .command-palette[open] {
@@ -44,10 +44,47 @@
   flex-direction: column;
   max-height: inherit;
   overflow: hidden;
-  background-color: var(--color-surface-raised);
-  border: 1px solid var(--color-border);
+  /* Cores do APP, não o cinza raso do dialog default (pedido do dono 07/07):
+     base --color-surface como as telas; a borda-assinatura de acento entra no
+     header. Sombra mais funda pra descolar do backdrop. */
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-top: 3px solid var(--color-accent);
   border-radius: var(--radius);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* Header: título + fechar, no tom recuado do shell (mesma família das faixas de
+   dia do tracker). A borda de acento vive logo acima, no topo do panel. */
+.command-palette__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-4);
+  background-color: var(--color-surface-sunken);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.command-palette__title {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.command-palette__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-1);
+  color: var(--color-text-subtle);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.command-palette__close:hover {
+  color: var(--color-text);
+  background-color: color-mix(in srgb, var(--color-border) 45%, transparent);
 }
 
 .command-palette__label {
@@ -63,8 +100,9 @@
   border: 0;
   border-bottom: 1px solid var(--color-border);
   border-radius: 0;
-  padding: var(--space-4);
-  background-color: var(--color-surface-raised);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-surface);
+  color: var(--color-text);
 }
 
 .command-palette__search:focus {

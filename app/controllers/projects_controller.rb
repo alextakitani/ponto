@@ -16,6 +16,7 @@ class ProjectsController < ApplicationController
     scope = scope.where(client_id: params[:client_id]) if params[:client_id].present?
     @projects = scope.name_matching(params[:q]).alphabetical
     @clients = authorized_scope(Client.all).active.alphabetical
+    @registered_seconds = registered_seconds_by_project
 
     respond_to do |format|
       format.html
@@ -107,6 +108,16 @@ class ProjectsController < ApplicationController
       current = @project.client
       clients = current && current.archived? ? active + [ current ] : active
       @client_options = clients.uniq.sort_by(&:name_normalized)
+    end
+
+    def registered_seconds_by_project
+      totals = Current.user.time_entries
+        .where.not(ended_at: nil)
+        .where(project_id: @projects)
+        .group(:project_id)
+        .sum("CAST((strftime('%s', ended_at) - strftime('%s', started_at)) AS INTEGER)")
+
+      Hash.new(0).merge(totals.transform_values(&:to_i))
     end
 
     def render_errors(project)

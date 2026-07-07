@@ -193,6 +193,8 @@ pt-BR:
   date:
     abbr_day_names: ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"]
     day_names: ["domingo", "segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sábado"]
+    # Rails exige 13 posições (índice 0 vazio). Usado pelo rótulo do período ("%B %Y").
+    month_names: [~, "janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"]
     formats:
       short: "%d/%m %H:%M"
       numeric: "%d/%m/%Y"
@@ -246,6 +248,7 @@ pt-BR:
       tag: "Tag"
       tags: "Tags"
       task: "Tarefa"
+      time: "Horário"
     placeholders:
       rate: "ex.: 150,00"
   pwa:
@@ -268,6 +271,9 @@ pt-BR:
       sign_out: "Sair"
     command:
       open: "Abrir comandos"
+      title: "Comandos"
+      close: "Fechar comandos"
+      empty: "Nenhuma ação encontrada."
       search_label: "Buscar ação"
       placeholder: "Digite para filtrar comandos"
       groups:
@@ -510,6 +516,25 @@ pt-BR:
       remove_default: "Remover padrão"
       set_default: "Definir como padrão"
       delete_confirm: "Deletar “%{name}” definitivamente? Esta ação não pode ser desfeita."
+      registered_words:
+        years:
+          one: "%{count} ano"
+          other: "%{count} anos"
+        months:
+          one: "%{count} mês"
+          other: "%{count} meses"
+        days:
+          one: "%{count} dia"
+          other: "%{count} dias"
+        hours:
+          one: "%{count} hora"
+          other: "%{count} horas"
+        minutes:
+          one: "%{count} minuto"
+          other: "%{count} minutos"
+        seconds:
+          one: "%{count} segundo"
+          other: "%{count} segundos"
     edit:
       title: "Editar projeto"
     new:
@@ -650,13 +675,11 @@ pt-BR:
     bar_hours: "%{hours}h"
     donut:
       aria: "Distribuição do tempo por projeto"
-    detailed:
-      empty_description: "Ajuste o período ou os filtros para ver suas entradas."
     summary:
       group_hint: "Escolha uma dimensão em \"Agrupar por\" para ver o resumo detalhado."
-      empty_description: "Ajuste o período ou os filtros para ver seu resumo."
     empty:
       title: "Nada neste período"
+      description: "Ajuste o período ou os filtros para ver suas entradas."
     filters:
       title: "Filtros"
       active: "Filtros aplicados"
@@ -678,6 +701,7 @@ pt-BR:
       aria: "Período do relatório"
       previous: "Período anterior"
       next: "Próximo período"
+      custom_toggle: "Personalizado"
       from: "Data inicial"
       to: "Data final"
       presets:
@@ -690,8 +714,7 @@ pt-BR:
     metrics:
       aria: "Totais do período"
       total: "Total"
-    tabs:
-      aria: "Visões do relatório"
+    sections:
       summary: "Resumo"
       detailed: "Detalhado"
     group_dimensions:

@@ -1,39 +1,32 @@
-<%# Summary (Q21/D): gráficos (donut + barras por dia) + tabela agrupada 1-2 níveis. %>
-<% if report.rows.any? %>
-  <section class="report-charts">
-    <%= render "reports/donut", report: report %>
-    <%= render "reports/bars", daily_series: report.daily_series %>
-  </section>
+<%# Summary (Q21/D): gráficos (donut + barras por dia) + tabela agrupada 1-2 níveis.
+    Assume rows presentes — o empty-state do período vazio vive no index (07/07). %>
+<section class="report-charts">
+  <%= render "reports/donut", report: report %>
+  <%= render "reports/bars", daily_series: report.daily_series %>
+</section>
 
-  <% if group_by.present? %>
-    <table class="data-table report-summary">
-      <thead>
-        <tr>
-          <th><%= report_group_dimension_label(group_by.first) %></th>
-          <th class="report-summary__num"><%= t("common.labels.duration") %></th>
-          <th class="report-summary__num"><%= t("common.labels.amount") %></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% report.groups.each do |group| %>
-          <%= render "reports/group_row", group: group, level: 1 %>
-        <% end %>
-      </tbody>
-      <tfoot>
-        <tr class="report-summary__total">
-          <td><%= t("reports.metrics.total") %></td>
-          <td class="report-summary__num tabular-nums"><%= report_duration(report.totals.duration_seconds) %></td>
-          <td class="report-summary__num tabular-nums"><%= report_amounts(report.totals.amounts) %></td>
-        </tr>
-      </tfoot>
-    </table>
-  <% else %>
-    <p class="muted report-summary__hint"><%= t("reports.summary.group_hint") %></p>
-  <% end %>
+<% if group_by.present? %>
+  <table class="data-table report-summary">
+    <thead>
+      <tr>
+        <th><%= report_group_dimension_label(group_by.first) %></th>
+        <th class="report-summary__num"><%= t("common.labels.duration") %></th>
+        <th class="report-summary__num"><%= t("common.labels.amount") %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% report.groups.each do |group| %>
+        <%= render "reports/group_row", group: group, level: 1 %>
+      <% end %>
+    </tbody>
+    <tfoot>
+      <tr class="report-summary__total">
+        <td><%= t("reports.metrics.total") %></td>
+        <td class="report-summary__num tabular-nums"><%= report_duration(report.totals.duration_seconds) %></td>
+        <td class="report-summary__num tabular-nums"><%= report_amounts(report.totals.amounts) %></td>
+      </tr>
+    </tfoot>
+  </table>
 <% else %>
-  <div class="empty-state">
-    <%= icon("chart-column", size: 40) %>
-    <h2><%= t("reports.empty.title") %></h2>
-    <p class="muted"><%= t("reports.summary.empty_description") %></p>
-  </div>
+  <p class="muted report-summary__hint"><%= t("reports.summary.group_hint") %></p>
 <% end %>

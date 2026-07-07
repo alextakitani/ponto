@@ -65,9 +65,18 @@ class Report
     end
 
     def build_daily_series
-      by_date = rows.group_by(&:date).transform_values { |day_rows| day_rows.sum(&:duration_seconds) }
+      by_date = rows.group_by(&:date)
       (period.first_date..period.last_date).map do |date|
-        DailyBucket.new(date: date, duration_seconds: by_date.fetch(date, 0))
+        rows_for_date = by_date.fetch(date, [])
+        totals = Totals.from(rows_for_date)
+
+        DailyBucket.new(
+          date: date,
+          duration_seconds: totals.duration_seconds,
+          first_started_at: rows_for_date.map(&:started_at).min,
+          last_ended_at: rows_for_date.map(&:ended_at).max,
+          amounts: totals.amounts
+        )
       end
     end
 

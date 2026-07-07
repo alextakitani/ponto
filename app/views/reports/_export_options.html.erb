@@ -9,7 +9,7 @@
   <div class="quick-settings__group">
     <%= form_with url: preferences_path, method: :patch,
           data: { controller: "settings-select", action: "change->settings-select#submit" } do |form| %>
-      <%= form.hidden_field :return_to, value: request.fullpath %>
+      <%= form.hidden_field :return_to, value: report_url %>
       <%= form.label "user[export_locale]", t("reports.export.locale_label"), class: "quick-settings__label" %>
       <%= form.select "user[export_locale]",
             options_for_select(

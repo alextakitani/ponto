@@ -1,15 +1,13 @@
 # Relatórios (Fatia 5.1) — o entregável principal. Controller FINO: traduz os params
 # da URL nos value objects do Report (Period/Filters/Rounding) e monta o PORO, que faz
-# todo o trabalho pesado (STYLE.md — modelo rico, sem service layer). Uma tela, duas
-# abas (Summary/Detailed) via param `view`; tudo o mais viaja na URL (pra 5.2 herdar
-# no export e pro link ser compartilhável).
+# todo o trabalho pesado (STYLE.md — modelo rico, sem service layer). Uma tela única;
+# tudo viaja na URL (pra 5.2 herdar no export e pro link ser compartilhável).
 class ReportsController < ApplicationController
   layout "app"
 
   def index
     authorize! Report, to: :index?
 
-    @view = params[:view] == "detailed" ? "detailed" : "summary"
     @period = build_period
     @report = build_report
     # Opções de filtro/dimensão = o que EXISTE no período (Q54) — derivadas do próprio

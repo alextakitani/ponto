@@ -41,7 +41,7 @@
 </div>
 
 <% if @projects.any? %>
-  <table class="data-table">
+  <table class="data-table projects-table">
     <thead>
       <tr>
         <th><%= t("common.labels.project") %></th>
@@ -52,7 +52,7 @@
       </tr>
     </thead>
     <tbody id="projects_list">
-      <%= render partial: "projects/project", collection: @projects, as: :project %>
+      <%= render partial: "projects/project", collection: @projects, as: :project, locals: { registered_seconds: @registered_seconds } %>
     </tbody>
   </table>
 <% elsif params[:q].present? %>

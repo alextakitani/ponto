@@ -22,8 +22,13 @@ class Report
       if @preset == "custom"
         @first_date, @last_date = resolve_custom(from, to, today)
       else
-        @first_date = preset_first(today)
-        @last_date  = preset_last(today)
+        # `from` como ÂNCORA explícita do preset nomeado (bug 07/07): as setas linkam
+        # o período resolvido em absoluto (?period=month&from=2026-08-01) em vez de
+        # nav= relativo — que era aplicado sempre sobre o período-base do preset e
+        # fazia next→ago / prev→jun pulando jul.
+        anchor = from || today
+        @first_date = preset_first(anchor)
+        @last_date  = preset_last(anchor)
       end
     end
 

@@ -59,6 +59,34 @@ class ProjectsTest < ActionDispatch::IntegrationTest
     assert_match(/150,00/, response.body)
   end
 
+  test "index soma só entries finalizados do user no total registrado do projeto" do
+    project = @user.projects.create!(name: "ComHoras")
+    other_user = create_user(email: "outro@example.com")
+    other_project = other_user.projects.create!(name: "Alheio")
+    started_at = Time.zone.local(2026, 7, 7, 9, 0, 0)
+
+    @user.time_entries.create!(
+      project: project,
+      started_at: started_at,
+      ended_at: started_at + 2.hours + 30.minutes
+    )
+    @user.time_entries.create!(
+      project: project,
+      started_at: started_at + 1.day
+    )
+    other_user.time_entries.create!(
+      project: other_project,
+      started_at: started_at,
+      ended_at: started_at + 4.hours
+    )
+
+    get projects_path
+
+    assert_response :success
+    assert_select "tr#project_#{project.id} .data-table__num", text: /02:30:00/
+    assert_no_match(/04:00:00/, response.body)
+  end
+
   test "create com override de rate pt-BR grava rate_cents" do
     client = @user.clients.create!(name: "Acme", currency: "BRL", rate_cents: 10000)
     post projects_path, params: {

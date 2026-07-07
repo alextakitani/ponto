@@ -20,9 +20,23 @@
 
     <div class="report-bars__track">
       <% daily_series.each do |bucket| %>
-        <div class="report-bars__col" title="<%= l(bucket.date, format: :day_month) %> — <%= report_duration(bucket.duration_seconds) %>">
-          <div class="report-bars__bar" style="height: <%= report_bar_height(bucket, axis[:max_seconds]) %>%"></div>
-        </div>
+        <%# Sáb/dom em cor própria (--color-weekend) pra saltar aos olhos (07/07). %>
+        <% col_classes = class_names("report-bars__col", "report-bars__col--weekend": bucket.date.on_weekend?) %>
+        <% if bucket.duration_seconds.positive? %>
+          <%# data-action: o report_day_controller troca o pulo da âncora por scroll
+              suave + destaque (barra e linhas do dia). O href segue funcional sem JS. %>
+          <%= link_to "##{report_day_anchor_id(bucket.date)}",
+                class: col_classes,
+                title: report_bar_title(bucket),
+                aria: { label: report_bar_title(bucket) },
+                data: { action: "report-day#select", report_day_date_param: bucket.date.iso8601 } do %>
+            <div class="report-bars__bar" style="height: <%= report_bar_height(bucket, axis[:max_seconds]) %>%"></div>
+          <% end %>
+        <% else %>
+          <div class="<%= col_classes %>" title="<%= report_bar_title(bucket) %>">
+            <div class="report-bars__bar" style="height: <%= report_bar_height(bucket, axis[:max_seconds]) %>%"></div>
+          </div>
+        <% end %>
       <% end %>
     </div>
   </div>

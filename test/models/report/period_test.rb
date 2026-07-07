@@ -87,6 +87,32 @@ class Report::PeriodTest < ActiveSupport::TestCase
     assert_equal Date.new(2024, 1, 1), period.previous.first_date
   end
 
+  # Bug 07/07: as setas viravam nav= relativo sobre o período-base do preset — next
+  # mostrava agosto mas o prev seguinte caía em junho (pulava julho). O conserto:
+  # preset nomeado aceita `from` como ÂNCORA absoluta (o que as setas põem na URL).
+  test "preset nomeado ancora em from quando presente (URL absoluta das setas)" do
+    period = Report::Period.new(preset: "month", from: Date.new(2026, 8, 1), today: Date.new(2026, 7, 15), time_zone: "America/Sao_Paulo")
+
+    assert_equal Date.new(2026, 8, 1), period.first_date
+    assert_equal Date.new(2026, 8, 31), period.last_date
+  end
+
+  test "ida e volta das setas devolve o período original em todos os presets" do
+    today = Date.new(2026, 7, 15)
+
+    %w[today week month year].each do |preset|
+      period = Report::Period.new(preset: preset, today: today, time_zone: "America/Sao_Paulo")
+
+      # Simula o fluxo REAL da UI: cada clique reconstrói o Period a partir da URL
+      # absoluta (preset + from) que a seta anterior gerou.
+      forward = Report::Period.new(preset: period.next.preset, from: period.next.first_date, today: today, time_zone: "America/Sao_Paulo")
+      back = Report::Period.new(preset: forward.previous.preset, from: forward.previous.first_date, today: today, time_zone: "America/Sao_Paulo")
+
+      assert_equal period.first_date, back.first_date, "preset #{preset}: ida e volta mudou o início"
+      assert_equal period.last_date, back.last_date, "preset #{preset}: ida e volta mudou o fim"
+    end
+  end
+
   test "custom anda pelo MESMO número de dias" do
     custom = Report::Period.new(preset: "custom", from: Date.new(2026, 7, 10), to: Date.new(2026, 7, 12), time_zone: "America/Sao_Paulo")
 

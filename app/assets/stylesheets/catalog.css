@@ -81,6 +81,18 @@
   white-space: nowrap;
 }
 
+/* Links de nome nas listas: NEUTROS (cor de texto, sem sublinhado) — em lista
+   densa o azul de link vira ruído; peso médio marca o clicável, hover sublinha. */
+.data-table td a {
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: var(--weight-medium);
+}
+
+.data-table td a:hover {
+  text-decoration: underline;
+}
+
 /* Badge "arquivado" na linha. */
 .tag-badge {
   display: inline-block;
@@ -521,6 +533,36 @@
   .page-header {
     flex-wrap: wrap;
     gap: var(--space-3);
+  }
+
+  /* Header denso no mobile, como o de Reports: lede some (decorativa) e o
+     título desce um degrau — título + ação primária numa linha só. */
+  .page-header {
+    align-items: center;
+  }
+
+  .page-header h1 {
+    font-size: var(--text-xl);
+  }
+
+  .page-header p {
+    display: none;
+  }
+
+  /* Ação primária do header FINA no mobile (Novo projeto/cliente/tag) — pedido
+     do dono 07/07: botão alto ao lado do título pesava a tela toda. */
+  .page-header .btn {
+    min-height: 0;
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--text-sm);
+  }
+
+  /* ⋮ das linhas vira ícone discreto (sem caixa com borda de 36px — dominava
+     cada linha empilhada). O alvo de toque segue ok: padding + a linha inteira. */
+  .data-table__actions .btn.btn--quiet {
+    min-height: 0;
+    padding: var(--space-1);
+    border: none;
   }
 
   /* Toolbar: a busca ganha a linha inteira; filtro e link "Arquivados" dividem

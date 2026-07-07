@@ -31,11 +31,16 @@ class ApplicationController < ActionController::Base
     def command_palette_recent_time_entries
       return TimeEntry.none unless Current.user
 
+      # Dedup por (descrição, projeto) — a mesma tarefa retomada várias vezes
+      # aparecia repetida na lista (feedback do dono 07/07). Janela de 25 no SQL,
+      # comprime em Ruby e corta em 5.
       @command_palette_recent_time_entries ||= authorized_scope(TimeEntry.all)
         .where.not(ended_at: nil)
         .includes(:project)
         .order(ended_at: :desc, id: :desc)
-        .limit(5)
+        .limit(25)
+        .uniq { |entry| [ entry.description, entry.project_id ] }
+        .first(5)
     end
 
     def deny_access

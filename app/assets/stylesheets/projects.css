@@ -165,3 +165,51 @@
   border-radius: 999px;
   vertical-align: middle;
 }
+
+/* --- Mobile (≤48rem): lista de projetos SEM scroll lateral -------------------- */
+/* A regra genérica do catálogo (data-table rola na horizontal) cortava o ⋮ fora
+   da tela (feedback do dono 07/07). Aqui a linha empilha em 2 andares, como o
+   Detalhado dos reports: nome + ⋮ em cima; cliente à esquerda e registrado ·
+   valor/hora à direita embaixo. Células: 1 projeto · 2 cliente · 3 registrado ·
+   4 valor/hora · 5 ações. */
+@media (max-width: 48rem) {
+  .projects-table {
+    overflow-x: visible;
+  }
+
+  .projects-table tbody {
+    display: block;
+  }
+
+  .projects-table thead {
+    display: none;
+  }
+
+  /* Hierarquia da linha (2 andares): nome forte + REGISTRADO protagonista à
+     direita (o dado que importa numa lista de projetos) + ⋮ discreto; embaixo,
+     cliente e valor/hora quietos. Mesma gramática do tracker. */
+  .projects-table tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      "proj reg  menu"
+      "cli  rate rate";
+    column-gap: var(--space-3);
+    row-gap: var(--space-1);
+    align-items: center;
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .projects-table td {
+    display: block;
+    padding: 0;
+    border: none;
+  }
+
+  .projects-table td:nth-child(1) { grid-area: proj; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .projects-table td:nth-child(2) { grid-area: cli; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--color-text-subtle); font-size: var(--text-xs); }
+  .projects-table td:nth-child(3) { grid-area: reg; text-align: right; font-weight: var(--weight-medium); }
+  .projects-table td:nth-child(4) { grid-area: rate; text-align: right; color: var(--color-text-subtle); font-size: var(--text-xs); white-space: nowrap; }
+  .projects-table td:nth-child(5) { grid-area: menu; justify-self: end; width: auto; }
+}

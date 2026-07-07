@@ -10,33 +10,66 @@ module ReportsHelper
     timestamp.in_time_zone(tracker_time_zone).strftime("%d/%m %H:%M")
   end
 
+  # Só a hora, no fuso do user (coluna de tempo e tooltip das barras).
+  def report_time(timestamp)
+    timestamp.in_time_zone(tracker_time_zone).strftime("%H:%M")
+  end
+
+  # Coluna de tempo estilo Clockify (pedido 07/07): horários numa linha
+  # ("10:21 – 16:51") e a data embaixo, subtle. Cruzou a meia-noite → a linha de
+  # data vira intervalo ("05/07 – 06/07/2026").
+  def report_entry_times(row)
+    "#{report_time(row.started_at)} – #{report_time(row.ended_at)}"
+  end
+
+  # nil no dia comum (a data vive no cabeçalho do grupo); intervalo quando o
+  # entry cruza a meia-noite no fuso do user.
+  def report_entry_date_range(row)
+    ended_date = row.ended_at.in_time_zone(tracker_time_zone).to_date
+    return if ended_date == row.date
+
+    "#{l(row.date, format: :day_month)} – #{l(ended_date, format: :numeric)}"
+  end
+
   # Amounts por MOEDA (Q43): nunca soma moedas diferentes. Recebe o Hash currency=>cents
   # (de Totals#amounts ou Group#amounts) e devolve uma string "R$ X · € Y". Vazio → "—".
   def report_amounts(amounts)
     return content_tag(:span, t("common.none"), class: "muted") if amounts.blank?
 
-    parts = amounts.map { |currency, cents| humanized_money_with_symbol(Money.new(cents, currency)) }
+    parts = humanized_report_amounts(amounts)
     safe_join(parts, content_tag(:span, t("common.middle_dot"), class: "muted", "aria-hidden": true))
   end
 
-  # Rótulo humano do período ativo (pra o header e as setas).
+  def report_amounts_text(amounts)
+    humanized_report_amounts(amounts).join(" #{t("common.middle_dot")} ")
+  end
+
+  # Rótulo humano do período ativo. Preset de calendário ganha o NOME ("julho 2026",
+  # "2026") em vez de duas datas completas — mais curto e escaneável (importa no
+  # mobile). Semana/custom mostram o intervalo; dia único, a data.
   def report_period_label(period)
-    zone = tracker_time_zone
-    first = period.first_date.strftime("%d/%m/%Y")
-    last = period.last_date.strftime("%d/%m/%Y")
-    first == last ? first : "#{first} – #{last}"
+    case period.preset
+    when "month", "last_month"
+      l(period.first_date, format: "%B %Y")
+    when "year", "last_year"
+      period.first_date.year.to_s
+    else
+      first = l(period.first_date, format: :day_month)
+      last = l(period.last_date, format: :numeric)
+      period.first_date == period.last_date ? last : "#{first} – #{last}"
+    end
   end
 
   # Merge dos params atuais com overrides, preservando período/filtros/rounding na URL
-  # (pra as setas, abas e o futuro botão de export herdarem tudo — Q58).
+  # (pra as setas e o botão de export herdarem tudo — Q58).
   def report_url(overrides = {})
-    reports_path(request.query_parameters.deep_symbolize_keys.merge(overrides))
+    reports_path(report_query_parameters.merge(overrides))
   end
 
   # URL do export no MESMO recorte da tela (Q58/Q20): herda período/filtros/rounding da
   # URL atual, só troca a extensão (:xlsx/:csv). O botão "Exportar" aponta pra cá.
   def report_export_url(format:)
-    params = request.query_parameters.deep_symbolize_keys.merge(format: format)
+    params = report_query_parameters.merge(format: format)
     export_reports_path(params)
   end
 
@@ -57,6 +90,36 @@ module ReportsHelper
     return 0 if axis_max_seconds.to_i.zero?
 
     ((bucket.duration_seconds.to_f / axis_max_seconds) * 100).round(2)
+  end
+
+  def report_bar_title(bucket)
+    # Dia da semana abreviado antes da data ("dom, 05/07" — pedido 07/07); o %a
+    # lê os abbr_day_names dos locales.
+    title = "#{l(bucket.date, format: "%a, %d/%m")} — #{report_duration(bucket.duration_seconds)}"
+    if bucket.duration_seconds.positive? && bucket.first_started_at && bucket.last_ended_at
+      title = "#{title} · #{report_time(bucket.first_started_at)}–#{report_time(bucket.last_ended_at)}"
+      title = "#{title} · #{report_amounts_text(bucket.amounts)}" if bucket.amounts.present?
+    end
+
+    title
+  end
+
+  def report_day_anchor_id(date)
+    "report-day-#{date.iso8601}"
+  end
+
+  # Params ABSOLUTOS de um período (preset + âncora `from`; custom leva as duas
+  # datas). Usado pelas setas ‹ › e pelo form de filtros — navegação RELATIVA
+  # (nav= mergeado na URL corrente) era aplicada sempre sobre o período-base do
+  # preset (bug 07/07: next→ago, prev→jun pulando jul), e o form de filtros
+  # perdia o período por não reemitir os params dele.
+  def report_period_params(period)
+    {
+      period: period.preset,
+      from: period.first_date.iso8601,
+      to: period.custom? ? period.last_date.iso8601 : nil,
+      nav: nil
+    }
   end
 
   # Eixo Y do gráfico de barras, estilo Clockify: o topo do eixo é o pico arredondado
@@ -93,6 +156,14 @@ module ReportsHelper
     def axis_step(raw)
       candidates = [ 0.5, 1, 2, 2.5, 5, 10, 20, 50 ]
       candidates.find { |c| c >= raw } || raw.ceil
+    end
+
+    def humanized_report_amounts(amounts)
+      amounts.map { |currency, cents| humanized_money_with_symbol(Money.new(cents, currency)) }
+    end
+
+    def report_query_parameters
+      request.query_parameters.deep_symbolize_keys.except(:view)
     end
 
   public

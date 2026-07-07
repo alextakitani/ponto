@@ -194,6 +194,8 @@ en:
   date:
     abbr_day_names: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
     day_names: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    # Mesma chave do pt-BR (teste de paridade); os nomes batem com o default do Rails.
+    month_names: [~, "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     formats:
       short: "%m/%d %H:%M"
       numeric: "%m/%d/%Y"
@@ -247,6 +249,7 @@ en:
       tag: "Tag"
       tags: "Tags"
       task: "Task"
+      time: "Time"
     placeholders:
       rate: "e.g. 150.00"
   pwa:
@@ -269,6 +272,9 @@ en:
       sign_out: "Sign out"
     command:
       open: "Open commands"
+      title: "Commands"
+      close: "Close commands"
+      empty: "No actions found."
       search_label: "Search action"
       placeholder: "Type to filter commands"
       groups:
@@ -511,6 +517,25 @@ en:
       remove_default: "Remove default"
       set_default: "Set as default"
       delete_confirm: "Delete “%{name}” permanently? This action cannot be undone."
+      registered_words:
+        years:
+          one: "%{count} year"
+          other: "%{count} years"
+        months:
+          one: "%{count} month"
+          other: "%{count} months"
+        days:
+          one: "%{count} day"
+          other: "%{count} days"
+        hours:
+          one: "%{count} hour"
+          other: "%{count} hours"
+        minutes:
+          one: "%{count} minute"
+          other: "%{count} minutes"
+        seconds:
+          one: "%{count} second"
+          other: "%{count} seconds"
     edit:
       title: "Edit project"
     new:
@@ -651,13 +676,11 @@ en:
     bar_hours: "%{hours}h"
     donut:
       aria: "Time distribution by project"
-    detailed:
-      empty_description: "Adjust the period or filters to see your entries."
     summary:
       group_hint: "Choose a dimension in \"Group by\" to see the detailed summary."
-      empty_description: "Adjust the period or filters to see your summary."
     empty:
       title: "Nothing in this period"
+      description: "Adjust the period or filters to see your entries."
     filters:
       title: "Filters"
       active: "Filters applied"
@@ -679,6 +702,7 @@ en:
       aria: "Report period"
       previous: "Previous period"
       next: "Next period"
+      custom_toggle: "Custom"
       from: "Start date"
       to: "End date"
       presets:
@@ -691,8 +715,7 @@ en:
     metrics:
       aria: "Period totals"
       total: "Total"
-    tabs:
-      aria: "Report views"
+    sections:
       summary: "Summary"
       detailed: "Detailed"
     group_dimensions:

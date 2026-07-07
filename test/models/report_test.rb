@@ -90,6 +90,32 @@ class ReportTest < ActiveSupport::TestCase
     assert_equal 0, dia11.duration_seconds
   end
 
+  test "daily_series carrega primeira entrada, última saída e amounts por moeda" do
+    brl = @user.clients.create!(name: "BR Co", currency: "BRL", rate_cents: 10000)
+    eur = @user.clients.create!(name: "EU Co", currency: "EUR", rate_cents: 5000)
+    brl_project = @user.projects.create!(name: "BR", client: brl)
+    eur_project = @user.projects.create!(name: "EU", client: eur)
+    entry(started: Time.utc(2026, 7, 10, 12, 0), ended: Time.utc(2026, 7, 10, 13, 0), project: brl_project) # R$100
+    entry(started: Time.utc(2026, 7, 10, 15, 0), ended: Time.utc(2026, 7, 10, 17, 0), project: eur_project) # €100
+
+    bucket = Report.new(user: @user, period: month_period).daily_series.find { |b| b.date == Date.new(2026, 7, 10) }
+
+    assert_equal 3.hours.to_i, bucket.duration_seconds
+    assert_equal Time.utc(2026, 7, 10, 12, 0), bucket.first_started_at
+    assert_equal Time.utc(2026, 7, 10, 17, 0), bucket.last_ended_at
+    assert_equal({ "BRL" => 10000, "EUR" => 10000 }, bucket.amounts)
+  end
+
+  test "daily_series deixa dias vazios sem horários nem amounts" do
+    report = Report.new(user: @user, period: month_period)
+    bucket = report.daily_series.find { |b| b.date == Date.new(2026, 7, 11) }
+
+    assert_equal 0, bucket.duration_seconds
+    assert_nil bucket.first_started_at
+    assert_nil bucket.last_ended_at
+    assert_equal({}, bucket.amounts)
+  end
+
   test "amount usa o snapshot congelado (horas × rate) e billable_seconds só o faturável" do
     client = @user.clients.create!(name: "Acme", currency: "BRL", rate_cents: 10000) # R$100/h
     project = @user.projects.create!(name: "Site", client: client)

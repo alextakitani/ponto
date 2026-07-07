@@ -13,6 +13,18 @@ module ProjectsHelper
     end
   end
 
+  # Tooltip do "Registrado" (pedido do dono 07/07): a MESMA soma traduzida em unidades
+  # de calendário (anos/meses/dias/horas…) pra dar noção de escala. Conversões do
+  # ActiveSupport (mês médio ≈ 30,44 dias); mostra as 3 unidades mais significativas.
+  def project_registered_words(seconds)
+    ActiveSupport::Duration.build(seconds).parts
+      .slice(:years, :months, :days, :hours, :minutes, :seconds)
+      .reject { |_unit, count| count.zero? }
+      .first(3)
+      .map { |unit, count| t("projects.project.registered_words.#{unit}", count: count) }
+      .join(" ")
+  end
+
   # Valor do campo `rate` (override) no form, em pt-BR ("150,00") — casa com o input do
   # usuário e round-trips pelo writer do model. nil = campo vazio (herda — Q45).
   def project_rate_field_value(project)

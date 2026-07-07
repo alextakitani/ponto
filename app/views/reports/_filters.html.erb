@@ -2,7 +2,11 @@
     + description contains + dimensão de agrupamento (Summary). GET → viaja na URL.
     OR dentro da dimensão (multi-select), AND entre. %>
 <%= form_with url: reports_path, method: :get, class: "report-filters" do |form| %>
-  <%= form.hidden_field :view, value: view %>
+  <%# Reemite o período RESOLVIDO (form GET descarta a query string atual — sem isto,
+      aplicar filtro resetava pro preset default; mesmo bug-família das setas 07/07). %>
+  <% report_period_params(report.period).compact.each do |name, value| %>
+    <%= form.hidden_field name, value: value %>
+  <% end %>
 
   <%# Indicador de filtro ativo (Q54): quando alguma das 6 dimensões está aplicada,
       o botão ganha um ponto de acento + o estado --active. Só formatação (agrupamento/
@@ -84,7 +88,8 @@
 
       <div class="report-filters__actions">
         <%= form.submit t("common.actions.apply"), class: "btn btn--sm" %>
-        <%= link_to t("common.actions.clear"), reports_path(view: view), class: "btn btn--quiet btn--sm" %>
+        <%# Limpar = zera FILTROS, preserva o período em que o usuário está. %>
+        <%= link_to t("common.actions.clear"), reports_path(report_period_params(report.period).compact), class: "btn btn--quiet btn--sm" %>
       </div>
     </div>
   </details>

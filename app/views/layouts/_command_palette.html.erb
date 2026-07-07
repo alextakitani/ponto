@@ -1,6 +1,16 @@
 <div id="command_palette">
   <dialog class="command-palette" data-command-palette-target="dialog">
     <div class="command-palette__panel">
+      <%# Header com a borda-assinatura de acento (mesma do topo do app) + fechar
+          explícito — Esc e clique fora continuam funcionando (pedido do dono 07/07). %>
+      <header class="command-palette__header">
+        <span class="command-palette__title"><%= t("shell.command.title") %></span>
+        <button type="button" class="command-palette__close"
+            aria-label="<%= t("shell.command.close") %>"
+            data-action="command-palette#close">
+          <%= icon("x") %>
+        </button>
+      </header>
       <label class="command-palette__label" for="command_palette_query"><%= t("shell.command.search_label") %></label>
       <input id="command_palette_query"
           class="command-palette__search"
@@ -14,7 +24,9 @@
           data-command-palette-target="input"
           data-action="input->command-palette#filter keydown->command-palette#handleListKeydown">
 
-      <p class="command-palette__status" role="status" data-command-palette-target="status"></p>
+      <p class="command-palette__status" role="status"
+          data-command-palette-target="status"
+          data-empty-message="<%= t("shell.command.empty") %>"></p>
 
       <div id="command_palette_list" class="command-palette__groups" role="listbox" data-command-palette-target="list">
         <section class="command-palette__group" data-command-palette-target="group" role="presentation">
@@ -104,7 +116,14 @@
                       command_palette_label: "#{tracker_entry_description(time_entry)} #{tracker_entry_project_name(time_entry)}"
                     } do %>
                 <span><%= t("shell.command.recent.resume", description: tracker_entry_description(time_entry)) %></span>
-                <small><%= tracker_entry_project_name(time_entry) %></small>
+                <small>
+                  <%# A bolinha do projeto traz a cor legítima do app pra palette
+                      (a personalidade vem da cor dos projetos — DESIGN.md). %>
+                  <% if time_entry.project %>
+                    <span class="project-dot" style="background-color: <%= time_entry.project.color %>" aria-hidden="true"></span>
+                  <% end %>
+                  <%= tracker_entry_project_name(time_entry) %>
+                </small>
               <% end %>
             <% end %>
           </section>

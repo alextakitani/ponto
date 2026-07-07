@@ -1,6 +1,8 @@
 <%# Uma linha densa da lista de projetos (TELA 01). Bolinha da cor + nome · cliente ·
-    Registrado (placeholder Fase 3) · rate efetiva (marca herança em muted). Menu ⋮
+    Registrado · rate efetiva (marca herança em muted). Menu ⋮
     (<details> + Stimulus menu_controller p/ fechar ao clicar fora — light-dismiss). %>
+<% registered_seconds ||= @registered_seconds || Hash.new(0) %>
+<% registered = registered_seconds.fetch(project.id, 0) %>
 <tr id="<%= dom_id(project) %>">
   <td>
     <span class="project-dot" style="background-color: <%= project.color %>" aria-hidden="true"></span>
@@ -10,8 +12,12 @@
   </td>
   <td><%= project.client ? project.client.name : t("common.none") %></td>
   <td class="data-table__num tabular-nums">
-    <%# TODO Fase 3 (TimeEntry): somar as horas registradas no projeto. Placeholder. %>
-    <span class="muted">0:00</span>
+    <% if registered.zero? %>
+      <span class="muted">0:00</span>
+    <% else %>
+      <%# title = a soma em anos/meses/dias no mouseover (pedido do dono 07/07). %>
+      <span title="<%= project_registered_words(registered) %>"><%= tracker_duration(registered) %></span>
+    <% end %>
   </td>
   <td class="data-table__num tabular-nums">
     <%= project_effective_rate(project) %>

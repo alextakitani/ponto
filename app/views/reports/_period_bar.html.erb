@@ -1,12 +1,13 @@
 <%# Seletor de período (Q53): setas ‹ › + presets enxutos + custom (2 datas). Tudo GET
-    (viaja na URL). As setas mandam nav=prev|next sobre o preset corrente. %>
+    (viaja na URL). As setas linkam o período resolvido em ABSOLUTO (preset + âncora
+    from) — nav= relativo sobre a URL corrente dobrava o deslocamento (bug 07/07). %>
 <section class="report-period" aria-label="<%= t("reports.period.aria") %>">
   <div class="report-period__nav">
-    <%= link_to report_url(nav: "prev"), class: "btn btn--quiet btn--sm", aria: { label: t("reports.period.previous") } do %>
+    <%= link_to report_url(report_period_params(period.previous)), class: "btn btn--quiet btn--sm", aria: { label: t("reports.period.previous") } do %>
       &lsaquo;
     <% end %>
     <span class="report-period__label tabular-nums"><%= report_period_label(period) %></span>
-    <%= link_to report_url(nav: "next"), class: "btn btn--quiet btn--sm", aria: { label: t("reports.period.next") } do %>
+    <%= link_to report_url(report_period_params(period.next)), class: "btn btn--quiet btn--sm", aria: { label: t("reports.period.next") } do %>
       &rsaquo;
     <% end %>
   </div>
@@ -18,13 +19,17 @@
     <% end %>
   </div>
 
-  <%# Custom: dois date inputs; submeter recarrega com period=custom. %>
-  <%= form_with url: reports_path, method: :get, class: "report-period__custom" do |form| %>
-    <%= form.hidden_field :period, value: "custom" %>
-    <%= form.hidden_field :view, value: view %>
-    <%= form.date_field :from, value: period.first_date.iso8601, "aria-label": t("reports.period.from") %>
-    <span class="muted" aria-hidden="true">–</span>
-    <%= form.date_field :to, value: period.last_date.iso8601, "aria-label": t("reports.period.to") %>
-    <%= form.submit t("common.actions.apply"), class: "btn btn--sm" %>
-  <% end %>
+  <%# Custom colapsado num <details> (declutter 07/07): o form de duas datas só
+      aparece quando o usuário quer intervalo próprio — aberto se o período JÁ é
+      custom. O chip do summary usa o mesmo visual dos presets. Zero JS. %>
+  <details class="report-period__custom" <%= "open" if period.custom? %>>
+    <summary class="report-preset <%= "report-preset--active" if period.custom? %>"><%= t("reports.period.custom_toggle") %></summary>
+    <%= form_with url: reports_path, method: :get, class: "report-period__custom-form" do |form| %>
+      <%= form.hidden_field :period, value: "custom" %>
+      <%= form.date_field :from, value: period.first_date.iso8601, "aria-label": t("reports.period.from") %>
+      <span class="muted" aria-hidden="true">–</span>
+      <%= form.date_field :to, value: period.last_date.iso8601, "aria-label": t("reports.period.to") %>
+      <%= form.submit t("common.actions.apply"), class: "btn btn--sm" %>
+    <% end %>
+  </details>
 </section>

@@ -489,7 +489,10 @@
     grid-template-areas: none;
   }
 
-  .manual-entry__grid > * {
+  /* :nth-child(n) iguala a especificidade (0,2,0) dos grid-area nomeados do
+     desktop — com `> *` (0,1,0) o reset perdia e os campos empilhavam na mesma
+     célula (popup quebrado no mobile, 07/07). */
+  .manual-entry__grid > :nth-child(n) {
     grid-area: auto;
   }
 

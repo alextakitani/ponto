@@ -1,16 +1,49 @@
 /*
- * Tela de Relatórios (Fatia 5.1) — Summary/Detailed. Só tokens; denso; claro/escuro
+ * Tela de Relatórios (Fatia 5.1) — resumo + detalhado. Só tokens; denso; claro/escuro
  * automático. O entregável principal: números legíveis, tabular-nums nas colunas de
  * tempo/dinheiro, gráficos SVG server-rendered theme-aware (Q71).
  */
+
+/* --- Header ---------------------------------------------------------------- */
+.report-header {
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+/* Grid items nascem com min-width:auto → o min-content dos date inputs do form
+   custom (~413px) estourava a coluna no mobile e o excesso era CLIPADO (Aplicar
+   e a seta › sumiam). min-width:0 deixa a coluna respeitar o viewport. */
+.report-header > * {
+  min-width: 0;
+}
+
+.report-header__title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.report-header__title h1,
+.report-header__title p {
+  margin-bottom: 0;
+}
+
+.report-header__controls {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
 
 /* --- Barra de período (Q53) ------------------------------------------------- */
 .report-period {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-4);
-  margin-bottom: var(--space-4);
+  gap: var(--space-3);
+  flex: 1;
+  min-width: 0;
 }
 
 .report-period__nav {
@@ -35,9 +68,15 @@
   padding: var(--space-1) var(--space-3);
   font-size: var(--text-sm);
   color: var(--color-text-subtle);
-  border: 1px solid transparent;
+  /* Borda fina de acento (pedido do dono 07/07): marca os chips como um grupo
+     clicável sem pintar fundo — o preenchido fica só no ativo. */
+  border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
   border-radius: var(--radius-sm);
   text-decoration: none;
+}
+
+.report-preset:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 60%, transparent);
 }
 
 .report-preset:hover {
@@ -51,21 +90,55 @@
   background-color: color-mix(in srgb, var(--color-accent) 12%, transparent);
 }
 
-/* Flui junto dos presets (sem margin-left:auto — órfão na 2ª linha ao quebrar). */
+/* Custom colapsado num <details> (declutter 07/07): fechado é só o chip
+   "Personalizado" (summary com visual de preset); aberto ganha a linha inteira
+   (flex-basis 100% dentro do .report-period, que é wrap) com o form embaixo. */
+.report-period__custom summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.report-period__custom summary::-webkit-details-marker {
+  display: none;
+}
+
+.report-period__custom[open] {
+  flex-basis: 100%;
+}
+
+/* Flex item nasce com min-width:auto — o min-content do form (dois date inputs +
+   Aplicar) estouraria o viewport no mobile; 0 deixa os inputs comprimirem. */
 .report-period__custom {
+  min-width: 0;
+}
+
+.report-period__custom summary.report-preset {
+  display: inline-block;
+}
+
+.report-period__custom-form {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  margin-top: var(--space-2);
 }
 
-.report-period__custom input {
+.report-period__custom-form input {
   margin: 0;
   width: auto;
 }
 
 /* --- Filtros finos (Q54) ---------------------------------------------------- */
 .report-filters {
-  margin-bottom: var(--space-4);
+  flex: none;
+  min-width: 0;
+}
+
+/* Painel aberto: o form (item do flex de controles) desce pra uma linha própria
+   com largura total — senão o grid interno (minmax 12rem) transborda pra fora do
+   form, que fechado tem só a largura do chip "Filtros". */
+.report-filters:has(.report-filters__group[open]) {
+  flex-basis: 100%;
 }
 
 .report-filters__summary {
@@ -135,11 +208,10 @@
 /* --- Métricas do topo (Q21) ------------------------------------------------- */
 .report-metrics {
   display: flex;
-  gap: var(--space-6);
-  padding: var(--space-4) 0;
+  gap: var(--space-5);
+  padding: var(--space-3) 0;
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
-  margin-bottom: var(--space-4);
 }
 
 .report-metric {
@@ -154,38 +226,20 @@
   letter-spacing: 0.04em;
 }
 
-/* Os números-herói da tela (o entregável): grandes, firmes, tabulares. */
+/* Números do topo: firmes e tabulares, mas compactos. */
 .report-metric__value {
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   font-weight: var(--weight-semibold);
-  letter-spacing: -0.01em;
 }
 
-/* --- Abas Summary/Detailed -------------------------------------------------- */
-.report-tabs {
-  display: flex;
-  gap: var(--space-1);
-  border-bottom: 1px solid var(--color-border);
-  margin-bottom: var(--space-4);
+/* --- Seções ---------------------------------------------------------------- */
+.report-section {
+  margin-top: var(--space-6);
 }
 
-.report-tab {
-  padding: var(--space-2) var(--space-4);
-  font-size: var(--text-sm);
-  color: var(--color-text-subtle);
-  text-decoration: none;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-}
-
-.report-tab:hover {
-  color: var(--color-text);
-}
-
-.report-tab--active {
-  color: var(--color-text);
-  border-bottom-color: var(--color-accent);
-  font-weight: var(--weight-medium);
+.report-section > h2 {
+  margin-bottom: var(--space-3);
+  font-size: var(--text-xl);
 }
 
 /* --- Gráficos (Q71) --------------------------------------------------------- */
@@ -310,6 +364,7 @@
   height: 100%;
   display: flex;
   align-items: flex-end;
+  text-decoration: none;
 }
 
 .report-bars__bar {
@@ -318,6 +373,20 @@
   background-color: var(--color-accent);
   border-radius: 2px 2px 0 0;
   opacity: 0.85;
+}
+
+/* Fim de semana em cor própria (Peach — pedido do dono 07/07): sáb/dom saltam
+   aos olhos no meio do mês. Vale até pra barra vazia (o traço de 1px na base). */
+.report-bars__col--weekend .report-bars__bar {
+  background-color: var(--color-weekend);
+}
+
+/* Barra selecionada (report_day_controller): a base já é accent, então o estado
+   mistura accent com o TEXTO — escurece no tema claro, clareia no escuro; distinto
+   nos dois sem token novo. */
+.report-bars__col--selected .report-bars__bar {
+  opacity: 1;
+  background-color: color-mix(in srgb, var(--color-accent) 65%, var(--color-text));
 }
 
 /* Datas: mesma grade flex do track (gutter + gap iguais) pra cada rótulo cair sob
@@ -341,7 +410,7 @@
   overflow: visible;
 }
 
-/* --- Tabelas Summary/Detailed ----------------------------------------------- */
+/* --- Tabelas resumo/detalhado ----------------------------------------------- */
 .report-summary__num,
 .report-detailed__num {
   text-align: right;
@@ -377,12 +446,134 @@
   vertical-align: middle;
 }
 
+.report-detailed tr[id] {
+  scroll-margin-top: var(--space-6);
+}
+
+/* Cabeçalho de DIA na lista (07/07): faixa sunken como as do tracker — carrega
+   a data (rótulo Hoje/Ontem/dia-da-semana) e os totais do dia à direita. */
+.report-detailed__day td {
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-surface-sunken);
+  font-size: var(--text-sm);
+}
+
+.report-detailed__day-bar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+/* Totais do dia: valor (muted) e duração respiram entre si — colados liam como
+   um número só (feedback do dono 07/07). */
+.report-detailed__day-bar > span:last-child {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.report-detailed__day-label {
+  font-weight: var(--weight-medium);
+}
+
+/* Descrição truncada com ellipsis (mesmo padrão do tracker): title no mouseover,
+   tap/Tab foca o span e o :focus desfaz a truncagem. No desktop limita a coluna. */
+.report-detailed__desc {
+  display: block;
+  max-width: 28rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.report-detailed__desc:focus {
+  white-space: normal;
+  overflow: visible;
+  outline: none;
+}
+
+/* A célula de projeto não quebra — a bolinha caía numa linha e o nome noutra,
+   esticando linhas aleatórias. */
+.report-detailed tbody td:nth-child(2) {
+  white-space: nowrap;
+}
+
+/* Ar entre os grupos de dia (desktop lia condensado — feedback 07/07): a faixa
+   do dia ganha um "respiro" acima via border na cor do fundo (tabela não aceita
+   margin em <tr>). */
+.report-detailed__day td {
+  border-top: var(--space-4) solid var(--color-surface);
+}
+
+/* Coluna de tempo estilo Clockify: horários em cima, data embaixo. Fonte um
+   degrau abaixo da tabela (pedido do dono 07/07) — é metadado, não protagonista. */
+.report-detailed__time {
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+}
+
+.report-detailed__time span {
+  display: block;
+}
+
+/* Linhas do dia selecionado na barra: fundo sutil de acento (mesma família do
+   .report-preset--active), removido quando outro dia é clicado. */
+.report-detailed__row--highlight {
+  background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
+}
+
+/* Foco programático da linha-âncora (tabindex=-1): o outline global de acento vale
+   pra teclado (:focus-visible); só puxamos pra dentro pra não sobrepor as vizinhas. */
+.report-detailed tr[tabindex]:focus-visible {
+  outline-offset: -2px;
+}
+
 /* --- Mobile (≤48rem) — o relatório nunca tinha adaptado -------------------- */
 @media (max-width: 48rem) {
-  /* Barra de período empilha limpa: nav numa linha, presets noutra, custom
-     ocupa a largura (inputs dividem o espaço). */
-  .report-period {
+  .report-header {
     gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  /* Exportar FINO (pedido do dono 07/07): abre exceção ao alvo de toque global —
+     é ação secundária/mensal, não vale um botão alto ao lado do título. */
+  .report-header__title .btn {
+    min-height: 0;
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--text-sm);
+  }
+
+  /* Título e Exportar dividem a linha; a lede sai no mobile — decorativa, custava
+     duas linhas antes de qualquer dado. Título desce um degrau na escala. */
+  .report-header__title {
+    align-items: center;
+  }
+
+  .report-header__title p {
+    display: none;
+  }
+
+  .report-header__title h1 {
+    font-size: var(--text-xl);
+  }
+
+  .report-header__controls {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  /* Grupos viram display:contents — nav, chips de preset, Personalizado e Filtros
+     fluem JUNTOS num único wrap denso. Antes cada grupo caía numa linha própria e
+     a tela lia como botões soltos (feedback do dono 07/07). */
+  .report-period,
+  .report-period__presets,
+  .report-filters {
+    display: contents;
+  }
+
+  .report-period__nav {
+    width: 100%;
   }
 
   .report-period__label {
@@ -390,31 +581,118 @@
     flex: 1;
   }
 
-  .report-period__nav {
+  /* Painéis abertos ganham a linha inteira (os flex items agora são os próprios
+     details, por causa do display:contents nos grupos). */
+  .report-filters__group[open] {
+    flex-basis: 100%;
+  }
+
+  /* O chip Filtros alinha altura/padding com os presets (grupo coeso). */
+  .report-filters__summary {
+    padding: var(--space-1) var(--space-3);
+  }
+
+  .report-period__custom-form {
     width: 100%;
   }
 
-  .report-period__custom {
-    width: 100%;
-  }
-
-  .report-period__custom input {
+  .report-period__custom-form input {
     flex: 1;
     min-width: 0;
   }
 
-  /* Métricas: mantêm o impacto mas quebram sem estourar. */
+  /* Métricas em grade de 3 fixa: rótulos e números sempre alinhados, VALOR
+     encosta na direita — mesma coluna dos números da lista. */
   .report-metrics {
-    flex-wrap: wrap;
-    gap: var(--space-4) var(--space-6);
+    display: grid;
+    grid-template-columns: auto auto auto;
+    justify-content: space-between;
+    gap: var(--space-2);
   }
 
-  /* Tabelas densas rolam na horizontal em vez de esmagar as colunas. */
-  .report-summary,
-  .report-detailed {
+  .report-metric:last-child {
+    text-align: right;
+  }
+
+  .report-metric__value {
+    font-size: var(--text-lg);
+  }
+
+  /* Seções mais juntas do topo (o mobile não tem espaço a perder). */
+  .report-section {
+    margin-top: var(--space-5);
+  }
+
+  /* Summary agrupado (3 colunas) rola se precisar. */
+  .report-summary {
     display: block;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+  }
+
+  /* Detailed SEM scroll lateral (decisão do dono 07/07): a tabela vira linhas
+     empilhadas, como o tracker. thead some; cada <tr> reagrupa as células via
+     grid-template-areas; Tarefa e Faturável ficam fora do recorte mobile (o
+     valor já conta a história do faturável; a matriz completa vive no export). */
+  .report-detailed,
+  .report-detailed tbody {
+    display: block;
+  }
+
+  .report-detailed thead {
+    display: none;
+  }
+
+  /* Linha em 3 andares SEM torre à direita (decisão do dono 07/07): duração e
+     valor à direita (um por linha), horário como metadado quieto à esquerda na
+     3ª linha. A data vive no cabeçalho do dia. */
+  .report-detailed tr {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "desc desc dur"
+      "proj cli  val"
+      "time time time";
+    column-gap: var(--space-2);
+    row-gap: 2px;
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  /* Cabeçalho do dia NÃO entra no grid de entry — é uma faixa simples. */
+  .report-detailed tr.report-detailed__day {
+    display: block;
+    padding: 0;
+  }
+
+  .report-detailed__day td {
+    display: block;
+    width: auto;
+  }
+
+  .report-detailed td {
+    display: block;
+    padding: 0;
+    border: none;
+  }
+
+  /* Células por posição: 1 descrição · 2 projeto · 3 cliente · 4 tarefa (fora) ·
+     5 tempo · 6 faturável (fora) · 7 duração · 8 valor. */
+  .report-detailed td:nth-child(1) { grid-area: desc; }
+  .report-detailed td:nth-child(2) { grid-area: proj; white-space: nowrap; }
+  .report-detailed td:nth-child(3) { grid-area: cli; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--color-text-subtle); }
+  .report-detailed td:nth-child(5) { grid-area: time; text-align: left; }
+  .report-detailed td:nth-child(7) { grid-area: dur; }
+  .report-detailed td:nth-child(8) { grid-area: val; text-align: right; }
+
+  /* Horários + (raro) intervalo de data cruzando meia-noite ficam inline. */
+  .report-detailed__time span {
+    display: inline;
+  }
+
+  .report-detailed td:nth-child(4),
+  .report-detailed td:nth-child(6) {
+    display: none;
   }
 
   /* Gráficos empilham (donut sobre as barras) em vez de espremer lado a lado. */

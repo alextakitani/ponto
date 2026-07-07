@@ -99,8 +99,15 @@ export default class extends Controller {
 
   focusTimer(event) {
     event.preventDefault()
+    // O close() do <dialog> restaura o foco pro elemento que abriu a palette —
+    // focar o input SÍNCRONO aqui perdia a disputa (bug no mobile, 07/07).
+    // Zera o previouslyFocused (close() não devolve o foco pro gatilho) e adia
+    // o foco do timer pra depois da restauração nativa do dialog.
+    this.previouslyFocused = null
     this.close()
-    document.querySelector(".timer-bar--idle input[name='timer[description]']")?.focus()
+    requestAnimationFrame(() => {
+      document.querySelector(".timer-bar--idle input[name='timer[description]']")?.focus()
+    })
   }
 
   moveSelection(delta) {
@@ -124,7 +131,8 @@ export default class extends Controller {
     this.clearSelection()
 
     if (items.length === 0) {
-      this.statusTarget.textContent = "Nenhuma ação encontrada."
+      // Copy vem do data-attribute (i18n Q79 — nunca string de UI no JS).
+      this.statusTarget.textContent = this.statusTarget.dataset.emptyMessage || ""
       this.inputTarget.removeAttribute("aria-activedescendant")
       return
     }

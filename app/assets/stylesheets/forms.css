@@ -159,8 +159,9 @@ button:disabled {
 
 /*
  * Alvo de toque no mobile (Q69 é PWA). No desktop a densidade manda e os botões
- * ficam compactos; abaixo de 48rem todo botão precisa de ≥44px de altura (WCAG
- * 2.5.5 / iOS HIG). Vale pro .btn base (Iniciar/Parar), pro .btn--sm (o ⋮ da linha,
+ * ficam compactos; abaixo de 48rem todo botão vira alvo de toque de 36px (2.25rem —
+ * o dono achou 44px e 40px grandes demais, 07/07; 36 ainda cobre o AA de 24px).
+ * Vale pro .btn base (Iniciar/Parar), pro .btn--sm (o ⋮ da linha,
  * "Adicionar manualmente", "Tags", Salvar/Cancelar inline) e pro summary que vira
  * botão. Só min-height — a tipografia densa e o layout não mudam.
  */
@@ -168,18 +169,18 @@ button:disabled {
   .btn,
   input[type="submit"],
   button[type="submit"] {
-    min-height: 2.75rem;
+    min-height: 2.25rem;
   }
 
   /* Inputs acompanham a altura dos botões (mesmo alvo de toque) — senão o
      Iniciar sai mais alto que o campo de descrição na barra do timer. */
   input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
   select {
-    min-height: 2.75rem;
+    min-height: 2.25rem;
   }
 
   .btn.btn--sm {
-    min-height: 2.75rem;
+    min-height: 2.25rem;
     padding: var(--space-2) var(--space-3);
   }
 }

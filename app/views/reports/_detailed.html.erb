@@ -1,24 +1,53 @@
-<%# Detailed (Q19/E): uma linha por entry, started_at DESC. As 14 "colunas" da Q19
-    em forma de linha densa (a matriz completa vai pro export na 5.2). %>
-<% if report.rows.any? %>
-  <table class="data-table report-detailed">
-    <thead>
-      <tr>
-        <th><%= t("common.labels.description") %></th>
-        <th><%= t("common.labels.project") %></th>
-        <th><%= t("common.labels.client") %></th>
-        <th><%= t("common.labels.task") %></th>
-        <th class="report-detailed__num"><%= t("common.labels.start") %></th>
-        <th class="report-detailed__num"><%= t("common.labels.end") %></th>
-        <th class="report-detailed__num"><%= t("common.labels.billable") %></th>
-        <th class="report-detailed__num"><%= t("common.labels.duration") %></th>
-        <th class="report-detailed__num"><%= t("common.labels.amount") %></th>
+<%# Detailed (Q19/E): uma linha por entry, started_at DESC, agrupada por DIA no fuso
+    do user (decisão do dono 07/07 — como o tracker): o cabeçalho do dia carrega a
+    data + totais, então as linhas não repetem a data (só quando cruzam a meia-noite).
+    A âncora do clique na barra aponta pro cabeçalho do dia.
+    Assume rows presentes — o empty-state do período vazio vive no index (07/07). %>
+<table class="data-table report-detailed">
+  <thead>
+    <tr>
+      <th><%= t("common.labels.description") %></th>
+      <th><%= t("common.labels.project") %></th>
+      <th><%= t("common.labels.client") %></th>
+      <th><%= t("common.labels.task") %></th>
+      <th class="report-detailed__num"><%= t("common.labels.time") %></th>
+      <th class="report-detailed__num"><%= t("common.labels.billable") %></th>
+      <th class="report-detailed__num"><%= t("common.labels.duration") %></th>
+      <th class="report-detailed__num"><%= t("common.labels.amount") %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% report.rows.group_by(&:date).each do |date, day_rows| %>
+      <% day_totals = Report::Totals.from(day_rows) %>
+      <%# Cabeçalho do dia: âncora do clique na barra (id + tabindex pro foco do
+          report_day_controller) e alvo do destaque em bloco (data-date). %>
+      <tr class="report-detailed__day" id="<%= report_day_anchor_id(date) %>" tabindex="-1" data-date="<%= date.iso8601 %>">
+        <td colspan="8">
+          <div class="report-detailed__day-bar">
+            <span class="report-detailed__day-label"><%= tracker_day_label(date) %></span>
+            <span class="tabular-nums">
+              <% if day_totals.amounts.present? %>
+                <span class="muted"><%= report_amounts_text(day_totals.amounts) %></span>
+              <% end %>
+              <strong><%= report_duration(day_totals.duration_seconds) %></strong>
+            </span>
+          </div>
+        </td>
       </tr>
-    </thead>
-    <tbody>
-      <% report.rows.each do |row| %>
-        <tr data-entry-id="<%= row.entry.id %>">
-          <td><%= row.description.presence || content_tag(:span, t("tracker.no_description"), class: "muted") %></td>
+      <% day_rows.each do |row| %>
+        <tr <%= tag.attributes(data: { entry_id: row.entry.id, date: row.date.iso8601 }) %>>
+          <td>
+            <%# Mesmo padrão do tracker: trunca com ellipsis; title no mouseover,
+                tap/Tab foca e expande (focus-toggle reverte no 2º toque). %>
+            <% if row.description.present? %>
+              <%= tag.span row.description, class: "report-detailed__desc",
+                    title: row.description, tabindex: "0",
+                    data: { controller: "focus-toggle",
+                            action: "pointerdown->focus-toggle#pointerdown click->focus-toggle#click" } %>
+            <% else %>
+              <span class="muted"><%= t("tracker.no_description") %></span>
+            <% end %>
+          </td>
           <td>
             <% if row.project %>
               <span class="project-dot" style="background-color: <%= row.project.color %>" aria-hidden="true"></span>
@@ -29,8 +58,14 @@
           </td>
           <td><%= row.client&.name || content_tag(:span, t("tracker.no_client"), class: "muted") %></td>
           <td><%= row.task&.name || content_tag(:span, t("common.none"), class: "muted") %></td>
-          <td class="report-detailed__num tabular-nums"><%= report_datetime(row.started_at) %></td>
-          <td class="report-detailed__num tabular-nums"><%= report_datetime(row.ended_at) %></td>
+          <%# Horários; a data só aparece quando o entry cruza a meia-noite (o dia
+              normal já está no cabeçalho do grupo). %>
+          <td class="report-detailed__num report-detailed__time tabular-nums">
+            <span><%= report_entry_times(row) %></span>
+            <% if (date_range = report_entry_date_range(row)) %>
+              <span class="report-detailed__date muted"><%= date_range %></span>
+            <% end %>
+          </td>
           <td class="report-detailed__num"><%= row.billable? ? t("common.yes") : t("common.no") %></td>
           <td class="report-detailed__num tabular-nums"><%= report_duration(row.duration_seconds) %></td>
           <td class="report-detailed__num tabular-nums">
@@ -42,12 +77,6 @@
           </td>
         </tr>
       <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <div class="empty-state">
-    <%= icon("chart-column", size: 40) %>
-    <h2><%= t("reports.empty.title") %></h2>
-    <p class="muted"><%= t("reports.detailed.empty_description") %></p>
-  </div>
-<% end %>
+    <% end %>
+  </tbody>
+</table>
