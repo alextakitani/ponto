@@ -9,7 +9,7 @@ class TimeEntriesController < ApplicationController
 
   def index
     authorize! TimeEntry, to: :index?
-    @time_entries = authorized_scope(TimeEntry.all).order(started_at: :desc)
+    @time_entries = authorized_scope(TimeEntry.all).includes(:tags).order(started_at: :desc)
 
     respond_to do |format|
       format.html { redirect_to home_path }

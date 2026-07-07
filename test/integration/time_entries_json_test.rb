@@ -43,6 +43,38 @@ class TimeEntriesJsonTest < ActionDispatch::IntegrationTest
     assert_equal "BRL", body["currency"]
   end
 
+  test "GET show expõe as tags da entry (contrato da extensão/CLI — 07/07)" do
+    entry = @user.time_entries.create!(
+      project: @project,
+      started_at: Time.utc(2026, 7, 2, 12, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 13, 0, 0)
+    )
+    backend = @user.tags.create!(name: "backend")
+    urgent = @user.tags.create!(name: "urgente")
+    entry.tags = [ urgent, backend ]
+
+    get time_entry_path(entry), headers: bearer(@read), as: :json
+
+    body = response.parsed_body
+    # ordenado por name_normalized: backend antes de urgente
+    assert_equal [ backend.id, urgent.id ], body["tag_ids"]
+    assert_equal [ "backend", "urgente" ], body["tags"].map { |t| t["name"] }
+    assert_equal backend.id, body["tags"].first["id"]
+  end
+
+  test "entry sem tags devolve arrays vazios (não null)" do
+    entry = @user.time_entries.create!(
+      started_at: Time.utc(2026, 7, 2, 12, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 13, 0, 0)
+    )
+
+    get time_entry_path(entry), headers: bearer(@read), as: :json
+
+    body = response.parsed_body
+    assert_equal [], body["tag_ids"]
+    assert_equal [], body["tags"]
+  end
+
   test "POST create cria entry manual com snapshot do projeto" do
     started_at = Time.utc(2026, 7, 2, 8, 0, 0)
     ended_at = Time.utc(2026, 7, 2, 10, 0, 0)

@@ -70,7 +70,7 @@
           <td class="report-detailed__num tabular-nums"><%= report_duration(row.duration_seconds) %></td>
           <td class="report-detailed__num tabular-nums">
             <% if row.amount_cents.positive? %>
-              <%= humanized_money_with_symbol(Money.new(row.amount_cents, row.currency)) %>
+              <%= Money.new(row.amount_cents, row.currency).format %>
             <% else %>
               <span class="muted"><%= t("common.none") %></span>
             <% end %>

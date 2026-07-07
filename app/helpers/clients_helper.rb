@@ -5,9 +5,11 @@ module ClientsHelper
   TOP_CURRENCIES = %w[BRL USD EUR].freeze
 
   # Rate formatada do cliente, ou "—" quando sem taxa (rate nil — Q2/Q15).
+  # `.format` (não humanized_money_with_symbol) pra SEMPRE mostrar os centavos
+  # ("R$ 150,00", não "R$ 150" — pedido do dono 07/07).
   def client_rate(client)
     if client.rate_cents
-      humanized_money_with_symbol(client.rate)
+      client.rate.format
     else
       t("common.none")
     end

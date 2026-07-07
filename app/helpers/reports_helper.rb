@@ -159,7 +159,8 @@ module ReportsHelper
     end
 
     def humanized_report_amounts(amounts)
-      amounts.map { |currency, cents| humanized_money_with_symbol(Money.new(cents, currency)) }
+      # `.format` mostra SEMPRE os centavos ("€ 98,00", não "€ 98" — pedido 07/07).
+      amounts.map { |currency, cents| Money.new(cents, currency).format }
     end
 
     def report_query_parameters
