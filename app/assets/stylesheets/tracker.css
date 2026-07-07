@@ -150,11 +150,26 @@
   flex-direction: column;
 }
 
+/* Linha da entry em 3 linhas TAMBÉM no desktop (decisão do dono 07/07 — mesma
+   disposição do mobile, só que com o € na 1ª linha):
+     1ª: descrição … início–fim · decorrido · € · ⋮
+     2ª: projeto (bolinha + nome)
+     3ª: tags e alertas.
+   Sem markup extra: os wrappers (main/summary/actions) viram display:contents e
+   cada dado se posiciona pelas grid-template-areas. Duração/valor em trilhas
+   FIXAS (ch), não auto: cada entry é um grid próprio, e só largura determinística
+   colunar VERTICALMENTE entre as linhas do dia (tabular-nums + trilha fixa). */
 .tracker-entry {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: var(--space-3);
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr) auto 6.5ch 11ch auto;
+  grid-template-areas:
+    "desc range dur amount menu"
+    "proj proj  proj proj  proj"
+    "tags tags  tags tags  tags";
+  column-gap: var(--space-2);
+  /* Respiro entre as 3 linhas internas (pedido do dono na rodada mobile). */
+  row-gap: var(--space-3);
+  align-items: start;
   padding: var(--space-3) var(--space-2);
   margin: 0 calc(-1 * var(--space-2));
   border-bottom: 1px solid var(--color-border);
@@ -166,32 +181,20 @@
   background-color: color-mix(in srgb, var(--color-accent) 5%, transparent);
 }
 
-/* Coluna esquerda: sumário e tags CORREM INLINE (uma linha só no desktop — tags
-   quebravam pra 2ª linha e a lista ficava dentada). min-width:0 deixa descrições
-   longas truncarem em vez de estourar o grid. */
-.tracker-entry__main {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-1) var(--space-2);
-  min-width: 0;
+/* Os wrappers somem do layout: os filhos viram grid items da própria entry. */
+.tracker-entry__main,
+.tracker-entry__summary,
+.tracker-entry__actions {
+  display: contents;
 }
 
-.tracker-entry__summary {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-/* Chips de tag da linha. gap próprio → o .tag-badge NÃO usa a margin-left dele aqui
-   (senão duplica o espaço); zeramos a margin no contexto flex. */
+/* Chips de tag da linha (3ª linha do grid). gap próprio → o .tag-badge NÃO usa a
+   margin-left dele aqui (senão duplica o espaço); zeramos a margin no contexto flex. */
 .tracker-entry__tags {
+  grid-area: tags;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-1);
-  /* Respiro entre o grupo identidade (desc·proj·horário) e os metadados. */
-  margin-left: var(--space-2);
 }
 
 .tracker-entry__tags .tag-badge {
@@ -205,7 +208,16 @@
   border-color: transparent;
 }
 
+/* 1ª linha: fontes de tamanhos diferentes alinham pelo PÉ (baseline), não pelo
+   topo — senão o horário (xs) flutua acima da descrição. Descrição longa trunca
+   com ellipsis; o texto inteiro vive no title (mouseover) / :focus (tap). */
 .tracker-entry__description {
+  grid-area: desc;
+  align-self: baseline;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-weight: var(--weight-medium);
 }
 
@@ -217,55 +229,61 @@
   outline: none;
 }
 
-.tracker-entry__separator {
-  color: var(--color-text-subtle);
-}
-
 /* Horário recua (xs, subtle) — a linha hierarquiza: descrição forte, projeto
    normal, horário e tags quietos, badge de alerta como único elemento alto. */
 .tracker-entry__range {
+  grid-area: range;
+  align-self: baseline;
   white-space: nowrap;
   font-size: var(--text-xs);
   color: var(--color-text-subtle);
 }
 
-/*
- * Coluna direita = grade de trilhas FIXAS (não flex), pra duração, valor e ⋮
- * colunarem VERTICALMENTE entre todas as linhas do dia. Como cada .tracker-entry
- * é um grid próprio, o alinhamento entre linhas depende das trilhas terem largura
- * determinística: por isso larguras fixas (ch), não `auto`. tabular-nums + trilha
- * fixa = a coluna de horas/dinheiro fica reta (o princípio "o número parece certo").
- * O ⋮ ganha um respiro extra (margin-left) pra separar a AÇÃO do par numérico.
- */
-.tracker-entry__actions {
-  display: grid;
-  /* Trilha do valor larga o bastante pro pior caso REALISTA de uma entry única
-     ("R$ 12.345,56" = 12 chars); valores maiores são raros e truncam graciosos em
-     vez de quebrar o alinhamento das linhas típicas. */
-  grid-template-columns: 6.5ch 11ch auto;
-  align-items: center;
-  column-gap: var(--space-2);
+/* 2ª linha: projeto — bolinha colada no nome; nome gigante trunca. */
+.tracker-entry__project {
+  grid-area: proj;
+  min-width: 0;
+  overflow: hidden;
+  gap: var(--space-1);
 }
 
-.tracker-entry__duration,
-.tracker-entry__amount {
+.tracker-entry__project > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tracker-entry__duration {
+  grid-area: dur;
+  align-self: baseline;
   text-align: right;
+  font-weight: var(--weight-semibold);
 }
 
-/* Valor de 6+ dígitos (raro) trunca com reticências em vez de estourar a trilha e
-   desalinhar as linhas típicas. min-width:0 deixa o grid honrar a trilha fixa. */
+/* Trilha do valor (11ch) cobre o pior caso REALISTA de uma entry única
+   ("R$ 12.345,56"); valores maiores são raros e truncam graciosos em vez de
+   quebrar o alinhamento das linhas típicas. min-width:0 honra a trilha fixa. */
 .tracker-entry__amount {
+  grid-area: amount;
+  align-self: baseline;
+  text-align: right;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* Empurra o ⋮ pro fim da sua trilha e afasta do par numérico (proximidade:
-   duração+valor são um grupo; a ação é outro). */
+/* O ⋮ sem CAIXA (a moldura pendurada lia como bagunça): ícone quieto, alvo de
+   clique/toque de 2.75rem intacto, centrado na 1ª linha via margem negativa. */
 .tracker-entry__actions .row-menu {
+  grid-area: menu;
   justify-self: end;
-  margin-left: var(--space-1);
+}
+
+.tracker-entry__actions .row-menu > summary {
+  border-color: transparent;
+  min-height: 2.75rem;
+  margin-block: calc((1lh - 2.75rem) / 2);
 }
 
 .tracker-entry--running .tracker-entry__description,
@@ -273,8 +291,11 @@
   color: var(--color-accent);
 }
 
+/* EDIÇÃO inline: coluna única e sem áreas (o form tem grid próprio; as áreas da
+   linha de leitura esmagariam o form). */
 .tracker-entry--editing {
   grid-template-columns: 1fr;
+  grid-template-areas: none;
   padding: var(--space-3);
   margin: var(--space-2) 0;
   background-color: color-mix(in srgb, var(--color-accent) 4%, var(--color-surface));
@@ -416,100 +437,19 @@
     grid-template-columns: 1fr;
   }
 
-  /* Linha do tracker no mobile — layout do dono (06/07):
-       1ª linha: descrição … início–fim · decorrido · ⋮
-       2ª linha: projeto (bolinha + nome)
-       3ª linha: tags e alertas.
-     Sem markup extra: os wrappers (main/summary/actions) viram display:contents
-     e cada dado se posiciona pelas grid-template-areas da própria linha. */
+  /* Mobile = o MESMO layout de 3 linhas da base (desde 07/07 o desktop também usa);
+     o delta é só o € por entry sair da 1ª linha (dinheiro é assunto do relatório) —
+     a trilha do valor some junto. */
   .tracker-entry {
     grid-template-columns: minmax(0, 1fr) auto auto auto;
     grid-template-areas:
       "desc range dur menu"
       "proj proj  proj proj"
       "tags tags  tags tags";
-    column-gap: var(--space-2);
-    /* Respiro entre as 3 linhas internas (pedido do dono — 2px ficava chumbado;
-       8px ainda pouco). */
-    row-gap: var(--space-3);
-    align-items: start;
   }
 
-  .tracker-entry__main,
-  .tracker-entry__summary,
-  .tracker-entry__actions {
-    display: contents;
-  }
-
-  /* EDIÇÃO inline no mobile: coluna única e sem áreas (o form tem grid próprio;
-     as áreas da linha de leitura esmagariam o form). */
-  .tracker-entry--editing {
-    grid-template-columns: 1fr;
-    grid-template-areas: none;
-  }
-
-  /* 1ª linha: fontes de tamanhos diferentes alinham pelo PÉ (baseline), não
-     pelo topo — senão o horário (xs) flutua acima da descrição. */
-  .tracker-entry__description {
-    grid-area: desc;
-    align-self: baseline;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .tracker-entry__range {
-    grid-area: range;
-    align-self: baseline;
-    font-size: var(--text-xs);
-    color: var(--color-text-subtle);
-  }
-
-  .tracker-entry__duration {
-    grid-area: dur;
-    align-self: baseline;
-    font-weight: var(--weight-semibold);
-  }
-
-  /* O ⋮ sem CAIXA (a moldura de 44px pendurada lia como bagunça): ícone quieto,
-     alvo de toque de 2.75rem intacto, centrado na 1ª linha via margem negativa. */
-  .tracker-entry__actions .row-menu {
-    grid-area: menu;
-    margin-left: 0;
-  }
-
-  .tracker-entry__actions .row-menu > summary {
-    border-color: transparent;
-    margin-block: calc((1lh - 2.75rem) / 2);
-  }
-
-  .tracker-entry__project {
-    grid-area: proj;
-    min-width: 0;
-    overflow: hidden;
-    /* Bolinha colada no nome (o gap herdado de 8px separava demais). */
-    gap: var(--space-1);
-  }
-
-  .tracker-entry__project > span:last-child {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  /* Sem separadores "·" e sem € por entry no mobile (o valor vive no relatório).
-     As TAGS ficam — linha própria de chips, compacta (pedido do dono). */
-  .tracker-entry__separator,
   .tracker-entry__amount {
     display: none;
-  }
-
-  .tracker-entry__tags {
-    grid-area: tags;
-    /* O row-gap do grid já dá o respiro — sem margem extra. */
-    margin-top: 0;
-    margin-left: 0;
   }
 
   /* Cabeçalho do dia no mobile: data + HORAS (o número do dia). O € do dia sai —

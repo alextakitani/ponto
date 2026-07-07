@@ -10,14 +10,12 @@
         <%= tag.span tracker_entry_description(time_entry), class: "tracker-entry__description",
               title: time_entry.description.presence,
               tabindex: ("0" if time_entry.description.present?) %>
-        <span class="tracker-entry__separator" aria-hidden="true">·</span>
         <span class="tracker-entry__project">
           <% if time_entry.project %>
             <span class="project-dot" style="background-color: <%= time_entry.project.color %>" aria-hidden="true"></span>
           <% end %>
           <%= tracker_entry_project_name(time_entry) %>
         </span>
-        <span class="tracker-entry__separator" aria-hidden="true">·</span>
         <span class="tracker-entry__range muted tabular-nums"><%= tracker_entry_time_range(time_entry) %></span>
       </div>
       <% if tracker_entry_tags(time_entry).any? %>
