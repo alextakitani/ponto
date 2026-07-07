@@ -320,6 +320,31 @@
   font-size: var(--text-base);
   font-weight: var(--weight-semibold);
   color: var(--color-text);
+  /* Âncora do tooltip de valor (abaixo). */
+  position: relative;
+}
+
+/* Tooltip do € no FOCO (tap no mobile, onde o title nativo não existe; Tab/clique
+   no desktop): CSS puro lendo o próprio title — sem JS, sem markup. O tooltip é o
+   indicador de foco (outline fora), mesmo racional da descrição truncada. */
+.tracker-entry__duration[title]:focus {
+  outline: none;
+}
+
+.tracker-entry__duration[title]:focus::after {
+  content: attr(title);
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  right: 0;
+  z-index: 2;
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-subtle);
+  white-space: nowrap;
 }
 
 /* O ⋮ sem CAIXA (a moldura pendurada lia como bagunça): ícone quieto, alvo de
@@ -520,17 +545,9 @@
     max-width: none;
   }
 
-  /* Cabeçalho do dia no mobile: data + HORAS (o número do dia). O € do dia sai —
-     dinheiro é assunto do relatório; a pseudo-coluna do menu mantém as horas do
-     header alinhadas com a coluna de duração das entries. */
-  .tracker-day__amount {
-    display: none;
-  }
-
-  .tracker-day__header {
-    grid-template-columns: minmax(0, 1fr) auto auto;
-    grid-template-areas: "label total menu";
-  }
+  /* Cabeçalho do dia no mobile = o MESMO do desktop, € incluso (decisão do dono
+     07/07 — agora que o € saiu das linhas, o total do dia é o único lugar dele
+     na lista; a data trunca antes de empurrar os números). */
 
   /* Timer RODANDO: título + cronômetro/Parar empilhados, cronômetro protagonista. */
   .timer-bar__actions {
