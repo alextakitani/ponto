@@ -14,7 +14,7 @@
           <% if time_entry.project %>
             <span class="project-dot" style="background-color: <%= time_entry.project.color %>" aria-hidden="true"></span>
           <% end %>
-          <%= tracker_entry_project_name(time_entry) %>
+          <span class="tracker-entry__project-name"><%= tracker_entry_project_name(time_entry) %></span>
         </span>
         <span class="tracker-entry__range muted tabular-nums"><%= tracker_entry_time_range(time_entry) %></span>
       </div>
@@ -39,7 +39,11 @@
     </div>
 
     <div class="tracker-entry__actions">
-      <span class="tracker-entry__duration tabular-nums">
+      <%# O € por entry saiu da linha (decisão do dono 07/07): valor mora no total
+          do dia e aqui, como tooltip do decorrido (só entry parada — a rodando
+          teria um valor defasado no title). %>
+      <%= tag.span class: "tracker-entry__duration tabular-nums",
+            title: (time_entry.billable_amount&.format if time_entry.ended_at?) do %>
         <% if time_entry.ended_at? %>
           <%= tracker_duration(time_entry.duration_seconds) %>
         <% else %>
@@ -47,8 +51,7 @@
             <%= tracker_duration(0) %>
           </span>
         <% end %>
-      </span>
-      <span class="tracker-entry__amount muted tabular-nums"><%= tracker_billable_amount(time_entry) %></span>
+      <% end %>
 
       <details class="row-menu" data-controller="menu">
         <summary class="btn btn--quiet btn--sm" aria-label="<%= t("time_entries.entry.actions_label", description: tracker_entry_description(time_entry)) %>">

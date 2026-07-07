@@ -167,9 +167,12 @@ class TrackerPowerUserPathsTest < ActionDispatch::IntegrationTest
     get home_path
 
     assert_response :success
-    assert_select "[data-entry-id='#{billable.id}'] .tracker-entry__amount", text: /R\$\s?100,00/
-    assert_select "[data-entry-id='#{non_billable.id}'] .tracker-entry__amount", text: "—"
-    assert_select "[data-entry-id='#{no_rate.id}'] .tracker-entry__amount", text: "—"
+    # O € saiu da linha (07/07): vive no title do decorrido, e SÓ quando há
+    # dinheiro faturável — entry não-faturável/sem taxa não ganha tooltip.
+    doc = Nokogiri::HTML(response.body)
+    assert_match(/R\$\s?100,00/, doc.at_css("[data-entry-id='#{billable.id}'] .tracker-entry__duration")["title"])
+    assert_nil doc.at_css("[data-entry-id='#{non_billable.id}'] .tracker-entry__duration")["title"]
+    assert_nil doc.at_css("[data-entry-id='#{no_rate.id}'] .tracker-entry__duration")["title"]
   end
 
   private
