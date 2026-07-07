@@ -518,20 +518,31 @@
     grid-template-columns: 1fr;
   }
 
-  /* Mobile preserva as 3 linhas do working tree:
-       1ª: descrição … início–fim · decorrido · ⋮
-       2ª: projeto
-       3ª: tags e alertas.
-     (O € por entry não existe mais em lugar nenhum — vive no total do dia e no
-     title do decorrido.) */
+  /* Mobile em 3 linhas (REVISADO 07/07 — o início–fim DESCEU da 1ª linha; a
+     descrição era quem pagava o aperto):
+       1ª: descrição ………………………… decorrido · ⋮
+       2ª: ● projeto ………………………… início–fim (alinhado sob o decorrido — os dados
+           de tempo formam uma coluna à direita)
+       3ª: tags e alertas. */
   .tracker-entry {
-    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    grid-template-columns: minmax(0, 1fr) auto auto;
     grid-template-areas:
-      "desc range dur menu"
-      "proj proj  proj proj"
-      "tags tags  tags tags";
+      "desc dur   menu"
+      "proj range ."
+      "tags tags  tags";
     row-gap: var(--space-3);
     align-items: start;
+  }
+
+  /* Range na MESMA coluna do decorrido, com a fonte calibrada pra LARGURA bater:
+     decorrido = 8 chars em text-base (14px); início–fim = 13 chars → 9px iguala
+     as larguras (medido no device; pedido do dono 07/07). Fora da escala de
+     tokens de propósito — é o único lugar com essa restrição geométrica. O
+     letter-spacing positivo compensa a legibilidade no tamanho mínimo. */
+  .tracker-entry__range {
+    justify-self: end;
+    font-size: 0.5625rem;
+    letter-spacing: 0.01em;
   }
 
   .tracker-entry__tags {
