@@ -28,6 +28,31 @@ class PreferencesTest < ActionDispatch::IntegrationTest
     assert_select "button[disabled]", text: /Exportar meus dados/
   end
 
+  test "show JSON via Bearer devolve as preferências do user (contrato extensão/CLI)" do
+    @user.update!(theme: "dark", accent: "mauve", locale: "pt-BR", export_locale: "en")
+    token = @user.access_tokens.create!(permission: "read")
+
+    get preferences_path(format: :json), headers: { "Authorization" => "Bearer #{token.token}" }
+
+    assert_response :success
+    body = response.parsed_body
+    assert_equal "pt-BR", body["locale"]
+    assert_equal "dark", body["theme"]
+    assert_equal "mauve", body["accent"]
+    assert_equal "America/Sao_Paulo", body["time_zone"]
+    assert_equal "en", body["export_locale"]
+  end
+
+  test "show JSON sem token nem sessão é rejeitado (401)" do
+    # O setup faz sign_in_as (sessão de browser); sair garante que a rejeição
+    # testada vem da AUSÊNCIA de credencial, não de um cookie residual.
+    delete sign_out_path
+
+    get preferences_path(format: :json)
+
+    assert_response :unauthorized
+  end
+
   test "update altera name e time_zone do user atual" do
     patch preferences_path, params: {
       user: { name: "Ana Paula", time_zone: "Europe/Lisbon", theme: "dark" }

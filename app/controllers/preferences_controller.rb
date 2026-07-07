@@ -1,9 +1,19 @@
 class PreferencesController < ApplicationController
   layout "app"
 
-  before_action :set_preferences
+  # O setup pesado (400+ fusos, tokens) só serve o form HTML; o JSON (contrato da
+  # extensão/CLI, autenticado por Bearer como os demais resources) só precisa do
+  # Current.user — evita a query e a montagem à toa numa request de API.
+  before_action :set_preferences, unless: -> { action_name == "show" && request.format.json? }
 
+  # GET /preferences — HTML: o form de Preferências. JSON: as preferências do
+  # usuário autenticado (locale/theme/accent/time_zone/export_locale), pra a
+  # extensão/CLI espelharem a config sem uma tela dedicada (07/07).
   def show
+    respond_to do |format|
+      format.html
+      format.json # app/views/preferences/show.json.jbuilder
+    end
   end
 
   def update
