@@ -50,6 +50,10 @@ en:
           title: "Reports"
           text: "Summary with charts and the detailed view grouped by day — ready to export."
           alt: "Ponto reports screen with donut, per-day bars and the detailed list"
+        detailed:
+          title: "Detailed"
+          text: "Entry by entry, grouped by day with totals — the matrix that becomes the export."
+          alt: "Ponto detailed report table grouped by day"
         projects:
           title: "Projects"
           text: "Each project with its color, client, logged hours and hourly rate."

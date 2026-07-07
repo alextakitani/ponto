@@ -49,6 +49,10 @@ pt-BR:
           title: "Relatórios"
           text: "Resumo com gráficos e o detalhado agrupado por dia — pronto pra exportar."
           alt: "Tela de relatórios do Ponto com donut, barras por dia e a lista detalhada"
+        detailed:
+          title: "Detalhado"
+          text: "Lançamento a lançamento, agrupado por dia com totais — a matriz que vira o export."
+          alt: "Tabela detalhada do relatório do Ponto agrupada por dia"
         projects:
           title: "Projetos"
           text: "Cada projeto com sua cor, cliente, horas registradas e valor-hora."
