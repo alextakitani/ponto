@@ -4,12 +4,20 @@ module Tags
 
     def create
       @tag.archive!
-      redirect_to tags_path, notice: t("tags.archivals.created")
+
+      respond_to do |format|
+        format.html { redirect_to tags_path, notice: t("tags.archivals.created") }
+        format.json { render "tags/show" }
+      end
     end
 
     def destroy
       @tag.unarchive!
-      redirect_to tags_path(archived: "1"), notice: t("tags.archivals.destroyed")
+
+      respond_to do |format|
+        format.html { redirect_to tags_path(archived: "1"), notice: t("tags.archivals.destroyed") }
+        format.json { render "tags/show" }
+      end
     end
 
     private

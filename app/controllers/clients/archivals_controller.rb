@@ -8,12 +8,20 @@ module Clients
 
     def create
       @client.archive!
-      redirect_to clients_path, notice: t("clients.archivals.created")
+
+      respond_to do |format|
+        format.html { redirect_to clients_path, notice: t("clients.archivals.created") }
+        format.json { render "clients/show" }
+      end
     end
 
     def destroy
       @client.unarchive!
-      redirect_to clients_path(archived: "1"), notice: t("clients.archivals.destroyed")
+
+      respond_to do |format|
+        format.html { redirect_to clients_path(archived: "1"), notice: t("clients.archivals.destroyed") }
+        format.json { render "clients/show" }
+      end
     end
 
     private

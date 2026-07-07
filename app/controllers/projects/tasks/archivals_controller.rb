@@ -37,6 +37,7 @@ module Projects
               render "projects/tasks/section_stream", project: @project, tasks: @tasks
             end
             format.html { redirect_to edit_project_path(@project), notice: notice }
+            format.json { render "projects/tasks/show" }
           end
         end
     end

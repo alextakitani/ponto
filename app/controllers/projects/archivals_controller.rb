@@ -7,12 +7,22 @@ module Projects
 
     def create
       @project.archive!
-      redirect_to projects_path, notice: t("projects.archivals.created")
+      @tasks = @project.active_tasks
+
+      respond_to do |format|
+        format.html { redirect_to projects_path, notice: t("projects.archivals.created") }
+        format.json { render "projects/show" }
+      end
     end
 
     def destroy
       @project.unarchive!
-      redirect_to projects_path(archived: "1"), notice: t("projects.archivals.destroyed")
+      @tasks = @project.active_tasks
+
+      respond_to do |format|
+        format.html { redirect_to projects_path(archived: "1"), notice: t("projects.archivals.destroyed") }
+        format.json { render "projects/show" }
+      end
     end
 
     private

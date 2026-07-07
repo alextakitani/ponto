@@ -1,6 +1,6 @@
 # Concern único de auth (decisões §3, padrões clonados do fizzy):
 #   1. cookie de sessão (humano no browser/PWA) — Session identificada por signed_id
-#   2. Bearer AccessToken — só em requests JSON, escopado por método HTTP (extensão)
+#   2. Bearer AccessToken — requests JSON/export, escopado por método HTTP (extensão)
 #   3. senão, exige login
 module Authentication
   extend ActiveSupport::Concern
@@ -58,6 +58,7 @@ module Authentication
     respond_to do |format|
       format.html { redirect_to suspended_path }
       format.json { render json: { error: I18n.t("auth.errors.suspended") }, status: :forbidden }
+      format.any(:csv, :xlsx) { render plain: I18n.t("auth.errors.suspended"), status: :forbidden }
     end
   end
 
@@ -107,7 +108,12 @@ module Authentication
   end
 
   def bearer_token_authenticatable_request?
-    request.format.json? && request.authorization.to_s.include?("Bearer")
+    bearer_request_format? && request.authorization.to_s.include?("Bearer")
+  end
+
+  def bearer_request_format?
+    # Export é o entregável principal; CLI/cron baixam via token Bearer.
+    request.format.json? || request.format.csv? || request.format.xlsx?
   end
 
   # --- Falha ------------------------------------------------------------------
@@ -119,6 +125,13 @@ module Authentication
         redirect_to sign_in_path, alert: t("auth.errors.sign_in_required")
       end
       format.json { render json: { error: t("auth.errors.unauthorized") }, status: :unauthorized }
+      format.any(:csv, :xlsx) do
+        if request.authorization.to_s.include?("Bearer")
+          render plain: t("auth.errors.unauthorized"), status: :unauthorized
+        else
+          head :not_acceptable
+        end
+      end
     end
   end
 
