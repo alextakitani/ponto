@@ -104,13 +104,12 @@ Rails.application.routes.draw do
   namespace :admin do
     root "dashboard#show"
 
-    # Analytics via AhoyCaptain — protegido pela mesma sessão assinada do admin.
-    constraints(->(req) {
-      session_record = Session.find_signed(req.cookie_jar.signed[:session_token])
-      session_record&.user&.admin?
-    }) do
-      mount AhoyCaptain::Engine => "/analytics", as: :analytics
-    end
+    # Analytics via AhoyCaptain. A autorização (só admin) é injetada no
+    # ApplicationController da engine em config/initializers/ahoy_captain.rb —
+    # NÃO num constraint de rota (req.cookie_jar não tem key generator ali:
+    # "undefined method 'generate_key' for nil"). O gate real reusa a
+    # Authentication do app.
+    mount AhoyCaptain::Engine => "/analytics", as: :analytics
 
     resources :users, only: %i[create destroy] do
       resource :suspension,  only: %i[create destroy], module: :users
