@@ -102,6 +102,14 @@ class TimeEntry < ApplicationRecord
     end
   end
 
+  # Filtro por intervalo sobre `started_at` (usado no GET /time_entries JSON): a
+  # entry pertence inteira ao instante do seu `started_at` (Q6, sem fatiar). `until`
+  # é FIM EXCLUSIVO (`<`) de propósito — a fronteira do próximo período (ex.: a
+  # segunda-feira 00:00 seguinte) não entra na janela. Compara em UTC; o argumento
+  # já carrega seu offset quando vem ISO 8601.
+  scope :started_since, ->(time) { where(started_at: time..) }
+  scope :started_before, ->(time) { where(started_at: ...time) }
+
   private
     def ended_at_after_started_at
       if ended_at.present? && started_at.present? && ended_at <= started_at

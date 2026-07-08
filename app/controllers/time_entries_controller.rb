@@ -15,7 +15,11 @@ class TimeEntriesController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to home_path }
-      format.json { @time_entries = paginate_json(relation); render :index }
+      format.json do
+        relation = apply_time_entry_range(relation) or return
+        @time_entries = paginate_json(relation)
+        render :index
+      end
     end
   end
 
@@ -97,6 +101,38 @@ class TimeEntriesController < ApplicationController
   end
 
   private
+    # Filtro opcional por intervalo no GET /time_entries JSON (só JSON). `since` e
+    # `until` são ISO 8601 combináveis; filtram por `started_at` no SQL (via scopes),
+    # ANTES da paginação — então o X-Total-Count já reflete a janela. `until` é fim
+    # EXCLUSIVO. Valor não-parseável → 400 `{error:}` (formato de erro da API): um
+    # since/until malformado é bug do cliente, melhor falhar visível que devolver a
+    # janela errada em silêncio. Sem os params, a relação passa intacta.
+    # Retorna a relation, ou nil após já ter renderizado o 400 (o index dá `return`).
+    def apply_time_entry_range(relation)
+      if params[:since].present?
+        since = parse_iso_timestamp(params[:since]) or return render_range_error(:since)
+        relation = relation.started_since(since)
+      end
+
+      if params[:until].present?
+        upto = parse_iso_timestamp(params[:until]) or return render_range_error(:until)
+        relation = relation.started_before(upto)
+      end
+
+      relation
+    end
+
+    def parse_iso_timestamp(value)
+      Time.iso8601(value)
+    rescue ArgumentError
+      nil
+    end
+
+    def render_range_error(param)
+      render json: { error: "invalid #{param} timestamp" }, status: :bad_request
+      nil
+    end
+
     def set_time_entry
       @time_entry = authorized_scope(TimeEntry.all).find(params[:id])
       authorize! @time_entry

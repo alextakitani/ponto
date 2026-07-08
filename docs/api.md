@@ -161,7 +161,21 @@ projeto/cliente muda; é re-congelado se `project_id` mudar num update
 
 - **`GET /time_entries`** → 200, array `started_at DESC`, **paginado**
   (`?page=`/`?limit=`, headers `X-*` — ver §2 Paginação). Inclui o timer
-  rodando. Sem filtros de query além da paginação.
+  rodando.
+  - **Filtro por intervalo** (opcional, combinável), por `started_at`,
+    aplicado no SQL antes da paginação (o `X-Total-Count` já reflete a janela):
+    - `?since=` — ISO 8601. Retorna entries com `started_at >= since`
+      (**início inclusivo**).
+    - `?until=` — ISO 8601. Retorna entries com `started_at < until`
+      (**fim EXCLUSIVO** — a fronteira do próximo período, ex. a próxima
+      segunda 00:00, não entra).
+    - O offset do ISO 8601 é respeitado; a comparação é em UTC. Exija hora
+      completa com offset/`Z` (`2026-07-06T00:00:00-03:00`); só-data
+      (`2026-07-06`) é rejeitada.
+    - Valor não-parseável em `since`/`until` → **400** `{"error": "invalid
+      since timestamp"}` (não 500): um timestamp malformado é bug do cliente,
+      falha visível em vez de devolver a janela errada em silêncio.
+    - Sem os params, o comportamento é inalterado.
 - **`GET /time_entries/:id`** → 200 | 404.
 - **`POST /time_entries`** (entry manual) → 201 | 422. Body:
 
