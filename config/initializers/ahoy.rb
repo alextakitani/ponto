@@ -9,6 +9,23 @@ class Ahoy::Store < Ahoy::DatabaseStore
     super
   end
 
+  # O geocode do Ahoy grava country = NOME por extenso ("Brazil"), mas o
+  # AhoyCaptain indexa o mapa-múndi e as bandeiras por ISO de 2 letras ("BR")
+  # — sem isto o mapa fica em branco e não sai emoji. O job já resolve o
+  # country_code ("BR"); aqui o promovemos pra coluna `country` (a única que a
+  # tabela tem) antes de persistir. Ver docs/adr/analytics-tracking.md.
+  def geocode(data)
+    super(self.class.iso_country(data))
+  end
+
+  # Troca o nome do país (country) pelo ISO code (country_code) quando presente.
+  # Extraído pra ser testável sem a infra do DatabaseStore (nossa lógica; o
+  # super é framework).
+  def self.iso_country(data)
+    code = data[:country_code].presence
+    code ? data.merge(country: code) : data
+  end
+
   private
     def ahoy_user
       controller.respond_to?(:current_ahoy_user, true) ? controller.send(:current_ahoy_user) : nil
