@@ -20,7 +20,10 @@ class ProjectsController < ApplicationController
 
     respond_to do |format|
       format.html
-      format.json { render :index }
+      # JSON paginado (Q73): catálogo também é limitado. A tela HTML segue completa.
+      # `@registered_seconds` já foi calculado acima com a relação inteira (só a HTML
+      # o usa), então paginar `@projects` aqui não o afeta.
+      format.json { @projects = paginate_json(@projects); render :index }
     end
   end
 

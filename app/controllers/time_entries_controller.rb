@@ -9,11 +9,13 @@ class TimeEntriesController < ApplicationController
 
   def index
     authorize! TimeEntry, to: :index?
-    @time_entries = authorized_scope(TimeEntry.all).includes(:tags).order(started_at: :desc)
+    # Paginado (Q73): sem LIMIT, um histórico grande puxava o array inteiro + um
+    # N+1 de taggings de milhares de ids numa request só. `?page=`/`?limit=` no JSON.
+    relation = authorized_scope(TimeEntry.all).includes(:tags).order(started_at: :desc, id: :desc)
 
     respond_to do |format|
       format.html { redirect_to home_path }
-      format.json { render :index }
+      format.json { @time_entries = paginate_json(relation); render :index }
     end
   end
 

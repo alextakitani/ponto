@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::Base
-  include Pagy::Backend
+  include Pagy::Method
 
   include Authentication
   include Ahoy::Controller
@@ -31,7 +31,33 @@ class ApplicationController < ActionController::Base
 
   helper_method :command_palette_current_timer, :command_palette_recent_time_entries
 
+  # Teto de paginação da API JSON: TODO endpoint de coleção é paginado (LIMIT/OFFSET
+  # no SQL) — sem isso um histórico grande puxava o array inteiro (ex.: 3319 entries
+  # + N+1 de taggings numa request só). `?limit=` sobrescreve o default até o teto;
+  # acima disso o Pagy clampa via `max_limit` (ninguém reabre o buraco com limit=999999).
+  JSON_PAGE_LIMIT_DEFAULT = 50
+  JSON_PAGE_LIMIT_MAX = 100
+
   private
+    # Pagina uma relação pra resposta JSON: aplica LIMIT/OFFSET no SQL via Pagy 43 e
+    # expõe os metadados em HEADERS (o body segue array puro — não quebra clientes
+    # que esperam array). O Pagy 43 lê `?page=`/`?limit=` do request sozinho; passar
+    # `max_limit` liga o override por `?limit=` e clampa no teto de uma vez só.
+    def paginate_json(relation, default_limit: JSON_PAGE_LIMIT_DEFAULT)
+      pagy, records = pagy(:offset, relation, limit: default_limit, max_limit: JSON_PAGE_LIMIT_MAX)
+      set_pagination_headers(pagy)
+      records
+    end
+
+    def set_pagination_headers(pagy)
+      response.headers["X-Total-Count"] = pagy.count.to_s
+      response.headers["X-Total-Pages"] = pagy.pages.to_s
+      response.headers["X-Page"] = pagy.page.to_s
+      response.headers["X-Per-Page"] = pagy.limit.to_s
+      response.headers["X-Next-Page"] = pagy.next.to_s if pagy.next
+      response.headers["X-Prev-Page"] = pagy.previous.to_s if pagy.previous
+    end
+
     def current_ahoy_user
       Current.user
     end

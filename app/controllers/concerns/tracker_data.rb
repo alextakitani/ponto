@@ -15,7 +15,7 @@ module TrackerData
     end
 
     def load_tracker_day_groups
-      @tracker_pagy, @tracker_entries_page = pagy(tracker_relation, limit: TRACKER_PAGE_LIMIT)
+      @tracker_pagy, @tracker_entries_page = pagy(:offset, tracker_relation, limit: TRACKER_PAGE_LIMIT)
       @tracker_day_groups = tracker_day_groups(@tracker_entries_page)
       @tracker_has_more = @tracker_pagy.next.present?
     end

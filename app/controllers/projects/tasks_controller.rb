@@ -15,7 +15,8 @@ module Projects
 
       respond_to do |format|
         format.html { redirect_to edit_project_path(@project) }
-        format.json { render :index }
+        # JSON paginado (Q73): mesmo as tasks de um projeto são limitadas.
+        format.json { @tasks = paginate_json(@tasks); render :index }
       end
     end
 

@@ -67,7 +67,16 @@ claro aparece uma única vez.
   validação `{"errors": ["...", ...]}` (422). Sem envelope extra.
 - **Ordenação**: catálogo por `name_normalized ASC`; entries por
   `started_at DESC`.
-- **Paginação**: NÃO há em nenhum endpoint JSON — arrays completos.
+- **Paginação**: TODO endpoint de coleção é paginado (LIMIT/OFFSET no SQL) —
+  sem isso um histórico grande puxava o array inteiro numa request só. O corpo
+  segue **array puro** (sem envelope); os metadados vão nos **headers**:
+  - Params: `?page=` (default `1`) e `?limit=` (default `50`, teto `100` —
+    valores acima são clampeados no teto).
+  - Headers de resposta: `X-Total-Count`, `X-Total-Pages`, `X-Page`,
+    `X-Per-Page`, e `X-Next-Page`/`X-Prev-Page` quando existem.
+  - Percorrer tudo = seguir `X-Next-Page` até ele sumir. Aplica-se a
+    `/time_entries` e ao catálogo (`/clients`, `/projects`,
+    `/projects/:id/tasks`, `/tags`).
 
 ## 3. Timer (resource singular)
 
@@ -150,8 +159,9 @@ projeto/cliente muda; é re-congelado se `project_id` mudar num update
 
 ### Endpoints
 
-- **`GET /time_entries`** → 200, array completo (sem filtros/paginação),
-  `started_at DESC`. Inclui o timer rodando.
+- **`GET /time_entries`** → 200, array `started_at DESC`, **paginado**
+  (`?page=`/`?limit=`, headers `X-*` — ver §2 Paginação). Inclui o timer
+  rodando. Sem filtros de query além da paginação.
 - **`GET /time_entries/:id`** → 200 | 404.
 - **`POST /time_entries`** (entry manual) → 201 | 422. Body:
 

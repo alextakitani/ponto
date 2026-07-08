@@ -1,6 +1,4 @@
 module ApplicationHelper
-  include Pagy::Frontend
-
   # Ícones Lucide (Q80) — vendorizados como SVG puro em app/assets/svg/icons/
   # (licença ISC — LICENSE na mesma pasta). Sem gem, sem lucide.js.
   #

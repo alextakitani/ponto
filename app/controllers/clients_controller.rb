@@ -19,7 +19,9 @@ class ClientsController < ApplicationController
 
     respond_to do |format|
       format.html
-      format.json { render :index }
+      # JSON paginado (Q73): mesmo o catálogo é limitado — um user pode acumular
+      # centenas de clientes ao longo dos anos. A tela HTML segue mostrando tudo.
+      format.json { @clients = paginate_json(@clients); render :index }
     end
   end
 

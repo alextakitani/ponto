@@ -15,7 +15,8 @@ class TagsController < ApplicationController
 
     respond_to do |format|
       format.html
-      format.json { render :index }
+      # JSON paginado (Q73): catálogo também é limitado. A tela HTML segue completa.
+      format.json { @tags = paginate_json(@tags); render :index }
     end
   end
 

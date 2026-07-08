@@ -11,6 +11,7 @@ module Admin
       @usage_by_endpoint = Ahoy::Event.api_usage_by_endpoint
       @total_requests = Ahoy::Event.api_requests.count
       @pagy, @recent_requests = pagy(
+        :offset,
         Ahoy::Event.api_requests.includes(:user).order(time: :desc),
         limit: 50
       )
