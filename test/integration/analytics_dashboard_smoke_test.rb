@@ -30,7 +30,7 @@ class AnalyticsDashboardSmokeTest < ActionDispatch::IntegrationTest
       get path
       failures << "#{path} -> #{response.status}" if response.status >= 500
     rescue => e
-      failures << "#{path} -> RAISED #{e.class}: #{e.message[0,80]}"
+      failures << "#{path} -> RAISED #{e.class}: #{e.message[0, 80]}"
     end
     assert failures.empty?, "Páginas com erro:\n#{failures.join("\n")}"
   end

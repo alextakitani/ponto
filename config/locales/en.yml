@@ -368,6 +368,7 @@ en:
       message: "Your account is suspended and access to Ponto is temporarily blocked. Contact the administrator to reactivate it."
   admin:
     nav:
+      accounts: "Accounts"
       analytics: "Analytics"
       api_usage: "API usage"
     labels:
@@ -380,7 +381,7 @@ en:
       status: "Status"
     dashboard:
       show:
-        title: "Admin"
+        title: "Accounts"
         lede: "Manage accounts and access requests. (Domain data does not appear here.)"
         access_requests:
           title: "Access requests"
