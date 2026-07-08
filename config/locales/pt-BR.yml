@@ -368,6 +368,7 @@ pt-BR:
   admin:
     nav:
       analytics: "Analytics"
+      api_usage: "Uso da API"
     labels:
       actions: "Ações"
       admin: "Admin"
@@ -389,6 +390,21 @@ pt-BR:
           submit: "Convidar"
         users:
           title: "Contas"
+    api_usage:
+      show:
+        title: "Uso da API"
+        lede: "Acessos do CLI e da extensão (via token). Não aparecem no Analytics, que só mostra navegação de browser."
+        empty: "Nenhum acesso de API registrado ainda."
+        labels:
+          endpoint: "Endpoint"
+          method: "Método"
+          count: "Chamadas"
+          last_access: "Último acesso"
+          format: "Formato"
+        by_endpoint:
+          title: "Por endpoint"
+        recent:
+          title: "Acessos recentes"
     access_requests:
       actions:
         approve: "Aprovar"

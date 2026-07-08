@@ -369,6 +369,7 @@ en:
   admin:
     nav:
       analytics: "Analytics"
+      api_usage: "API usage"
     labels:
       actions: "Actions"
       admin: "Admin"
@@ -390,6 +391,21 @@ en:
           submit: "Invite"
         users:
           title: "Accounts"
+    api_usage:
+      show:
+        title: "API usage"
+        lede: "CLI and extension access (via token). These do not show in Analytics, which only tracks browser navigation."
+        empty: "No API access recorded yet."
+        labels:
+          endpoint: "Endpoint"
+          method: "Method"
+          count: "Calls"
+          last_access: "Last access"
+          format: "Format"
+        by_endpoint:
+          title: "By endpoint"
+        recent:
+          title: "Recent access"
     access_requests:
       actions:
         approve: "Approve"

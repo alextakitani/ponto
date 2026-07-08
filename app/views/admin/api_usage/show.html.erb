@@ -1,0 +1,67 @@
+<% content_for :title, t(".title") %>
+<div class="admin">
+  <header class="admin__header">
+    <h1><%= t(".title") %></h1>
+    <p class="muted"><%= t(".lede") %></p>
+  </header>
+
+  <% if @total_requests.zero? %>
+    <section class="admin__section">
+      <p class="muted"><%= t(".empty") %></p>
+    </section>
+  <% else %>
+    <%# Resumo: quais endpoints o CLI/extensão mais batem. %>
+    <section class="admin__section" id="by_endpoint">
+      <h2><%= t(".by_endpoint.title") %></h2>
+      <table class="admin__table">
+        <thead>
+          <tr>
+            <th><%= t(".labels.endpoint") %></th>
+            <th><%= t(".labels.method") %></th>
+            <th><%= t(".labels.count") %></th>
+            <th><%= t(".labels.last_access") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @usage_by_endpoint.each do |row| %>
+            <tr>
+              <td><code><%= row.endpoint %></code></td>
+              <td><%= row.method %></td>
+              <td class="tabular-nums"><%= row.count %></td>
+              <td><%= row.last_time ? l(row.last_time, format: :short) : "—" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </section>
+
+    <%# Timeline: os acessos mais recentes, um a um (paginado no SQL via Pagy). %>
+    <section class="admin__section" id="recent">
+      <h2><%= t(".recent.title") %></h2>
+      <table class="admin__table">
+        <thead>
+          <tr>
+            <th><%= t("admin.labels.date") %></th>
+            <th><%= t("admin.labels.email") %></th>
+            <th><%= t(".labels.method") %></th>
+            <th><%= t(".labels.endpoint") %></th>
+            <th><%= t(".labels.format") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @recent_requests.each do |event| %>
+            <% props = admin_api_usage_properties(event) %>
+            <tr>
+              <td><%= l(event.time, format: :short) %></td>
+              <td><%= event.user&.email || "—" %></td>
+              <td><%= props["method"] %></td>
+              <td><code><%= "#{props["controller"]}##{props["action"]}" %></code></td>
+              <td><%= props["format"] %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+    </section>
+  <% end %>
+</div>

@@ -111,6 +111,13 @@ Rails.application.routes.draw do
     # Authentication do app.
     mount AhoyCaptain::Engine => "/analytics", as: :analytics
 
+    # Uso da API (CLI/extensão via Bearer). O AhoyCaptain só mostra visitas de
+    # browser ($view) e ancora TODAS as telas num JOIN com ahoy_visits; os
+    # acessos de máquina são gravados como eventos `api_request` SEM visita (ver
+    # ApplicationController#track_api_request), então o join os elimina e eles
+    # nunca aparecem no dashboard da engine. Esta página os lê direto.
+    resource :api_usage, only: :show, controller: :api_usage
+
     resources :users, only: %i[create destroy] do
       resource :suspension,  only: %i[create destroy], module: :users
       resource :admin_role,  only: %i[create destroy], module: :users
