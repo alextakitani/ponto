@@ -366,6 +366,8 @@ pt-BR:
       title: "Conta suspensa"
       message: "Sua conta está suspensa e o acesso ao Ponto está temporariamente bloqueado. Fale com o administrador para reativá-la."
   admin:
+    nav:
+      analytics: "Analytics"
     labels:
       actions: "Ações"
       admin: "Admin"

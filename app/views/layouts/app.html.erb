@@ -27,9 +27,13 @@
       <div class="shell-sidebar__footer">
         <%= render "layouts/shell/nav_item", label: t("shell.nav.preferences"), icon_name: "settings", active: true, current: current_page?(preferences_path), href: preferences_path %>
         <% if current_user.admin? %>
+          <%= link_to admin_analytics_path, class: "shell-nav__item" do %>
+            <%= icon("chart-column") %>
+            <%= t("admin.nav.analytics") %>
+          <% end %>
           <%= link_to admin_root_path, class: "shell-nav__item" do %>
             <%= icon("shield") %>
-            Admin
+            <%= t("admin.labels.admin") %>
           <% end %>
         <% end %>
         <%= button_to sign_out_path, method: :delete, class: "shell-nav__item shell-nav__item--button" do %>
@@ -97,9 +101,13 @@
             <%= t("shell.nav.preferences") %>
           <% end %>
           <% if current_user.admin? %>
+            <%= link_to admin_analytics_path, class: "shell-nav__item" do %>
+              <%= icon("chart-column") %>
+              <%= t("admin.nav.analytics") %>
+            <% end %>
             <%= link_to admin_root_path, class: "shell-nav__item" do %>
               <%= icon("shield") %>
-              Admin
+              <%= t("admin.labels.admin") %>
             <% end %>
           <% end %>
           <%= button_to sign_out_path, method: :delete, class: "shell-nav__item shell-nav__item--button" do %>

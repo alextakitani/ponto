@@ -367,6 +367,8 @@ en:
       title: "Account suspended"
       message: "Your account is suspended and access to Ponto is temporarily blocked. Contact the administrator to reactivate it."
   admin:
+    nav:
+      analytics: "Analytics"
     labels:
       actions: "Actions"
       admin: "Admin"

@@ -104,6 +104,14 @@ Rails.application.routes.draw do
   namespace :admin do
     root "dashboard#show"
 
+    # Analytics via AhoyCaptain — protegido pela mesma sessão assinada do admin.
+    constraints(->(req) {
+      session_record = Session.find_signed(req.cookie_jar.signed[:session_token])
+      session_record&.user&.admin?
+    }) do
+      mount AhoyCaptain::Engine => "/analytics", as: :analytics
+    end
+
     resources :users, only: %i[create destroy] do
       resource :suspension,  only: %i[create destroy], module: :users
       resource :admin_role,  only: %i[create destroy], module: :users

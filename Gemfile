@@ -18,6 +18,12 @@ gem "stimulus-rails"
 # Paginação Ruby puro para lists server-rendered (sem JS/build).
 gem "pagy"
 
+# Analytics interno (só admin): tracking de visitas/eventos via Ahoy + dashboard
+# AhoyCaptain. O fork em ~/Projetos/ahoy_captain foi portado pra SQLite (era
+# Postgres-only) — ver SQLITE_PORT.md lá. Cobre landing pública + uso do app.
+gem "ahoy_matey"
+gem "ahoy_captain", path: "../ahoy_captain"
+
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
 
