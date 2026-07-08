@@ -35,6 +35,10 @@
             <%= icon("square-terminal") %>
             <%= t("admin.nav.api_usage") %>
           <% end %>
+          <%= link_to admin_jobs_path, class: "shell-nav__item" do %>
+            <%= icon("loader-circle") %>
+            <%= t("admin.nav.jobs") %>
+          <% end %>
           <%= link_to admin_root_path, class: "shell-nav__item" do %>
             <%= icon("shield") %>
             <%= t("admin.nav.accounts") %>
@@ -112,6 +116,10 @@
             <%= link_to admin_api_usage_path, class: "shell-nav__item" do %>
               <%= icon("square-terminal") %>
               <%= t("admin.nav.api_usage") %>
+            <% end %>
+            <%= link_to admin_jobs_path, class: "shell-nav__item" do %>
+              <%= icon("loader-circle") %>
+              <%= t("admin.nav.jobs") %>
             <% end %>
             <%= link_to admin_root_path, class: "shell-nav__item" do %>
               <%= icon("shield") %>

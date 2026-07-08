@@ -43,6 +43,10 @@ gem "solid_cache"
 gem "solid_queue"
 gem "solid_cable"
 
+# Dashboard web dos jobs (Solid Queue) — montado em /admin/jobs, só admin.
+# Sem HTTP Basic (desligado); protegido pelo MESMO gate do AhoyCaptain.
+gem "mission_control-jobs"
+
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 

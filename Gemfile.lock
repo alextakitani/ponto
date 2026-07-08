@@ -203,6 +203,16 @@ GEM
     minitest (6.0.6)
       drb (~> 2.0)
       prism (~> 1.5)
+    mission_control-jobs (1.1.0)
+      actioncable (>= 7.1)
+      actionpack (>= 7.1)
+      activejob (>= 7.1)
+      activerecord (>= 7.1)
+      importmap-rails (>= 1.2.1)
+      irb (~> 1.13)
+      railties (>= 7.1)
+      stimulus-rails
+      turbo-rails
     monetize (2.0.0)
       money (~> 7.0)
     money (7.0.2)
@@ -441,6 +451,7 @@ DEPENDENCIES
   jbuilder
   kamal
   maxminddb
+  mission_control-jobs
   money-rails (~> 3.0)
   pagy
   propshaft
@@ -528,6 +539,7 @@ CHECKSUMS
   mini_magick (5.3.1) sha256=29395dfd76badcabb6403ee5aff6f681e867074f8f28ce08d78661e9e4a351c4
   mini_mime (1.1.5) sha256=8681b7e2e4215f2a159f9400b5816d85e9d8c6c6b491e96a12797e798f8bccef
   minitest (6.0.6) sha256=153ea36d1d987a62942382b61075745042a2b3123b1cd48f4c3675af9cc7d6f1
+  mission_control-jobs (1.1.0) sha256=b13da9cde3344fec7c744b79d2a34c3ecd454f45d4d593d4c968ba762315e84c
   monetize (2.0.0) sha256=152980cadff9fd11a95817d56e3d7d69b07998c4506f15d971edf05851f82aba
   money (7.0.2) sha256=615c27c1fd1d190dceda5c5f4dd5af5f4d20f790ff3b62ea2fe2d96eb22e2c60
   money-rails (3.0.0) sha256=f4bd1c8e1c98d221e7bf452eeb52e240f41224e43da2a477a5659a87c0c95bae

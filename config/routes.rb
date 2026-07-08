@@ -118,6 +118,12 @@ Rails.application.routes.draw do
     # nunca aparecem no dashboard da engine. Esta página os lê direto.
     resource :api_usage, only: :show, controller: :api_usage
 
+    # Dashboard web dos jobs (Solid Queue) via Mission Control — montado em
+    # /admin/jobs. HTTP Basic da engine fica DESLIGADO (production.rb); a
+    # autorização (só admin) é injetada no controller base da engine no
+    # config/initializers/mission_control_jobs.rb, mesmo padrão do AhoyCaptain.
+    mount MissionControl::Jobs::Engine => "/jobs", as: :jobs
+
     resources :users, only: %i[create destroy] do
       resource :suspension,  only: %i[create destroy], module: :users
       resource :admin_role,  only: %i[create destroy], module: :users

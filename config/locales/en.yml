@@ -371,6 +371,7 @@ en:
       accounts: "Accounts"
       analytics: "Analytics"
       api_usage: "API usage"
+      jobs: "Jobs"
     labels:
       actions: "Actions"
       admin: "Admin"
