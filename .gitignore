@@ -39,3 +39,7 @@
 # Skills instaladas localmente (não fazem parte do app)
 .claude/skills/
 skills-lock.json
+
+# GeoIP database local (MaxMind GeoLite2, licença própria; baixado à parte)
+/db/geoip/*.mmdb
+/storage/geoip/*.mmdb

@@ -24,6 +24,13 @@ gem "pagy"
 gem "ahoy_matey"
 gem "ahoy_captain", path: "../ahoy_captain"
 
+# Geocode das visitas (cidade/país no dashboard) via MaxMind GeoLite2 LOCAL —
+# banco .mmdb offline, sem request externo nem custo (ideal pro homelab). O Ahoy
+# geocoda via a gem geocoder; o lookup :geoip2 lê o .mmdb com a gem maxminddb.
+# O arquivo mora em db/geoip/GeoLite2-City.mmdb (baixado à parte; ver docs/deploy.md).
+gem "geocoder"
+gem "maxminddb"
+
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
 
