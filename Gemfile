@@ -19,10 +19,11 @@ gem "stimulus-rails"
 gem "pagy"
 
 # Analytics interno (só admin): tracking de visitas/eventos via Ahoy + dashboard
-# AhoyCaptain. O fork em ~/Projetos/ahoy_captain foi portado pra SQLite (era
-# Postgres-only) — ver SQLITE_PORT.md lá. Cobre landing pública + uso do app.
+# AhoyCaptain. Fork alextakitani/ahoy_captain portado pra SQLite (upstream é
+# Postgres-only) — ver SQLITE_PORT.md no fork. Cobre landing pública + uso do app.
+# github: (não path:) pra o build remoto do Kamal enxergar o fork no deploy.
 gem "ahoy_matey"
-gem "ahoy_captain", path: "../ahoy_captain"
+gem "ahoy_captain", github: "alextakitani/ahoy_captain", branch: "main"
 
 # Geocode das visitas (cidade/país no dashboard) via MaxMind GeoLite2 LOCAL —
 # banco .mmdb offline, sem request externo nem custo (ideal pro homelab). O Ahoy

@@ -1,5 +1,7 @@
-PATH
-  remote: ../ahoy_captain
+GIT
+  remote: https://github.com/alextakitani/ahoy_captain.git
+  revision: a83f302af17e6f8628ea78567de54dcc48590a0a
+  branch: main
   specs:
     ahoy_captain (1.2.0)
       ahoy_matey (>= 1.1)
