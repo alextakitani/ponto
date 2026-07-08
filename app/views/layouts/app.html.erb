@@ -2,11 +2,25 @@
 <html lang="<%= I18n.locale %>">
   <head>
     <%= render "layouts/head" %>
+    <%# Page-refresh com morph — SÓ no shell logado. Variantes _tag (retornam a <meta>
+        direto): o turbo_refreshes_with usa `provide :head`, que só sai se chamado ANTES
+        do `yield :head` do _head; aqui é DEPOIS, então a meta não sairia. A meta PRECISA
+        estar no headSnapshot pro Turbo ativar o morph (senão degrada pra replace e o
+        turbo:morph nunca dispara → a barra do timer não sincroniza). %>
+    <%= turbo_refresh_method_tag :morph %>
+    <%= turbo_refresh_scroll_tag :preserve %>
   </head>
 
   <body class="app"<% if Current.user.theme.in?(User::THEMES - [ "system" ]) %> data-theme="<%= Current.user.theme %>"<% end %> data-accent="<%= Current.user.accent %>"
       data-controller="command-palette"
       data-action="keydown@window->command-palette#handleGlobalKeydown">
+    <%# Sincroniza abas do MESMO user quando timer/entries mudam por qualquer caminho
+        (web, API da extensão, CLI). Stream assinado por Current.user — outra conta não
+        se inscreve nem forjando o ID (Q23). Fica no <body> (não no <head>): um custom
+        element não é conteúdo válido de <head>, o parser fecharia o head aqui e jogaria
+        isto (e o que viesse depois) pro body de qualquer jeito. O CSS em base.css
+        (turbo-cable-stream-source { display:none }) impede que ele vire célula do grid. %>
+    <%= turbo_stream_from Current.user %>
     <%# Sidebar fixa (desktop). Nav de trabalho no topo; rodapé = Preferências/Admin/
         Sair (não são navegação de trabalho — Q65b). Só "Clientes" tem tela nesta
         fatia; os demais renderizam DESABILITADOS com badge "em breve" (sem link
@@ -59,7 +73,7 @@
       </div>
 
       <div class="shell-timerbar">
-        <%= turbo_frame_tag "timer_bar", src: timer_path(page: params[:page]), data: { turbo_permanent: true } do %>
+        <%= turbo_frame_tag "timer_bar", src: timer_path(page: params[:page]), data: { turbo_permanent: true, controller: "timer-bar-sync" } do %>
           <div class="shell-timerbar__loading muted"><%= t("shell.timer_loading") %></div>
         <% end %>
       </div>

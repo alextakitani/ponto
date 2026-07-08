@@ -9,6 +9,14 @@
   box-sizing: border-box;
 }
 
+/* turbo-cable-stream-source é um elemento de conexão INVISÍVEL (turbo_stream_from).
+   O browser/Turbo o realoca pro <body>; como o shell .app é display:grid, ele viraria
+   uma CÉLULA e empurraria a sidebar/conteúdo. display:none tira do fluxo sem afetar a
+   conexão do ActionCable. */
+turbo-cable-stream-source {
+  display: none;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
 }

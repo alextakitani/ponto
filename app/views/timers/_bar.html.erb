@@ -1,30 +1,36 @@
 <% if time_entry %>
-  <div class="timer-bar timer-bar--running">
-    <div class="timer-bar__context">
-      <p class="timer-bar__eyebrow"><%= t("timers.bar.running") %></p>
-      <div class="timer-bar__title">
-        <span><%= tracker_entry_description(time_entry) %></span>
-        <span class="timer-bar__separator" aria-hidden="true">·</span>
-        <span class="timer-bar__project">
-          <% if time_entry.project %>
-            <span class="project-dot" style="background-color: <%= time_entry.project.color %>" aria-hidden="true"></span>
-          <% end %>
-          <%= tracker_entry_project_name(time_entry) %>
-        </span>
-      </div>
-    </div>
+  <%# Cápsula viva: um objeto só, denso, fit-content à esquerda da régua.
+      A cor do projeto entra como custom property e vira a régua ::before;
+      sem projeto, o CSS cai no fallback --color-accent. %>
+  <%= tag.div class: "timer-bar timer-bar--running",
+        style: ("--project-color: #{time_entry.project.color}" if time_entry.project) do %>
 
-    <div class="timer-bar__actions">
+    <div class="timer-bar__clock">
+      <span class="timer-bar__live" aria-hidden="true"></span>
+      <span class="timer-bar__sr"><%= t("timers.bar.running") %></span>
       <span class="timer-bar__stopwatch tabular-nums" data-controller="stopwatch"
           data-stopwatch-started-at-value="<%= time_entry.started_at.iso8601 %>">
         <%= tracker_duration(0) %>
       </span>
+    </div>
+
+    <div class="timer-bar__context">
+      <p class="timer-bar__description" title="<%= tracker_entry_description(time_entry) %>"><%= tracker_entry_description(time_entry) %></p>
+      <p class="timer-bar__project">
+        <% if time_entry.project %>
+          <span class="project-dot" style="background-color: <%= time_entry.project.color %>" aria-hidden="true"></span>
+        <% end %>
+        <span class="timer-bar__project-name"><%= tracker_entry_project_name(time_entry) %></span>
+      </p>
+    </div>
+
+    <div class="timer-bar__stop">
       <%= button_to timer_path, method: :delete, class: "btn btn--danger" do %>
         <%= icon("square") %>
         <%= t("timers.bar.stop") %>
       <% end %>
     </div>
-  </div>
+  <% end %>
 <% else %>
   <% form_time_entry ||= TimeEntry.new %>
 

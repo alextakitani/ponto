@@ -11,8 +11,14 @@
 
 .shell-timerbar turbo-frame {
   display: block;
-  /* Mesmo eixo do conteúdo centrado (shell-content: 64rem centrado). */
-  max-width: 64rem;
+  /* width:100% conserta o bug real: o host .shell-timerbar é flex, então sem isto
+     o frame encolhia pro conteúdo (~587px) em vez de esticar até o teto.
+     max-width 61rem (976px), NÃO 64rem: o .shell-content é 64rem MAS com padding
+     lateral de 24px, então o conteúdo real da lista mede 976px (64rem − 2×24px).
+     A barra e a lista têm o mesmo padding de host, então igualar o max-width interno
+     alinha as bordas exatamente. margin auto centraliza. */
+  width: 100%;
+  max-width: 61rem;
   margin-inline: auto;
 }
 
@@ -33,15 +39,6 @@
   gap: var(--space-3);
 }
 
-.timer-bar__eyebrow {
-  margin: 0 0 var(--space-1);
-  font-size: var(--text-xs);
-  font-weight: var(--weight-medium);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--color-text-subtle);
-}
-
 .timer-bar__label {
   position: absolute;
   width: 1px;
@@ -52,35 +49,127 @@
   white-space: nowrap;
 }
 
-/* min-width:0 — descrição longa trunca em vez de estourar o grid da barra
-   (o mesmo princípio das linhas do tracker). */
-.timer-bar__context {
-  min-width: 0;
-}
-
-.timer-bar__title {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-lg);
-  font-weight: var(--weight-semibold);
-}
-
 .timer-bar__actions {
   display: flex;
   align-items: center;
   gap: var(--space-3);
 }
 
-.timer-bar__stopwatch {
-  font-size: 1.5rem;
-  font-weight: var(--weight-semibold);
-  letter-spacing: -0.02em;
+/* ====================== Timer RODANDO: a cápsula viva ======================
+   O form de largura total CONDENSA num objeto único fit-content ancorado à
+   esquerda da régua (flush com a lista). Mata o vazio por gestalt: nada
+   relacionado fica separado — descrição, relógio e Parar moram no MESMO
+   objeto; o espaço à direita vira moldura, não buraco. Segmentos divididos
+   por hairlines (instrumento, não toolbar). A cor do projeto é a régua de
+   3px na borda esquerda, respirando — identidade + "gravando". */
+
+.timer-bar--running {
+  /* Fallback da régua: entry sem projeto respira no acento. */
+  --project-color: var(--color-accent);
+  position: relative;
+  display: flex;            /* derruba o grid 1fr/auto do .timer-bar base */
+  gap: 0;                   /* ritmo interno por padding dos segmentos */
+  align-items: stretch;     /* hairlines de ponta a ponta = leitura de instrumento */
+  width: fit-content;
+  max-width: 100%;
+  /* Centralizada na régua da lista (decisão do dono): a cápsula fit-content fica
+     no centro do frame de 61rem. No mobile ela estica (width:auto), então o auto
+     é inócuo lá — sem custo. */
+  margin-inline: auto;
+  background-color: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  /* Recorta a régua ::before no radius. Seguro AQUI: a cápsula não contém
+     dropdown (o overflow proibido é o dos dias da lista). */
+  overflow: hidden;
+  /* Nasce subindo: o momento start→cápsula é a assinatura. Roda no swap do
+     Turbo Stream e no load — 0.2s, imperceptível como custo, sentido como vida. */
+  animation: timer-bar-enter 0.2s ease-out;
 }
 
-.timer-bar__separator {
+/* Régua do projeto: 3px na borda esquerda, respirando devagar. É o fio que
+   amarra a identidade do projeto ao estado "gravando". Anima sempre — o app
+   ignora prefers-reduced-motion por decisão do dono. */
+.timer-bar--running::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 3px;
+  background-color: var(--project-color);
+  animation: timer-bar-edge 2s ease-in-out infinite;
+}
+
+/* Segmento 1 — o herói. Pulso + relógio; o olho bate aqui primeiro (topo-
+   esquerda), e o dado mais importante de um timer rodando é o tempo.
+   +3px à esquerda compensa a régua ::before. */
+.timer-bar__clock {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4) var(--space-2) calc(var(--space-4) + 3px);
+}
+
+/* Relógio 1.75rem: o ÚNICO elemento grande da barra, tabular pra não dançar. */
+.timer-bar__stopwatch {
+  font-size: 1.75rem;
+  line-height: 1;
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+/* Pulso "gravando" no acento — o estado é mostrado, não escrito (pra leitor
+   de tela fica o .timer-bar__sr). */
+.timer-bar__live {
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  animation: timer-bar-pulse 2s ease-out infinite;
+}
+
+/* Segmento 2 — contexto: descrição sobre ● projeto, denso, truncando.
+   border-strong porque a hairline vive SOBRE surface-raised (no dark,
+   --color-border == raised e sumiria). */
+.timer-bar--running .timer-bar__context {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;  /* centra as 2 linhas no stretch do segmento */
+  align-items: flex-start;
+  gap: var(--space-1);
+  min-width: 0;             /* deixa truncar em vez de estourar */
+  max-width: 34rem;         /* descrição longa não come a régua inteira */
+  padding: var(--space-2) var(--space-4);
+  border-inline-start: 1px solid var(--color-border-strong);
+}
+
+.timer-bar__description {
+  max-width: 100%;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: 1.35;
+}
+
+.timer-bar--running .timer-bar__project {
+  max-width: 100%;
+  margin: 0;
+  font-size: var(--text-xs);
+  line-height: 1.35;
   color: var(--color-text-subtle);
+}
+
+/* Nome do projeto trunca dentro do inline-flex (regra compartilhada com
+   .tracker-entry__project segue valendo pro display/gap). */
+.timer-bar__project-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .timer-bar__project,
@@ -88,6 +177,49 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
+}
+
+/* Segmento 3 — a única ação, dentro do objeto (não órfã na outra ponta). */
+.timer-bar__stop {
+  display: flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  border-inline-start: 1px solid var(--color-border-strong);
+}
+
+/* Parar compacto: presente (vermelho), mas menor que o relógio — a hierarquia
+   é relógio > ação. (0,2,0) vence o button[type=submit] (0,1,1) do forms.css
+   nas métricas; as cores seguem do .btn.btn--danger. */
+.timer-bar__stop .btn {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-sm);
+}
+
+/* Texto só pra leitores de tela (mesmo clip do .timer-bar__label). */
+.timer-bar__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@keyframes timer-bar-pulse {
+  0%        { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 40%, transparent); }
+  70%, 100% { box-shadow: 0 0 0 0.5rem transparent; }
+}
+
+/* Respiração da régua do projeto: devagar, no mesmo período do pulso. */
+@keyframes timer-bar-edge {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+
+@keyframes timer-bar-enter {
+  from { opacity: 0; transform: translateY(2px); }
+  to   { opacity: 1; transform: none; }
 }
 
 .timer-bar__error {
@@ -565,15 +697,64 @@
      07/07 — agora que o € saiu das linhas, o total do dia é o único lugar dele
      na lista; a data trunca antes de empurrar os números). */
 
-  /* Timer RODANDO: título + cronômetro/Parar empilhados, cronômetro protagonista. */
-  .timer-bar__actions {
-    display: flex;
-    justify-content: space-between;
+  /* Timer RODANDO no mobile: a cápsula ESTICA e vira a barra. 2 linhas com
+     respiro de verdade (row-gap space-3 — o "socado" era gap 8px + linhas
+     coladas): 1ª ◉ relógio + Parar na borda (zona do polegar), 2ª contexto. */
+  .timer-bar--running {
+    display: grid;
+    width: auto;                       /* estica na largura da barra */
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "clock stop"
+      "context context";
     align-items: center;
+    row-gap: var(--space-3);
+    padding: var(--space-3);
+    padding-inline-start: calc(var(--space-3) + 3px); /* compensa a régua */
+  }
+
+  .timer-bar__clock {
+    grid-area: clock;
+    padding: 0;                        /* o grid + padding da cápsula assumem */
   }
 
   .timer-bar__stopwatch {
-    font-size: 1.25rem;
+    font-size: 1.5rem;                 /* herói ainda, na escala do mobile */
+  }
+
+  .timer-bar__stop {
+    grid-area: stop;
+    padding: 0;
+    border: 0;                         /* hairlines são coisa de linha única */
+  }
+
+  /* Contexto deita: "descrição · ● projeto" numa linha, truncando. */
+  .timer-bar--running .timer-bar__context {
+    grid-area: context;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-2);
+    max-width: none;
+    padding: 0;
+    border: 0;
+  }
+
+  .timer-bar--running .timer-bar__description {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  /* Projeto nunca some; 45% segura nome grande sem esmagar a descrição. */
+  .timer-bar--running .timer-bar__project {
+    flex: none;
+    max-width: 45%;
+    font-size: var(--text-sm);         /* legibilidade no device > densidade */
+  }
+
+  /* Separador "·" só no mobile (no desktop os segmentos têm hairline). */
+  .timer-bar--running .timer-bar__project::before {
+    content: "·";
+    color: var(--color-text-subtle);
   }
 
   .tracker-billable {

@@ -11,6 +11,10 @@ class TimeEntry < ApplicationRecord
   has_many :taggings, dependent: :destroy
   has_many :tags, through: :taggings
 
+  # Notifica TODAS as abas do mesmo user quando o timer ou entries mudam por qualquer
+  # caminho (web, API com Bearer, CLI). Stream escopado por user — isolamento Q23.
+  broadcasts_refreshes_to :user
+
   # Escape para caminhos internos que podem conviver com sobreposição: importador,
   # stop_at e split.
   attr_accessor :allow_overlap

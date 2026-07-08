@@ -6,6 +6,9 @@ class Task < ApplicationRecord
   belongs_to :user
   belongs_to :project
 
+  # Notifica abas do mesmo user quando tasks mudam (nome, arquivamento) — isolamento Q23.
+  broadcasts_refreshes_to :user
+
   include Archivable
   include Nameable
   name_uniqueness_scope :project_id

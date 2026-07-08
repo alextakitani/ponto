@@ -160,23 +160,30 @@ class Clockify::Import
       tasks = create_tasks(rows, projects)
       tags = create_tags(rows)
 
-      rows.each do |row|
-        entry = user.time_entries.build(
-          project: projects[project_key(row.project_name)],
-          task: tasks[[ project_key(row.project_name), Task.normalize_name(row.task_name) ]],
-          description: row.description,
-          billable: row.billable,
-          started_at: row.started_at,
-          ended_at: row.ended_at
-        )
-        # Q49c/Q22: importador preserva o histórico externo mesmo com sobreposição.
-        entry.allow_overlap = true
-        entry.save!
+      # Suprime broadcasts individuais por entry durante o import em lote — evita
+      # "broadcast storm" de centenas de refreshes. Dispara UM refresh único ao final.
+      TimeEntry.suppressing_turbo_broadcasts do
+        rows.each do |row|
+          entry = user.time_entries.build(
+            project: projects[project_key(row.project_name)],
+            task: tasks[[ project_key(row.project_name), Task.normalize_name(row.task_name) ]],
+            description: row.description,
+            billable: row.billable,
+            started_at: row.started_at,
+            ended_at: row.ended_at
+          )
+          # Q49c/Q22: importador preserva o histórico externo mesmo com sobreposição.
+          entry.allow_overlap = true
+          entry.save!
 
-        row.tag_names.each do |tag_name|
-          Tagging.create!(time_entry: entry, tag: tags.fetch(Tag.normalize_name(tag_name)))
+          row.tag_names.each do |tag_name|
+            Tagging.create!(time_entry: entry, tag: tags.fetch(Tag.normalize_name(tag_name)))
+          end
         end
       end
+
+      # Um único refresh após o import completo (em vez de N refreshes por entry).
+      Turbo::StreamsChannel.broadcast_refresh_to(user)
 
       Result.new(
         clients.size,
