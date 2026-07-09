@@ -9,8 +9,9 @@
 <% end %>
 
 <% unless @running_timer %>
-  <%= turbo_stream.replace "timer_bar" do %>
-    <%= render "timers/frame", time_entry: nil, form_time_entry: TimeEntry.new %>
+  <%# update, não replace: preserva os atributos do frame do layout (permanent/src/sync). %>
+  <%= turbo_stream.update "timer_bar" do %>
+    <%= render "timers/bar", time_entry: nil, form_time_entry: TimeEntry.new %>
   <% end %>
 <% end %>
 

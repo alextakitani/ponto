@@ -293,9 +293,6 @@
   background-color: var(--color-surface-raised);
   border: 1px solid color-mix(in srgb, var(--color-accent) 58%, var(--color-border));
   border-radius: var(--radius);
-  /* Nasce subindo: o momento start→cápsula é a assinatura. Roda no swap do
-     Turbo Stream e no load — 0.2s, imperceptível como custo, sentido como vida. */
-  animation: timer-bar-enter 0.2s ease-out;
 }
 
 .timer-bar__clock {
@@ -425,6 +422,21 @@
 @keyframes timer-bar-enter {
   from { opacity: 0; transform: translateY(2px); }
   to   { opacity: 1; transform: none; }
+}
+
+/* Transição start/stop: o Turbo Stream troca o nó inteiro, mas idle e rodando
+   compartilham a MESMA moldura (padding/borda/fundo/radius) — então a moldura
+   lê como parada e só o CONTEÚDO nasce em fade+rise. Animar a cápsula inteira
+   (como era) piscava a borda a cada swap; o form ocioso nem animava (corte
+   seco no stop). Roda no swap do Turbo Stream e no load. */
+.timer-bar__fields,
+.timer-bar__actions,
+.timer-bar__error,
+.timer-bar__clock,
+.timer-bar__description,
+.timer-bar--running .timer-bar__project,
+.timer-bar__stop {
+  animation: timer-bar-enter 0.2s ease-out;
 }
 
 .timer-bar__error {

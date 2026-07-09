@@ -191,7 +191,9 @@ class ProjectsTest < ActionDispatch::IntegrationTest
     assert_response :success
     # reescreve a lista de projetos E a barra do timer (pra o select pré-selecionar)
     assert_match %r{turbo-stream action="update" target="projects_list"}, response.body
-    assert_match %r{turbo-stream action="replace" target="timer_bar"}, response.body
+    # update (não replace): o conteúdo troca mas o frame do layout (permanent/src/
+    # sync) fica intocado — replace do frame quebrava o cronômetro-entre-telas.
+    assert_match %r{turbo-stream action="update" target="timer_bar"}, response.body
   end
 
   test "definir padrão com timer RODANDO não toca a barra do timer" do

@@ -1,7 +1,11 @@
 <% timer_entry = defined?(@current_timer) ? @current_timer : @time_entry %>
 
-<%= turbo_stream.replace "timer_bar" do %>
-  <%= render "timers/frame", time_entry: timer_entry, form_time_entry: @form_time_entry %>
+<%# UPDATE (não replace): troca só o CONTEÚDO do frame. Replace do frame inteiro
+    punha no lugar o frame "nu" do partial — sem data-turbo-permanent, src e o
+    controller timer-bar-sync do layout — quebrando o cronômetro-entre-telas e o
+    sync entre abas até o próximo full reload. %>
+<%= turbo_stream.update "timer_bar" do %>
+  <%= render "timers/bar", time_entry: timer_entry, form_time_entry: @form_time_entry %>
 <% end %>
 
 <%= turbo_stream.replace "tracker_entries" do %>

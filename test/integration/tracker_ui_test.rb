@@ -96,7 +96,10 @@ class TrackerUiTest < ActionDispatch::IntegrationTest
     assert_equal project.id, entry.project_id
     assert_equal [ "Bug", "Urgente" ], entry.tags.order(:created_at).map(&:name)
     assert_equal Mime[:turbo_stream], response.media_type
-    assert_includes response.body, %(target="timer_bar")
+    # Regressão: o stream tem que fazer UPDATE do conteúdo do frame, não replace do
+    # frame — replace trocava o frame do layout por um "nu" (sem data-turbo-permanent/
+    # src/timer-bar-sync), quebrando o cronômetro-entre-telas e o sync entre abas.
+    assert_match %r{turbo-stream action="update" target="timer_bar"}, response.body
     assert_includes response.body, "Escrevendo tracker"
     assert_includes response.body, "Parar"
     assert_select "[data-entry-id='#{entry.id}'][data-running='true']", count: 1
