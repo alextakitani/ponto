@@ -27,7 +27,7 @@
     <div class="timer-bar__stop">
       <%= button_to timer_path, method: :delete, class: "btn btn--danger" do %>
         <%= icon("square") %>
-        <%= t("timers.bar.stop") %>
+        <span class="timer-bar__stop-label"><%= t("timers.bar.stop") %></span>
       <% end %>
     </div>
   <% end %>
