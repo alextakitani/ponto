@@ -730,7 +730,7 @@ en:
     donut:
       aria: "Time distribution by project"
     summary:
-      group_hint: "Choose a dimension in \"Group by\" to see the detailed summary."
+      group_hint: "Choose a dimension in \"Group by\" to see totals by project, client, task or tag."
     empty:
       title: "Nothing in this period"
       description: "Adjust the period or filters to see your entries."

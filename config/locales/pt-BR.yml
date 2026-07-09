@@ -729,7 +729,7 @@ pt-BR:
     donut:
       aria: "Distribuição do tempo por projeto"
     summary:
-      group_hint: "Escolha uma dimensão em \"Agrupar por\" para ver o resumo detalhado."
+      group_hint: "Escolha uma dimensão em \"Agrupar por\" para ver os totais por projeto, cliente, tarefa ou tag."
     empty:
       title: "Nada neste período"
       description: "Ajuste o período ou os filtros para ver suas entradas."
