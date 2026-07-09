@@ -2,9 +2,12 @@
   <%= render "home/tracker_entries", day_groups: @tracker_day_groups %>
 <% end %>
 
-<%# update, não replace: preserva os atributos do frame do layout (permanent/src/sync). %>
-<%= turbo_stream.update "timer_bar" do %>
-  <%= render "timers/bar", time_entry: @current_timer, form_time_entry: nil %>
+<%# Só quando a entry deletada era a rodando (barra volta a ocioso). update, não
+    replace: preserva os atributos do frame do layout (permanent/src/sync). %>
+<% if @timer_bar_stale %>
+  <%= turbo_stream.update "timer_bar" do %>
+    <%= render "timers/bar", time_entry: @current_timer, form_time_entry: nil %>
+  <% end %>
 <% end %>
 
 <%= turbo_stream.replace "command_palette" do %>

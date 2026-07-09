@@ -166,6 +166,29 @@ class TrackerUiTest < ActionDispatch::IntegrationTest
     assert_equal Time.utc(2026, 7, 2, 12, 30, 0), running.reload.ended_at
   end
 
+  # Regressão: deletar entry PARADA não pode reescrever a barra do timer — o
+  # rewrite re-anima o conteúdo (barra "pula") e apaga o que estiver digitado.
+  test "DELETE de entry parada via turbo não toca a barra do timer" do
+    entry = @user.time_entries.create!(description: "Parada", started_at: 2.hours.ago, ended_at: 1.hour.ago)
+
+    delete time_entry_path(entry), headers: turbo_headers("tracker_entries")
+
+    assert_response :success
+    assert_equal Mime[:turbo_stream], response.media_type
+    assert_includes response.body, %(target="tracker_entries")
+    assert_not_includes response.body, %(target="timer_bar")
+  end
+
+  test "DELETE da entry RODANDO via turbo volta a barra ao ocioso" do
+    running = @user.time_entries.create!(description: "Rodando", started_at: 10.minutes.ago)
+
+    delete time_entry_path(running), headers: turbo_headers("tracker_entries")
+
+    assert_response :success
+    assert_match %r{turbo-stream action="update" target="timer_bar"}, response.body
+    assert_includes response.body, "Iniciar"
+  end
+
   test "edição inline de entry carrega e salva no mesmo turbo frame" do
     first_project = @user.projects.create!(name: "Primeiro")
     second_project = @user.projects.create!(name: "Segundo")

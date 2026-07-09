@@ -90,6 +90,10 @@ class TimeEntriesController < ApplicationController
   end
 
   def destroy
+    # A barra do timer só muda se a entry deletada era a RODANDO — deletar entry
+    # parada não pode reescrever a barra (o rewrite re-anima o conteúdo e apaga o
+    # que o usuário tiver digitado no form ocioso).
+    @timer_bar_stale = @time_entry.ended_at.nil?
     @time_entry.destroy
     load_tracker_day_groups
     @current_timer = authorized_scope(TimeEntry.all).find_by(ended_at: nil)
