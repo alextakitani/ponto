@@ -58,7 +58,7 @@ env:
 
     # Host público (links dos e-mails de magic code) e remetente (Resend — 04/07).
     APP_HOST: pontotracker.com
-    MAILER_FROM: Ponto <ponto@send.pontotracker.com>
+    MAILER_FROM: Ponto <ponto@pontotracker.com>
 
     # Bootstrap do 1º admin (Q37): com o banco vazio, só este e-mail cria conta.
     ADMIN_EMAIL: admin@example.com
