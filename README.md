@@ -60,7 +60,7 @@ O repositório já traz o **Dockerfile** e a configuração do **Kamal**
 
 Não quer hospedar? A instância gerenciada custa **US$ 1/mês** (preço promocional — se
 um dia mudar, você é avisado antes). Acesso por convite: peça o seu em
-[ponto.takitani.net](https://ponto.takitani.net/).
+[pontotracker.com](https://pontotracker.com/).
 
 ## Licença
 
@@ -132,7 +132,7 @@ The repo already ships the **Dockerfile** and **Kamal** config
 
 Don't want to self-host? The managed instance is **US$ 1/month** (a promotional price —
 if it ever changes, you'll be told first). Invite-only: request yours at
-[ponto.takitani.net](https://ponto.takitani.net/).
+[pontotracker.com](https://pontotracker.com/).
 
 ### License
 

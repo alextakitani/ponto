@@ -16,13 +16,13 @@ servers:
 #
 # Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
 #
-# ponto.takitani.net entra por CLOUDFLARE TUNNEL: o TLS termina na borda da
+# pontotracker.com entra por CLOUDFLARE TUNNEL: o TLS termina na borda da
 # Cloudflare e o cloudflared entrega HTTP interno pro kamal-proxy (ingress →
 # http://10.0.0.10:80). Sem Let's Encrypt aqui (ssl: false) — o app confia
 # no https externo via assume_ssl/force_ssl no production.rb.
 proxy:
   ssl: false
-  host: ponto.takitani.net
+  host: pontotracker.com
 
 # Where you keep your container images.
 registry:
@@ -57,8 +57,8 @@ env:
     SOLID_QUEUE_IN_PUMA: 'true'
 
     # Host público (links dos e-mails de magic code) e remetente (Resend — 04/07).
-    APP_HOST: ponto.takitani.net
-    MAILER_FROM: Ponto <ponto@takitani.net>
+    APP_HOST: pontotracker.com
+    MAILER_FROM: Ponto <ponto@send.pontotracker.com>
 
     # Bootstrap do 1º admin (Q37): com o banco vazio, só este e-mail cria conta.
     ADMIN_EMAIL: admin@example.com
