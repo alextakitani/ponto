@@ -23,9 +23,20 @@ export default class extends Controller {
       }
     }
     document.addEventListener("turbo:morph", this.reload)
+
+    // A animação de entrada só existe sob .timer-bar--enter (render fresco).
+    // Terminou de nascer → tira a classe: re-inserir o frame permanent numa
+    // navegação reinicia as animações CSS do nó, e sem a classe não sobra
+    // animação pra reiniciar (a barra fica estável entre telas).
+    this.settle = (event) => {
+      if (event.animationName !== "timer-bar-enter") return
+      this.element.querySelector(".timer-bar--enter")?.classList.remove("timer-bar--enter")
+    }
+    this.element.addEventListener("animationend", this.settle)
   }
 
   disconnect() {
     document.removeEventListener("turbo:morph", this.reload)
+    this.element.removeEventListener("animationend", this.settle)
   }
 }

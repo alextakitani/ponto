@@ -428,14 +428,18 @@
    compartilham a MESMA moldura (padding/borda/fundo/radius) — então a moldura
    lê como parada e só o CONTEÚDO nasce em fade+rise. Animar a cápsula inteira
    (como era) piscava a borda a cada swap; o form ocioso nem animava (corte
-   seco no stop). Roda no swap do Turbo Stream e no load. */
-.timer-bar__fields,
-.timer-bar__actions,
-.timer-bar__error,
-.timer-bar__clock,
-.timer-bar__description,
-.timer-bar--running .timer-bar__project,
-.timer-bar__stop {
+   seco no stop).
+   Condicionada a .timer-bar--enter (render fresco do servidor): re-inserir um
+   nó REINICIA suas animações CSS, e a navegação re-insere o frame permanent no
+   body novo — sem a guarda, a barra "nascia" a cada troca de tela. O
+   timer_bar_sync remove a classe no animationend. */
+.timer-bar--enter .timer-bar__fields,
+.timer-bar--enter .timer-bar__actions,
+.timer-bar--enter .timer-bar__error,
+.timer-bar--enter .timer-bar__clock,
+.timer-bar--enter .timer-bar__description,
+.timer-bar--enter .timer-bar__project,
+.timer-bar--enter .timer-bar__stop {
   animation: timer-bar-enter 0.2s ease-out;
 }
 

@@ -2,7 +2,10 @@
   <%# Cápsula viva: um objeto só, denso, fit-content à esquerda da régua.
       A cor do projeto entra como custom property e vira a régua ::before;
       sem projeto, o CSS cai no fallback --color-accent. %>
-  <%= tag.div class: "timer-bar timer-bar--running",
+  <%# timer-bar--enter: liga a animação de entrada SÓ em render fresco — o
+      timer_bar_sync tira a classe no animationend; sem ela, a re-inserção do
+      frame permanent na navegação não tem animação pra reiniciar. %>
+  <%= tag.div class: "timer-bar timer-bar--running timer-bar--enter",
         style: ("--project-color: #{time_entry.project.color}" if time_entry.project) do %>
 
     <div class="timer-bar__clock">
@@ -41,7 +44,7 @@
   <% selected_project = Current.user.projects.active.find { |project| project.id == selected_project_id.to_i } %>
   <% selected_project_name = selected_project&.name || t("tracker.no_project") %>
 
-  <%= form_with url: timer_path, scope: :timer, class: "timer-bar timer-bar--idle" do |form| %>
+  <%= form_with url: timer_path, scope: :timer, class: "timer-bar timer-bar--idle timer-bar--enter" do |form| %>
     <%= hidden_field_tag :page, params[:page] if params[:page].present? %>
 
     <div class="timer-bar__fields">

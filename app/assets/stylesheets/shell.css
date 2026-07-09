@@ -152,6 +152,10 @@ a.shell-nav__item:hover {
   min-width: 0; /* deixa tabelas largas encolherem em vez de estourar o grid */
   min-height: 0; /* permite que o filho que rola (.shell-content) encolha no grid */
   overflow-y: auto; /* o SCROLL da página mora aqui — a sidebar fica fixa */
+  /* Gutter SEMPRE reservado: sem isto a scrollbar clássica aparece/some conforme
+     a página tem scroll ou não, e a largura útil varia ~15px a cada navegação —
+     a barra do timer (e o conteúdo) esticava/encolhia entre telas. */
+  scrollbar-gutter: stable;
 }
 
 /* Barra do timer — a assinatura (Q63): fica GRUDADA no topo enquanto o conteúdo
