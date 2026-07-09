@@ -1,4 +1,5 @@
-<div class="tags-field" data-controller="tags-select">
+<% scope ||= "time_entry" %>
+<div class="tags-field" data-controller="tags-select" data-tags-select-scope-value="<%= scope %>">
   <details class="tags-field__details" data-controller="menu">
     <summary class="btn btn--quiet btn--sm">
       <%= icon("tags") %>
@@ -23,7 +24,7 @@
       <div class="tags-field__options" data-tags-select-target="options">
         <% tracker_available_tags_for(time_entry).each do |tag| %>
           <label class="tags-field__option">
-            <%= check_box_tag "time_entry[tag_ids][]", tag.id, time_entry.tag_ids.include?(tag.id), id: nil %>
+            <%= check_box_tag "#{scope}[tag_ids][]", tag.id, time_entry.tag_ids.include?(tag.id), id: nil %>
             <span><%= tag.name %></span>
             <% if tag.archived? %><span class="muted"><%= t("common.archived_feminine") %></span><% end %>
           </label>
@@ -35,7 +36,7 @@
         <div class="tags-field__new-row">
           <input type="text"
                  id="<%= "#{form.field_id(:description)}_new_tag" %>"
-                 name="time_entry[new_tag_names][]"
+                 name="<%= scope %>[new_tag_names][]"
                  list="tag-suggestions"
                  placeholder="<%= t("time_entries.tags.placeholder") %>"
                  data-tags-select-target="input"

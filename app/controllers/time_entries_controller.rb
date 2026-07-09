@@ -4,6 +4,7 @@
 class TimeEntriesController < ApplicationController
   layout "app"
   include TrackerData
+  include EntryTags
 
   before_action :set_time_entry, only: %i[show edit update destroy]
 
@@ -47,7 +48,7 @@ class TimeEntriesController < ApplicationController
     authorize! TimeEntry, to: :create?
     @time_entry = authorized_scope(TimeEntry.all).new
 
-    if save_time_entry_with_tags(@time_entry, time_entry_create_params)
+    if save_entry_with_tags(@time_entry, time_entry_create_params)
       load_tracker_day_groups
       @manual_entry = TimeEntry.new
       respond_to do |format|
@@ -67,7 +68,7 @@ class TimeEntriesController < ApplicationController
   end
 
   def update
-    if save_time_entry_with_tags(@time_entry, time_entry_update_params)
+    if save_entry_with_tags(@time_entry, time_entry_update_params)
       load_tracker_day_groups
       respond_to do |format|
         format.turbo_stream
@@ -164,54 +165,5 @@ class TimeEntriesController < ApplicationController
       return value if value.match?(/[zZ]|[+-]\d{2}:\d{2}\z/)
 
       (ActiveSupport::TimeZone[Current.user.time_zone] || Time.zone).parse(value)
-    end
-
-    def save_time_entry_with_tags(time_entry, attrs)
-      tag_ids = Array(attrs.delete(:tag_ids))
-      new_tag_names = Array(attrs.delete(:new_tag_names))
-
-      time_entry.assign_attributes(attrs)
-      return false unless time_entry.valid?
-
-      saved = false
-      TimeEntry.transaction do
-        time_entry.save!
-        unless sync_time_entry_tags(time_entry, tag_ids:, new_tag_names:)
-          raise ActiveRecord::Rollback
-        end
-        saved = true
-      end
-      saved
-    end
-
-    def sync_time_entry_tags(time_entry, tag_ids:, new_tag_names:)
-      tags = tags_from_ids(tag_ids)
-      return false if time_entry.errors.any?
-
-      tags += tags_from_names(new_tag_names)
-      time_entry.tags = tags.uniq
-      true
-    end
-
-    def tags_from_ids(tag_ids)
-      ids = tag_ids.map(&:to_s).reject(&:blank?)
-      return [] if ids.empty?
-
-      tags = Current.user.tags.where(id: ids).to_a
-      return tags if tags.size == ids.uniq.size
-
-      @time_entry.errors.add(:tags, :not_owned)
-      []
-    end
-
-    def tags_from_names(new_tag_names)
-      new_tag_names
-        .map { |name| name.to_s.strip }
-        .reject(&:blank?)
-        .uniq { |name| Tag.normalize_name(name) }
-        .map do |name|
-          Current.user.tags.find_by(name_normalized: Tag.normalize_name(name)) ||
-            Current.user.tags.create!(name: name)
-        end
     end
 end

@@ -33,10 +33,22 @@
   align-items: center;
 }
 
+.timer-bar--idle {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+  padding: var(--space-3);
+  background-color: var(--color-surface-raised);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 58%, var(--color-border));
+  border-radius: var(--radius);
+}
+
 .timer-bar__fields {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-3);
+  grid-template-columns: minmax(14rem, 1fr) minmax(10rem, 14rem) auto;
+  grid-template-areas: "description project tags";
+  column-gap: var(--space-3);
+  align-items: center;
+  min-width: 0;
 }
 
 .timer-bar__label {
@@ -53,6 +65,198 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
+}
+
+.timer-bar--idle .timer-bar__input {
+  grid-area: description;
+}
+
+.timer-bar--idle .timer-bar__select {
+  grid-area: project;
+  position: relative;
+  min-width: 0;
+}
+
+.timer-bar--idle .timer-bar__fields > .tags-field {
+  grid-area: tags;
+  align-self: center;
+}
+
+.timer-bar--idle input[type="text"] {
+  min-height: 1.875rem;
+  padding: 0;
+  background-color: transparent;
+  border-color: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  font-size: var(--text-base);
+}
+
+.timer-bar--idle input[type="text"]:hover,
+.timer-bar--idle input[type="text"]:focus {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.timer-project-picker {
+  position: relative;
+  width: 100%;
+}
+
+.timer-project-picker__summary {
+  position: relative;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 100%;
+  min-height: 1.75rem;
+  padding: var(--space-1) var(--space-6) var(--space-1) 0;
+  box-sizing: border-box;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text);
+}
+
+.timer-project-picker__summary::-webkit-details-marker {
+  display: none;
+}
+
+.timer-project-picker__summary::after {
+  content: "";
+  position: absolute;
+  right: var(--space-2);
+  top: 50%;
+  width: 0;
+  height: 0;
+  border-inline: 4px solid transparent;
+  border-top: 5px solid var(--color-text-subtle);
+  transform: translateY(-35%);
+}
+
+.timer-project-picker__summary:hover,
+.timer-project-picker__summary:focus {
+  outline: none;
+  background-color: var(--color-surface-sunken);
+}
+
+.timer-project-picker__label,
+.timer-project-picker__option-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timer-project-picker__dot {
+  flex: none;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 999px;
+  background-color: var(--timer-project-color);
+}
+
+.timer-bar--idle .timer-bar__select--empty .timer-project-picker__dot {
+  display: none;
+}
+
+.timer-bar--idle .timer-bar__select--empty .timer-project-picker__summary {
+  padding-left: 0;
+}
+
+.timer-project-picker__panel {
+  position: absolute;
+  z-index: 11;
+  left: 0;
+  margin-top: var(--space-1);
+  min-width: 14rem;
+  max-width: min(22rem, calc(100vw - 2 * var(--space-4)));
+  max-height: min(22rem, calc(100vh - 8rem));
+  overflow-y: auto;
+  padding: var(--space-2);
+  background-color: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.timer-project-picker__group + .timer-project-picker__group {
+  margin-top: var(--space-2);
+}
+
+.timer-project-picker__group-label {
+  margin: var(--space-2) var(--space-2) var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+
+.timer-project-picker__option {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  min-height: 1.75rem;
+  padding: var(--space-1) var(--space-2);
+  font: inherit;
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.timer-project-picker__option:hover,
+.timer-project-picker__option:focus,
+.timer-project-picker__option--selected {
+  outline: none;
+  background-color: color-mix(in srgb, var(--color-accent) 14%, transparent);
+}
+
+.timer-bar--idle .tags-field__details > summary {
+  min-height: 1.75rem;
+  padding: var(--space-1) var(--space-2);
+  border-color: transparent;
+  color: var(--color-text-subtle);
+}
+
+.timer-bar--idle .tags-field__details > summary:hover {
+  color: var(--color-text);
+  background-color: var(--color-surface-sunken);
+}
+
+.timer-bar--idle .tags-field__panel {
+  right: 0;
+}
+
+.timer-bar__start {
+  width: 2.75rem;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0;
+  border-radius: 999px;
+}
+
+.timer-bar__start .icon {
+  margin-left: 1px;
+}
+
+.timer-bar__start-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 /* ====================== Timer RODANDO: a cápsula viva ======================
@@ -634,20 +838,45 @@
     padding: var(--space-2) var(--space-3);
   }
 
-  /* Timer ocioso compacto: descrição e Iniciar ficam na mesma linha. */
+  /* Timer ocioso mobile: uma cápsula só, como a extensão. Descrição domina; o
+     projeto e tags ficam como metadados compactos; Play permanece sempre na borda. */
   .timer-bar {
     grid-template-columns: 1fr;
     gap: var(--space-2);
   }
 
-  .timer-bar__fields {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-2);
-  }
-
   .timer-bar--idle {
     grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+  }
+
+  .timer-bar--idle .timer-bar__fields {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "description description"
+      "project tags";
+    column-gap: var(--space-2);
+  }
+
+  .timer-bar--idle .timer-bar__input {
+    min-width: 0;
+  }
+
+  .timer-bar--idle .timer-bar__select {
+    min-width: 0;
+  }
+
+  .timer-bar--idle .timer-bar__fields > .tags-field {
+    justify-self: end;
+  }
+
+  .timer-bar--idle .timer-bar__actions {
+    align-self: start;
+  }
+
+  .timer-project-picker__summary {
+    max-width: 100%;
   }
 
   .tracker-entry__edit-grid,

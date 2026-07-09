@@ -3,6 +3,7 @@
 # real do user logado. A invariante "um rodando por user" é reforçada no banco.
 class TimersController < ApplicationController
   include TrackerData
+  include EntryTags
 
   def show
     @time_entry = current_timer
@@ -33,9 +34,10 @@ class TimersController < ApplicationController
       unless params.fetch(:timer, {}).key?(:project_id)
         attrs[:project_id] = Current.user.active_default_project&.id
       end
-      @time_entry = authorized_scope(TimeEntry.all).new(attrs.merge(started_at: Time.current))
+      attrs[:started_at] = Time.current
+      @time_entry = authorized_scope(TimeEntry.all).new
 
-      if @time_entry.save
+      if save_entry_with_tags(@time_entry, attrs)
         load_tracker_day_groups
         @form_time_entry = nil
         respond_to do |format|
@@ -100,7 +102,7 @@ class TimersController < ApplicationController
     end
 
     def timer_params
-      params.fetch(:timer, {}).permit(:project_id, :task_id, :description)
+      params.fetch(:timer, {}).permit(:project_id, :task_id, :description, tag_ids: [], new_tag_names: [])
     end
 
     def render_timer_conflict

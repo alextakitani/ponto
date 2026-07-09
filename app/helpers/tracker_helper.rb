@@ -74,10 +74,13 @@ module TrackerHelper
     safe_join(parts, content_tag(:span, t("common.middle_dot"), class: "muted", "aria-hidden": true))
   end
 
+  # Com SEGUNDOS — `<input type="datetime-local">` sem `step` trunca ao minuto e
+  # descarta os segundos no submit, arrastando silenciosamente started_at/ended_at
+  # (regressão observada: edição reescreveu o start 55s pra trás e criou sobreposição).
   def tracker_datetime_local_value(timestamp)
     return if timestamp.blank?
 
-    timestamp.in_time_zone(tracker_time_zone).strftime("%Y-%m-%dT%H:%M")
+    timestamp.in_time_zone(tracker_time_zone).strftime("%Y-%m-%dT%H:%M:%S")
   end
 
   # Ponto de corte DEFAULT do split (Q48): o meio do intervalo, já no fuso do user e no
@@ -90,12 +93,16 @@ module TrackerHelper
   end
 
   def tracker_grouped_project_options
-    Current.user.projects.active.includes(:client).to_a
-      .sort_by { |project| [ project.client&.name_normalized.to_s, project.name_normalized ] }
-      .group_by { |project| project.client&.name || t("tracker.no_client") }
+    tracker_grouped_projects
       .map do |client_name, projects|
         [ client_name, projects.map { |project| [ project.name, project.id ] } ]
       end
+  end
+
+  def tracker_grouped_projects
+    Current.user.projects.active.includes(:client).to_a
+      .sort_by { |project| [ project.client&.name_normalized.to_s, project.name_normalized ] }
+      .group_by { |project| project.client&.name || t("tracker.no_client") }
   end
 
   def tracker_available_tags_for(time_entry)

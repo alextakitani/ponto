@@ -44,6 +44,7 @@
           <%= form.label :started_at, t("common.labels.start") %>
           <%= form.datetime_local_field :started_at,
                 value: tracker_datetime_local_value(time_entry.started_at),
+                step: 1,
                 data: { duration_fields_target: "start" } %>
         </div>
 
@@ -51,6 +52,7 @@
           <%= form.label :ended_at, t("common.labels.end") %>
           <%= form.datetime_local_field :ended_at,
                 value: tracker_datetime_local_value(time_entry.ended_at),
+                step: 1,
                 data: { duration_fields_target: "end" } %>
         </div>
 

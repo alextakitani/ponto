@@ -33,6 +33,13 @@
   <% end %>
 <% else %>
   <% form_time_entry ||= TimeEntry.new %>
+  <%# Project padrão pré-selecionado (igual ao form de entry manual): o servidor
+      aplica o default só quando a chave `project_id` está AUSENTE (path da API),
+      então o form já a envia selecionada para o path web. Re-render com erro
+      respeita a escolha do usuário (não re-pre-seleciona). %>
+  <% selected_project_id = form_time_entry.project_id || (Current.user.active_default_project&.id unless form_time_entry.errors.any?) %>
+  <% selected_project = Current.user.projects.active.find { |project| project.id == selected_project_id.to_i } %>
+  <% selected_project_name = selected_project&.name || t("tracker.no_project") %>
 
   <%= form_with url: timer_path, scope: :timer, class: "timer-bar timer-bar--idle" do |form| %>
     <%= hidden_field_tag :page, params[:page] if params[:page].present? %>
@@ -43,12 +50,56 @@
         <%= form.text_field :description, value: form_time_entry.description,
               placeholder: t("tracker.description_placeholder") %>
       </div>
+
+      <div class="<%= class_names("timer-bar__select", "timer-bar__select--empty": selected_project.blank?) %>"
+           style="<%= "--timer-project-color: #{selected_project.color}" if selected_project %>"
+           data-controller="project-select-dot">
+        <%= form.label :project_id, t("common.labels.project"), class: "timer-bar__label" %>
+        <%= form.hidden_field :project_id, value: selected_project_id, data: { project_select_dot_target: "input" } %>
+
+        <details class="timer-project-picker" data-controller="menu" data-project-select-dot-target="details">
+          <summary class="timer-project-picker__summary">
+            <span class="timer-project-picker__dot" data-project-select-dot-target="swatch" aria-hidden="true"></span>
+            <span class="timer-project-picker__label" data-project-select-dot-target="label"><%= selected_project_name %></span>
+          </summary>
+
+          <div class="timer-project-picker__panel">
+            <button type="button"
+                    class="timer-project-picker__option"
+                    data-project-select-dot-id-param=""
+                    data-project-select-dot-name-param="<%= t("tracker.no_project") %>"
+                    data-project-select-dot-color-param=""
+                    data-action="project-select-dot#choose">
+              <span class="timer-project-picker__option-label"><%= t("tracker.no_project") %></span>
+            </button>
+
+            <% tracker_grouped_projects.each do |client_name, projects| %>
+              <div class="timer-project-picker__group">
+                <p class="timer-project-picker__group-label"><%= client_name %></p>
+                <% projects.each do |project| %>
+                  <button type="button"
+                          class="<%= class_names("timer-project-picker__option", "timer-project-picker__option--selected": project.id == selected_project_id.to_i) %>"
+                          data-project-select-dot-id-param="<%= project.id %>"
+                          data-project-select-dot-name-param="<%= project.name %>"
+                          data-project-select-dot-color-param="<%= project.color %>"
+                          data-action="project-select-dot#choose">
+                    <span class="project-dot" style="background-color: <%= project.color %>" aria-hidden="true"></span>
+                    <span class="timer-project-picker__option-label"><%= project.name %></span>
+                  </button>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </details>
+      </div>
+
+      <%= render "time_entries/tags_fields", form:, time_entry: form_time_entry, scope: "timer" %>
     </div>
 
     <div class="timer-bar__actions">
-      <%= form.button type: :submit, class: "btn" do %>
+      <%= form.button type: :submit, class: "btn timer-bar__start", aria: { label: t("timers.bar.start") } do %>
         <%= icon("play") %>
-        <%= t("timers.bar.start") %>
+        <span class="timer-bar__start-label"><%= t("timers.bar.start") %></span>
       <% end %>
     </div>
 

@@ -93,7 +93,7 @@
                     class: "row-menu__split-form" do %>
                 <label for="split_cut_<%= time_entry.id %>" class="muted"><%= t("time_entries.entry.cut_at") %></label>
                 <input type="datetime-local" id="split_cut_<%= time_entry.id %>"
-                       name="split[cut]" value="<%= tracker_split_default(time_entry) %>">
+                       name="split[cut]" step="1" value="<%= tracker_split_default(time_entry) %>">
                 <%= submit_tag t("time_entries.entry.split"), class: "btn btn--sm" %>
               <% end %>
             </details>

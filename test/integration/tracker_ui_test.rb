@@ -56,29 +56,45 @@ class TrackerUiTest < ActionDispatch::IntegrationTest
     assert_select "[data-day='2026-07-02'] [data-entry-id='#{running.id}']", count: 0
   end
 
-  test "barra ociosa renderiza só descrição e iniciar" do
+  test "barra ociosa renderiza descrição, projeto e tags" do
+    @user.tags.create!(name: "Bug")
     get timer_path, headers: turbo_headers("timer_bar")
 
     assert_response :success
     assert_select "form.timer-bar--idle", count: 1
     assert_select "label[for='timer_description']", text: /Descrição/
     assert_select "input[name='timer[description]']", count: 1
-    assert_select "select[name='timer[project_id]']", count: 0
+    assert_select "input[type='hidden'][name='timer[project_id]']", count: 1
+    assert_select ".timer-project-picker", count: 1
+    assert_select "input[name='timer[tag_ids][]']", minimum: 1
+    assert_select "input[name='timer[new_tag_names][]']", count: 1
   end
 
-  test "POST /timer via turbo inicia o timer e renderiza a barra no estado rodando" do
-    project = @user.projects.create!(name: "Projeto turbo")
+  test "barra ociosa pré-seleciona o projeto padrão do usuário" do
+    project = @user.projects.create!(name: "Padrão bar")
     @user.update!(default_project: project)
+
+    get timer_path, headers: turbo_headers("timer_bar")
+
+    assert_response :success
+    assert_select "input[type='hidden'][name='timer[project_id]'][value='#{project.id}']", count: 1
+    assert_select ".timer-project-picker__option--selected", text: "Padrão bar", count: 1
+  end
+
+  test "POST /timer via turbo inicia o timer com projeto e tags escolhidos no form" do
+    project = @user.projects.create!(name: "Projeto turbo")
+    bug = @user.tags.create!(name: "Bug")
 
     assert_difference -> { @user.time_entries.count }, +1 do
       post timer_path,
-        params: { timer: { description: "Escrevendo tracker" } },
+        params: { timer: { description: "Escrevendo tracker", project_id: project.id, tag_ids: [ bug.id.to_s ], new_tag_names: [ "Urgente" ] } },
         headers: turbo_headers("timer_bar")
     end
 
     entry = @user.time_entries.find_by!(ended_at: nil)
     assert_response :success
     assert_equal project.id, entry.project_id
+    assert_equal [ "Bug", "Urgente" ], entry.tags.order(:created_at).map(&:name)
     assert_equal Mime[:turbo_stream], response.media_type
     assert_includes response.body, %(target="timer_bar")
     assert_includes response.body, "Escrevendo tracker"

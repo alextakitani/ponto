@@ -61,12 +61,18 @@ class TimeEntry < ApplicationRecord
   end
 
   def overlapping_entries
-    return TimeEntry.none if user_id.blank? || started_at.blank? || ended_at.blank?
+    return TimeEntry.none if user_id.blank? || started_at.blank?
 
-    user.time_entries
-      .where.not(id: id)
-      .where.not(ended_at: nil)
-      .where("? < time_entries.ended_at AND time_entries.started_at < ?", started_at, ended_at)
+    # Entry rodando (ended_at nil) cobre [started_at, ∞): qualquer entry finalizada
+    # cujo fim venha depois do nosso start se sobrepõe. Sem isto, editar o started_at
+    # de um timer contornava a validação (a sobreposição do log entrava aqui — a
+    # 10346 teve o start arrastado 55s pra dentro da 10345 finalizada).
+    scope = user.time_entries.where.not(id: id).where.not(ended_at: nil)
+    if ended_at.present?
+      scope.where("? < time_entries.ended_at AND time_entries.started_at < ?", started_at, ended_at)
+    else
+      scope.where("? < time_entries.ended_at", started_at)
+    end
   end
 
   def attributes_for_restart
@@ -122,7 +128,9 @@ class TimeEntry < ApplicationRecord
     end
 
     def validate_overlap?
-      ended_at.present? && (started_at_changed? || ended_at_changed?) && !allow_overlap
+      # Roda também com a entry rodando (ended_at nil): mudar o started_at de um
+      # timer ou criar um timer sobreposto a uma finalizada devem ser barrados.
+      (started_at_changed? || ended_at_changed?) && !allow_overlap
     end
 
     def no_overlap

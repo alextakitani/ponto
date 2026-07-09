@@ -249,11 +249,41 @@ class TimeEntryTest < ActiveSupport::TestCase
       started_at: Time.utc(2026, 7, 2, 10, 0, 0),
       ended_at: Time.utc(2026, 7, 2, 11, 0, 0)
     )
-    running = @user.time_entries.create!(started_at: Time.utc(2026, 7, 2, 9, 30, 0))
+    # Sobreposição pré-existente (ex.: importada): criada com allow_overlap, então
+    # o stop nunca trava o usuário — Q49c/Q22 (parar é invariante operacional).
+    running = @user.time_entries.build(started_at: Time.utc(2026, 7, 2, 9, 30, 0))
+    running.allow_overlap = true
+    running.save!
 
     running.stop_at(Time.utc(2026, 7, 2, 10, 30, 0))
 
     assert_equal Time.utc(2026, 7, 2, 10, 30, 0), running.reload.ended_at
+  end
+
+  test "bloqueia editar started_at de timer rodando pra dentro de entry finalizada" do
+    @user.time_entries.create!(
+      started_at: Time.utc(2026, 7, 2, 17, 47, 23),
+      ended_at: Time.utc(2026, 7, 2, 18, 13, 27)
+    )
+    # Regressão do log: timer criado em 18:13:55, edição arrastou o start pra
+    # 18:13:00 e invadiu a entry finalizada (termina 18:13:27). Agora é barrado.
+    running = @user.time_entries.create!(started_at: Time.utc(2026, 7, 2, 18, 13, 55))
+    running.started_at = Time.utc(2026, 7, 2, 18, 13, 0)
+
+    assert_not running.valid?
+    assert running.errors[:started_at].any?
+  end
+
+  test "bloqueia criar timer rodando sobreposto a entry finalizada" do
+    @user.time_entries.create!(
+      started_at: Time.utc(2026, 7, 2, 9, 0, 0),
+      ended_at: Time.utc(2026, 7, 2, 11, 0, 0)
+    )
+
+    overlapping = @user.time_entries.build(started_at: Time.utc(2026, 7, 2, 10, 30, 0))
+
+    assert_not overlapping.valid?
+    assert overlapping.errors[:started_at].any?
   end
 
   test "índice único parcial barra dois timers rodando para o mesmo user" do

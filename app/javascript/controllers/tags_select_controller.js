@@ -6,6 +6,7 @@ import { Controller } from "@hotwired/stimulus"
 // tem name new_tag_names[], então um valor digitado ainda envia sozinho no submit.
 export default class extends Controller {
   static targets = ["input", "options"]
+  static values = { scope: { type: String, default: "time_entry" } }
 
   add(event) {
     event.preventDefault()
@@ -33,7 +34,7 @@ export default class extends Controller {
 
     const checkbox = document.createElement("input")
     checkbox.type = "checkbox"
-    checkbox.name = "time_entry[new_tag_names][]"
+    checkbox.name = `${this.scopeValue}[new_tag_names][]`
     checkbox.value = name
     checkbox.checked = true
 
