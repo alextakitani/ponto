@@ -63,3 +63,6 @@ skills-lock.json
 /docs/agents/
 /docs/superpowers/
 /docs/backup-hetzner-plan.md
+
+# Config do kamal-backup — tem host/usuário da Storage Box (infra privada).
+/config/kamal-backup.yml

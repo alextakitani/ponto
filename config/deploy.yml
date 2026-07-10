@@ -124,26 +124,24 @@ builder:
 # ssh:
 #   user: app
 
-# Use accessory services (secrets come from .kamal/secrets).
-# accessories:
-#   db:
-#     image: mysql:8.0
-#     host: 10.0.0.20
-#     # Change to 3306 to expose port to the world instead of just local network.
-#     port: "127.0.0.1:3306:3306"
-#     env:
-#       clear:
-#         MYSQL_ROOT_HOST: '%'
-#       secret:
-#         - MYSQL_ROOT_PASSWORD
-#     files:
-#       - config/mysql/production.cnf:/etc/mysql/my.cnf
-#       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
-#     directories:
-#       - data:/var/lib/mysql
-#   redis:
-#     image: valkey/valkey:8
-#     host: 10.0.0.20
-#     port: 6379
-#     directories:
-#       - data:/data
+# Backup off-site na Hetzner Storage Box via kamal-backup (restic/SFTP).
+# Dump QUENTE do SQLite + Active Storage (sem parar o app), off-site — complementa
+# o vzdump local do Proxmox. Config detalhada em config/kamal-backup.yml (gitignored,
+# tem host da Storage Box). A chave SSH + known_hosts são montados no container.
+# ⚠️ os caminhos de `files:` (~/.ssh/ponto-backup*) existem no desktop E no LXC.
+accessories:
+  backup:
+    # Imagem custom (kamal-backup + openssh + wrapper ssh p/ SFTP porta 23) buildada
+    # no LXC e no registry local. Ver .kamal/backup/Dockerfile.
+    image: <%= ENV.fetch("PONTO_DEPLOY_HOST", "10.0.0.10") %>:5555/ponto-kamal-backup:0.4.0-ssh
+    host: <%= ENV.fetch("PONTO_DEPLOY_HOST", "10.0.0.10") %>
+    files:
+      - config/kamal-backup.yml:/app/config/kamal-backup.yml:ro
+      - <%= ENV.fetch("HOME", "/root") %>/.ssh/ponto-backup:/root/.ssh/id_ed25519:ro
+      - <%= ENV.fetch("HOME", "/root") %>/.ssh/ponto-backup-known_hosts:/root/.ssh/known_hosts:ro
+    env:
+      secret:
+        - RESTIC_PASSWORD
+    volumes:
+      - "ponto_storage:/data/storage:ro"
+      - "ponto_backup_state:/var/lib/kamal-backup"
