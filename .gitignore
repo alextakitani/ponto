@@ -44,3 +44,21 @@ skills-lock.json
 /db/geoip/*.mmdb
 /storage/geoip/*.mmdb
 /.kamal/buildkitd.toml
+
+# Docs internos (processo/design/decisões do dono) — ficam no disco pra
+# referência, mas FORA do repo público. Ver decisão de 10/07.
+/CLAUDE.md
+/PRODUCT.md
+/DESIGN.md
+/STYLE.md
+/CONTEXT.md
+/.impeccable/
+/docs/deploy.md
+/docs/grilling-progress.md
+/docs/decisoes-auth-fizzy.md
+/docs/time-tracker-decisoes.md
+/docs/time-tracker-spec.pdf
+/docs/logo-mark.svg
+/docs/adr/
+/docs/agents/
+/docs/superpowers/
