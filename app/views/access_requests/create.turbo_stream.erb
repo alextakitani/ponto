@@ -1,0 +1,9 @@
+<%# O form aparece 2x na landing (CTA topo e CTA final). Substitui as DUAS
+    instâncias pela mensagem de sucesso — o Turbo ignora um target ausente,
+    então funciona mesmo se só uma existir na página. %>
+<%= turbo_stream.replace "access_request_form_top" do %>
+  <%= render "access_requests/success", dom_id: "access_request_form_top" %>
+<% end %>
+<%= turbo_stream.replace "access_request_form_final" do %>
+  <%= render "access_requests/success", dom_id: "access_request_form_final" %>
+<% end %>

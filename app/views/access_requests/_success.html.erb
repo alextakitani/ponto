@@ -1,0 +1,6 @@
+<%# Mensagem que substitui o form "pedir acesso" após o POST (Turbo Stream).
+    Recebe `dom_id` (mesmo id do form que saiu) pra o replace casar o alvo. %>
+<div id="<%= dom_id %>" class="landing__form access-request-success" role="status">
+  <p class="access-request-success__title"><%= t("access_requests.create.success_title") %></p>
+  <p class="access-request-success__text muted"><%= t("access_requests.create.received") %></p>
+</div>

@@ -70,4 +70,18 @@ class AccessRequestsTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_no_match(/sign_in/, response.location)
   end
+
+  # Turbo Stream: em vez de redirect, troca o form pela mensagem de sucesso na
+  # própria página (substitui as duas instâncias do form da landing).
+  test "requisição turbo_stream substitui o form pela mensagem de sucesso" do
+    post access_requests_path,
+      params: { access_request: { email: "turbo@example.com" } },
+      as: :turbo_stream
+
+    assert_response :success
+    assert_match "turbo-stream", response.media_type
+    assert_match GENERIC, response.body
+    assert_match(/action="replace"[^>]*target="access_request_form_top"/, response.body)
+    assert_match(/action="replace"[^>]*target="access_request_form_final"/, response.body)
+  end
 end

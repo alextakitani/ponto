@@ -9,7 +9,13 @@ class AccessRequestsController < ApplicationController
 
   def create
     AccessRequest.record(**access_request_params)
-    redirect_to root_path, notice: t("access_requests.create.received")
+
+    respond_to do |format|
+      # Troca o próprio form pela mensagem de sucesso, sem recarregar a página.
+      format.turbo_stream
+      # Fallback sem JS: redirect com o mesmo aviso no flash.
+      format.html { redirect_to root_path, notice: t("access_requests.create.received") }
+    end
   end
 
   private

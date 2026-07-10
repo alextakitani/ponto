@@ -214,6 +214,26 @@
   font-size: var(--text-sm);
 }
 
+/* Mensagem que substitui o form "pedir acesso" após o POST (Turbo Stream).
+   Mesmo container do aviso, com a linha-assinatura de acento no topo (sinal
+   positivo, coerente com o topo do app). */
+.access-request-success {
+  padding: var(--space-4);
+  background-color: var(--color-surface-sunken);
+  border: 1px solid var(--color-border);
+  border-top: 2px solid var(--color-accent);
+  border-radius: var(--radius);
+}
+
+.access-request-success__title {
+  font-weight: var(--weight-semibold);
+  margin-bottom: var(--space-2);
+}
+
+.access-request-success__text {
+  font-size: var(--text-sm);
+}
+
 /* ─────────── Mockup do tracker (assinatura / herói) ─────────── */
 
 .lp-shot {

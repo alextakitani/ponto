@@ -2,8 +2,12 @@
     i18n (Q79): labels/botão via t(). Compartilhado com telas PT — como o default é
     pt-BR, elas seguem idênticas. %>
 <%# scope: obrigatório — o controller faz params.require(:access_request); sem o
-    wrapper os campos vão soltos e o POST morre em ParameterMissing (bug 06/07). %>
-<%= form_with scope: :access_request, url: access_requests_path, method: :post, class: "landing__form" do |f| %>
+    wrapper os campos vão soltos e o POST morre em ParameterMissing (bug 06/07).
+    dom_id: o form aparece 2x na landing (CTA do topo e CTA final); cada instância
+    recebe um id próprio (via local `dom_id`) pra o Turbo Stream substituir a certa
+    pela mensagem de sucesso sem recarregar a página. %>
+<%= form_with scope: :access_request, url: access_requests_path, method: :post,
+      id: local_assigns[:dom_id], class: "landing__form access-request-form" do |f| %>
   <div class="field">
     <%= f.label :email, t("access_requests.form.email_label") %>
     <%= f.email_field :email,

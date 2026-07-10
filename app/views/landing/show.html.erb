@@ -35,7 +35,7 @@
             <p class="lp-cta__label">
               <%= t("landing.cloud.pitch_html") %>
             </p>
-            <%= render "access_requests/form" %>
+            <%= render "access_requests/form", dom_id: "access_request_form_top" %>
           <% end %>
         </div>
       </div>
@@ -319,7 +319,7 @@
         <% if @operator_setup_needed %>
           <%= render "shared/bootstrap_notice", css_class: "lp-notice" %>
         <% else %>
-          <%= render "access_requests/form" %>
+          <%= render "access_requests/form", dom_id: "access_request_form_final" %>
           <p class="lp-final__signin muted">
             <%= t("landing.final.signin_prompt") %> <%= link_to t("landing.nav.sign_in"), sign_in_path %>
           </p>
