@@ -30,13 +30,12 @@ pt-BR:
         text_html: "Horas por dia, distribuição por projeto e agrupamentos em dois níveis — do resumo ao detalhe. Exporte em <strong>.xlsx ou CSV</strong> e anexe direto à fatura."
       extension:
         title: "Extensão de Chrome"
-        badge: "em breve"
-        text: "Inicie e pare o timer direto do popup, sem trocar de aba. É a mesma API do app — o servidor continua sendo a fonte da verdade."
+        badge_available: "código aberto"
+        text: "Inicie e pare o timer direto do popup, sem trocar de aba. É a mesma API do app — o servidor continua sendo a fonte da verdade. Código aberto: carregue sem compactação a partir do repositório e conecte com um token."
       cli:
         title: "CLI"
         badge: "em breve"
-        badge_available: "disponível"
-        text: "Comandos no terminal e saída JSON para agentes de IA, como o Claude. Já disponível — compile do código e conecte à sua instância com o mesmo token da extensão."
+        text: "Comandos no terminal e saída JSON para agentes de IA, como o Claude. Conecta à sua instância com o mesmo token da extensão."
     gallery:
       heading: "Veja por dentro"
       sub: "As telas reais do Ponto — do timer no topo ao relatório que vira fatura."

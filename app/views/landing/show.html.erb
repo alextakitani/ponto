@@ -142,7 +142,10 @@
             </div>
           </div>
           <h3 class="lp-proof__title">
-            <%= t("landing.proofs.extension.title") %> <span class="lp-badge"><%= t("landing.proofs.extension.badge") %></span>
+            <%# Extensão publicada (open source, repo da Rafa): link direto pro repo. %>
+            <%= t("landing.proofs.extension.title") %>
+            <%= link_to t("landing.proofs.extension.badge_available"), "https://github.com/Rafatakitani/ponto-extension",
+                  class: "lp-badge lp-badge--live", target: "_blank", rel: "noopener" %>
           </h3>
           <p class="lp-proof__text muted">
             <%= t("landing.proofs.extension.text") %>
@@ -163,10 +166,9 @@
             </div>
           </div>
           <h3 class="lp-proof__title">
-            <%# CLI já disponível (07/07): sem badge "em breve" — link direto pro repo. %>
+            <%# CLI ainda em repo privado: badge estático "em breve", sem link (evita 404). %>
             <%= t("landing.proofs.cli.title") %> <code>ponto</code>
-            <%= link_to t("landing.proofs.cli.badge_available"), "https://github.com/alextakitani/ponto-cli",
-                  class: "lp-badge lp-badge--live", target: "_blank", rel: "noopener" %>
+            <span class="lp-badge"><%= t("landing.proofs.cli.badge") %></span>
           </h3>
           <p class="lp-proof__text muted">
             <%= t("landing.proofs.cli.text") %>
