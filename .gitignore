@@ -43,3 +43,4 @@ skills-lock.json
 # GeoIP database local (MaxMind GeoLite2, licença própria; baixado à parte)
 /db/geoip/*.mmdb
 /storage/geoip/*.mmdb
+/.kamal/buildkitd.toml

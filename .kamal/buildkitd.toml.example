@@ -1,0 +1,5 @@
+# Template do buildkitd.toml (copie pra .kamal/buildkitd.toml e ajuste o IP).
+# O registro do homelab é HTTP puro; o buildkit não herda insecure-registries
+# do daemon. O nome do registry DEVE bater com registry.server (PONTO_DEPLOY_HOST).
+[registry."10.0.0.10:5555"]
+  http = true
