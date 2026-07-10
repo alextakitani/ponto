@@ -166,9 +166,10 @@
             </div>
           </div>
           <h3 class="lp-proof__title">
-            <%# CLI ainda em repo privado: badge estático "em breve", sem link (evita 404). %>
+            <%# CLI publicada (open source): link direto pro repo, igual à extensão. %>
             <%= t("landing.proofs.cli.title") %> <code>ponto</code>
-            <span class="lp-badge"><%= t("landing.proofs.cli.badge") %></span>
+            <%= link_to t("landing.proofs.cli.badge_available"), "https://github.com/alextakitani/ponto-cli",
+                  class: "lp-badge lp-badge--live", target: "_blank", rel: "noopener" %>
           </h3>
           <p class="lp-proof__text muted">
             <%= t("landing.proofs.cli.text") %>

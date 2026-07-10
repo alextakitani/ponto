@@ -34,8 +34,8 @@ pt-BR:
         text: "Inicie e pare o timer direto do popup, sem trocar de aba. É a mesma API do app — o servidor continua sendo a fonte da verdade. Código aberto: carregue sem compactação a partir do repositório e conecte com um token."
       cli:
         title: "CLI"
-        badge: "em breve"
-        text: "Comandos no terminal e saída JSON para agentes de IA, como o Claude. Conecta à sua instância com o mesmo token da extensão."
+        badge_available: "código aberto"
+        text: "Comandos no terminal e saída JSON para agentes de IA, como o Claude. Código aberto: compile do código e conecte à sua instância com o mesmo token da extensão."
     gallery:
       heading: "Veja por dentro"
       sub: "As telas reais do Ponto — do timer no topo ao relatório que vira fatura."

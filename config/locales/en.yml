@@ -35,8 +35,8 @@ en:
         text: "Start and stop the timer right from the popup, without switching tabs. It's the same API as the app — the server stays the source of truth. Open source: load it unpacked from the repo and connect with a token."
       cli:
         title: "CLI"
-        badge: "coming soon"
-        text: "Terminal commands and JSON output for AI agents, like Claude. It connects to your instance with the same token as the extension."
+        badge_available: "open source"
+        text: "Terminal commands and JSON output for AI agents, like Claude. Open source: build from source and connect to your instance with the same token as the extension."
     gallery:
       heading: "See inside"
       sub: "Ponto's real screens — from the timer up top to the report that becomes an invoice."
