@@ -233,6 +233,7 @@ pt-BR:
       note_label: "Observação (opcional)"
       submit: "Pedir acesso"
     create:
+      success_title: "Pedido enviado!"
       received: "Recebemos seu pedido — você será avisado se for aprovado."
       rate_limited: "Muitos pedidos. Aguarde um minuto."
   shared:
@@ -373,7 +374,7 @@ pt-BR:
     rate_limited: "Muitas tentativas. Aguarde um minuto."
     email_form:
       title: "Entrar no Ponto"
-      description: "Enviamos um código de 6 dígitos para o seu e-mail."
+      description: "Digite seu e-mail e enviaremos um código de 6 dígitos para entrar."
       request_access: "Pedir acesso"
       email_placeholder: "voce@exemplo.com"
       submit: "Enviar código"

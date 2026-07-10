@@ -234,6 +234,7 @@ en:
       note_label: "Note (optional)"
       submit: "Request access"
     create:
+      success_title: "Request sent!"
       received: "We got your request — you'll be notified if it's approved."
       rate_limited: "Too many requests. Please wait a minute."
   shared:
@@ -374,7 +375,7 @@ en:
     rate_limited: "Too many attempts. Please wait a minute."
     email_form:
       title: "Sign in to Ponto"
-      description: "We'll send a 6-digit code to your email."
+      description: "Enter your email and we'll send a 6-digit code to sign in."
       request_access: "Request access"
       email_placeholder: "you@example.com"
       submit: "Send code"
