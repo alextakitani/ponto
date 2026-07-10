@@ -54,7 +54,8 @@ O repositório já traz o **Dockerfile** e a configuração do **Kamal**
 
 - **[ponto-cli](https://github.com/alextakitani/ponto-cli)** — CLI oficial (Go): timer,
   catálogo e export do terminal ou via agentes de IA. Usa o mesmo token da extensão.
-- **ponto-extension** — extensão de Chrome pro timer no navegador (em breve).
+- **[ponto-extension](https://github.com/Rafatakitani/ponto-extension)** — extensão de
+  Chrome pro timer no navegador. Usa o mesmo token da CLI.
 
 ## Ponto Cloud
 
@@ -126,7 +127,8 @@ The repo already ships the **Dockerfile** and **Kamal** config
 - **[ponto-cli](https://github.com/alextakitani/ponto-cli)** — official CLI (Go): timer,
   catalog and export from your terminal or through AI agents. Uses the same token as the
   extension.
-- **ponto-extension** — Chrome extension for the timer in your browser (coming soon).
+- **[ponto-extension](https://github.com/Rafatakitani/ponto-extension)** — Chrome
+  extension for the timer in your browser. Uses the same token as the CLI.
 
 ### Ponto Cloud
 
