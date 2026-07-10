@@ -186,6 +186,24 @@ button:disabled {
 }
 
 
+/* Magic code em 6 caixas (uma por dígito) — tela de login. As caixas alimentam
+   um campo escondido; colar em qualquer uma distribui os dígitos e auto-submete. */
+.code-boxes {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
+}
+
+.code-box.code-box {
+  width: 100%;
+  min-width: 0; /* deixa as caixas encolherem por igual em telas estreitas */
+  padding: var(--space-3) 0;
+  text-align: center;
+  font-size: var(--text-xl);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
 /* Header suave de acento no TOPO dos panels de form (pedido do dono: a mesma
    linha-assinatura do topo do app, versão 2px, só no topo — não nas laterais).
    Classe dobrada (0,2,0) pra vencer o `border:` shorthand dos arquivos de tela

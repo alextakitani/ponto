@@ -382,6 +382,7 @@ en:
       title: "Enter the code"
       description_html: "We sent a 6-digit code to <strong>%{email}</strong>. It expires in 15 minutes."
       dev_code_html: "Dev: code <strong>%{code}</strong>"
+      digit: "Digit %{position}"
       submit: "Sign in"
       use_another_email: "Use another email"
   suspensions:

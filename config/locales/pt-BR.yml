@@ -381,6 +381,7 @@ pt-BR:
       title: "Digite o código"
       description_html: "Enviamos um código de 6 dígitos para <strong>%{email}</strong>. Ele expira em 15 minutos."
       dev_code_html: "Dev: código <strong>%{code}</strong>"
+      digit: "Dígito %{position}"
       submit: "Entrar"
       use_another_email: "Usar outro e-mail"
   suspensions:
