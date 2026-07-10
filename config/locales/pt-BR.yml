@@ -393,6 +393,9 @@ pt-BR:
       analytics: "Analytics"
       api_usage: "Uso da API"
       jobs: "Jobs"
+      pending_count:
+        one: "%{count} pedido de acesso pendente"
+        other: "%{count} pedidos de acesso pendentes"
     labels:
       actions: "Ações"
       admin: "Admin"

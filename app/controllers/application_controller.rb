@@ -29,7 +29,7 @@ class ApplicationController < ActionController::Base
 
   after_action :track_analytics_event
 
-  helper_method :command_palette_current_timer, :command_palette_recent_time_entries
+  helper_method :command_palette_current_timer, :command_palette_recent_time_entries, :pending_access_requests_count
 
   # Teto de paginação da API JSON: TODO endpoint de coleção é paginado (LIMIT/OFFSET
   # no SQL) — sem isso um histórico grande puxava o array inteiro (ex.: 3319 entries
@@ -116,6 +116,15 @@ class ApplicationController < ActionController::Base
         .limit(25)
         .uniq { |entry| [ entry.description, entry.project_id ] }
         .first(5)
+    end
+
+    # Contador de pedidos de acesso pendentes pro badge no ícone de admin ("Contas").
+    # Só o admin vê a fila (AccessRequest é pré-conta, fora do isolamento por user_id);
+    # não-admin sempre 0 (o link de admin nem renderiza pra ele). Cacheado por request.
+    def pending_access_requests_count
+      return 0 unless Current.user&.admin?
+
+      @pending_access_requests_count ||= AccessRequest.pending.count
     end
 
     def deny_access

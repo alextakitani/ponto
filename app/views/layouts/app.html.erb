@@ -56,6 +56,9 @@
           <%= link_to admin_root_path, class: "shell-nav__item" do %>
             <%= icon("shield") %>
             <%= t("admin.nav.accounts") %>
+            <% if pending_access_requests_count > 0 %>
+              <span class="shell-nav__badge" aria-label="<%= t("admin.nav.pending_count", count: pending_access_requests_count) %>"><%= pending_access_requests_count %></span>
+            <% end %>
           <% end %>
         <% end %>
         <%= button_to sign_out_path, method: :delete, class: "shell-nav__item shell-nav__item--button" do %>

@@ -19,4 +19,17 @@ class HomeAdminLinkTest < ActionDispatch::IntegrationTest
     get home_path
     assert_select "a[href=?]", admin_root_path, count: 0
   end
+
+  test "badge de pendentes aparece pro admin quando há pedidos de acesso" do
+    2.times { |i| AccessRequest.create!(email: "quer#{i}@example.com") }
+    sign_in_as("chefe@example.com", admin: true, keep_active_admin: true)
+    get home_path
+    assert_select ".shell-nav__badge", text: "2"
+  end
+
+  test "sem pedidos pendentes, o badge não aparece" do
+    sign_in_as("chefe@example.com", admin: true, keep_active_admin: true)
+    get home_path
+    assert_select ".shell-nav__badge", count: 0
+  end
 end

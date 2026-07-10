@@ -394,6 +394,9 @@ en:
       analytics: "Analytics"
       api_usage: "API usage"
       jobs: "Jobs"
+      pending_count:
+        one: "%{count} pending access request"
+        other: "%{count} pending access requests"
     labels:
       actions: "Actions"
       admin: "Admin"
