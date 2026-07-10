@@ -19,6 +19,11 @@ class TimeEntry < ApplicationRecord
   # stop_at e split.
   attr_accessor :allow_overlap
 
+  # Escape para o importador de dados (Q72): preserva o snapshot rate/currency do
+  # arquivo em vez de recalcular do projeto atual (o round-trip tem que devolver o
+  # histórico intacto, sem revalorizar).
+  attr_accessor :skip_rate_snapshot
+
   monetize :rate_cents, allow_nil: true, with_model_currency: :currency
 
   validates :started_at, presence: true
@@ -180,6 +185,7 @@ class TimeEntry < ApplicationRecord
     end
 
     def snapshot_project_rate
+      return if skip_rate_snapshot
       return unless new_record? || will_save_change_to_project_id?
 
       if project

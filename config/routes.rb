@@ -38,6 +38,14 @@ Rails.application.routes.draw do
     resources :access_tokens, only: %i[create destroy], shallow: true
   end
 
+  # Portabilidade JSON (Q26/Q72) — export/import da bolha inteira do usuário. Cada um
+  # é um resource singular REST próprio (STYLE.md): o export baixa o arquivo (GET show),
+  # o import sobe um JSON (new + create). Namespaced pra casar com Account::.
+  namespace :account do
+    resource :data_export, only: :show, controller: :data_exports
+    resource :data_import, only: %i[new create], controller: :data_imports
+  end
+
   # Relatórios (Fatia 5.1) — o entregável principal. PÁGINA ÚNICA com abas
   # Summary/Detailed via param `view`; período/filtros/group_by/rounding viajam na
   # URL (pra 5.2 herdar no export e pro compartilhamento de link). Só :index (é uma

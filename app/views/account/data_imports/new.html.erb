@@ -1,0 +1,36 @@
+<% content_for :title, t(".title") %>
+
+<header class="page-header">
+  <div>
+    <h1><%= t(".title") %></h1>
+    <p class="muted"><%= t(".lede") %></p>
+  </div>
+</header>
+
+<% if @empty_bubble %>
+  <%= form_with url: account_data_import_path, scope: :account_data_import, method: :post, multipart: true, class: "form-stack" do |form| %>
+    <% if @upload_error.present? %>
+      <div class="form-errors" role="alert">
+        <%= @upload_error %>
+      </div>
+    <% end %>
+
+    <div class="form-field">
+      <%= form.label :file, t(".form.file_label") %>
+      <%= form.file_field :file, accept: ".json,application/json", required: true %>
+      <p class="form-hint"><%= t(".form.file_hint") %></p>
+    </div>
+
+    <div class="form-actions">
+      <%= form.submit t(".form.submit"), class: "btn" %>
+      <%= link_to t(".form.cancel"), preferences_path, class: "btn btn--quiet" %>
+    </div>
+  <% end %>
+<% else %>
+  <section class="empty-state" aria-labelledby="data-import-blocked-heading">
+    <%= icon("x", size: 24, class: "icon--lg") %>
+    <h2 id="data-import-blocked-heading"><%= t(".blocked.title") %></h2>
+    <p class="muted"><%= t(".blocked.description") %></p>
+    <%= link_to t(".blocked.back"), home_path, class: "btn btn--quiet" %>
+  </section>
+<% end %>

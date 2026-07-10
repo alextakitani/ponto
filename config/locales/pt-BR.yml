@@ -202,6 +202,29 @@ pt-BR:
       failed:
         title: "Importação falhou"
         retry: "Enviar outro CSV"
+  account:
+    data_imports:
+      new:
+        title: "Importar dados do Ponto"
+        lede: "Restaure uma exportação JSON do Ponto na sua conta vazia. Clientes, projetos, tarefas, tags e lançamentos voltam com seus valores originais."
+        form:
+          file_label: "Arquivo JSON"
+          file_hint: "Selecione um arquivo ponto-export gerado nas Preferências."
+          file_blank: "Selecione um arquivo JSON para importar."
+          submit: "Importar dados"
+          cancel: "Voltar"
+        blocked:
+          title: "Sua conta já tem dados"
+          description: "A importação de dados do Ponto só roda antes de criar clientes, projetos, tarefas, tags ou lançamentos."
+          back: "Ir pro tracker"
+      create:
+        imported: "Importação concluída: %{clients} clientes, %{projects} projetos, %{tasks} tarefas, %{tags} tags e %{time_entries} lançamentos."
+        non_empty_bubble: "Importação recusada: sua conta já tem dados. A importação de dados só roda em uma bolha vazia."
+      errors:
+        malformed_json: "Arquivo inválido: não é um JSON válido."
+        unsupported_schema_version: "Versão de schema não suportada. Este importador espera schema_version %{version}."
+        non_empty_bubble: "Importação recusada: sua conta já tem dados. A importação de dados só roda em uma bolha vazia."
+        failed: "Não foi possível importar o arquivo: %{message}"
   access_requests:
     form:
       email_label: "E-mail"
@@ -501,8 +524,11 @@ pt-BR:
         never: "nunca"
       data:
         title: "Meus dados"
-        description: "Exportação de dados da conta entrará junto com o importador."
-        export_soon: "Exportar meus dados (em breve)"
+        description: "Leve seus dados quando quiser. A exportação gera um JSON com clientes, projetos, tarefas, tags e lançamentos; a importação restaura esse arquivo numa conta vazia."
+        export: "Exportar meus dados"
+        import: "Importar dados"
+        import_hint: "A importação só roda numa conta vazia (sem clientes, projetos, tarefas, tags ou lançamentos)."
+        import_unavailable: "A importação fica disponível apenas em uma conta vazia."
   clients:
     archivals:
       created: "Cliente arquivado."

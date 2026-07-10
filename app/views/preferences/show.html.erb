@@ -165,7 +165,18 @@
       <p class="muted"><%= t(".data.description") %></p>
     </div>
 
-    <%# TODO(Q26/importador): implementar export real dos dados do usuário. %>
-    <button type="button" class="btn btn--quiet" disabled><%= t(".data.export_soon") %></button>
+    <div class="form-actions">
+      <%= link_to t(".data.export"), account_data_export_path(format: :json), class: "btn btn--quiet" %>
+
+      <% if @user.empty_bubble? %>
+        <%= link_to t(".data.import"), new_account_data_import_path, class: "btn btn--quiet" %>
+      <% end %>
+    </div>
+
+    <% if @user.empty_bubble? %>
+      <p class="form-hint"><%= t(".data.import_hint") %></p>
+    <% else %>
+      <p class="form-hint"><%= t(".data.import_unavailable") %></p>
+    <% end %>
   </section>
 </div>

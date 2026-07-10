@@ -25,7 +25,10 @@ class PreferencesTest < ActionDispatch::IntegrationTest
     assert_select "body", text: /Extensão/
     assert_select "body", text: /read/
     assert_select "body", text: /Token Alheio/, count: 0
-    assert_select "button[disabled]", text: /Exportar meus dados/
+    # Portabilidade JSON (Q26/Q72): export sempre disponível; import só em bolha vazia
+    # (o user recém-criado do setup não tem dados de domínio).
+    assert_select "a[href=?]", account_data_export_path(format: :json), text: /Exportar meus dados/
+    assert_select "a[href=?]", new_account_data_import_path, text: /Importar dados/
   end
 
   test "show JSON via Bearer devolve as preferências do user (contrato extensão/CLI)" do

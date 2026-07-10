@@ -203,6 +203,29 @@ en:
       failed:
         title: "Import failed"
         retry: "Upload another CSV"
+  account:
+    data_imports:
+      new:
+        title: "Import Ponto data"
+        lede: "Restore a Ponto JSON export into your empty account. Clients, projects, tasks, tags, and time entries come back with their original values."
+        form:
+          file_label: "JSON file"
+          file_hint: "Select a ponto-export file generated in Preferences."
+          file_blank: "Select a JSON file to import."
+          submit: "Import data"
+          cancel: "Back"
+        blocked:
+          title: "Your account already has data"
+          description: "The Ponto data importer only runs before clients, projects, tasks, tags, or time entries exist."
+          back: "Go to tracker"
+      create:
+        imported: "Import completed: %{clients} clients, %{projects} projects, %{tasks} tasks, %{tags} tags, and %{time_entries} time entries."
+        non_empty_bubble: "Import refused: your account already has data. The data importer only runs in an empty bubble."
+      errors:
+        malformed_json: "Invalid file: not valid JSON."
+        unsupported_schema_version: "Unsupported schema version. This importer expects schema_version %{version}."
+        non_empty_bubble: "Import refused: your account already has data. The data importer only runs in an empty bubble."
+        failed: "Could not import the file: %{message}"
   access_requests:
     form:
       email_label: "Email"
@@ -502,8 +525,11 @@ en:
         never: "never"
       data:
         title: "My data"
-        description: "Account data export will ship with the importer."
-        export_soon: "Export my data (coming soon)"
+        description: "Take your data whenever you want. Export produces a JSON with clients, projects, tasks, tags, and time entries; import restores that file into an empty account."
+        export: "Export my data"
+        import: "Import data"
+        import_hint: "Import only runs on an empty account (no clients, projects, tasks, tags, or time entries)."
+        import_unavailable: "Import is only available on an empty account."
   clients:
     archivals:
       created: "Client archived."

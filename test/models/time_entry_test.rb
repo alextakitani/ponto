@@ -86,6 +86,28 @@ class TimeEntryTest < ActiveSupport::TestCase
     assert_equal "BRL", entry.currency
   end
 
+  test "skip_rate_snapshot preserva o snapshot do arquivo mesmo divergindo do projeto atual" do
+    # Escape do importador de dados (Q72): a rate/moeda importada entra COMO ESTÁ, sem
+    # recalcular a partir do projeto atual. Aqui o projeto vale 30000/EUR, mas o arquivo
+    # traz 15000/USD — o snapshot importado tem que sobreviver.
+    client = @user.clients.create!(name: "Acme", currency: "EUR", rate_cents: 30000)
+    project = @user.projects.create!(name: "Site", client: client)
+
+    entry = @user.time_entries.build(
+      project: project,
+      started_at: Time.current - 1.hour,
+      ended_at: Time.current,
+      rate_cents: 15000,
+      currency: "USD"
+    )
+    entry.skip_rate_snapshot = true
+    entry.save!
+    entry.reload
+
+    assert_equal 15000, entry.rate_cents
+    assert_equal "USD", entry.currency
+  end
+
   test "projeto deve pertencer ao mesmo user" do
     outro = create_user(email: "outro@example.com")
     alheio = outro.projects.create!(name: "Alheio")
