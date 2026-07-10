@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/alextakitani/ahoy_captain.git
-  revision: b5527511749d2881b110d6d817db1393d92d57f7
+  revision: 84fcaa7cd6ec226bbfb87ae3bb7f52aad7cb272d
   branch: main
   specs:
     ahoy_captain (1.2.0)
