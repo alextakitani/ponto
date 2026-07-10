@@ -13,4 +13,11 @@ ENV["BUNDLE_GEMFILE"] ||= File.expand_path("../Gemfile", __dir__)
 require "rubygems"
 require "bundler/setup"
 
+# Carrega o .env da raiz (gitignored) ANTES do Kamal: o config/deploy.yml lê
+# PONTO_DEPLOY_HOST/PONTO_ADMIN_EMAIL via ERB. Fora do git por privacidade —
+# quem clona o repo público define o próprio .env (ver .env.example). Sem isto,
+# o deploy.yml cai nos placeholders e o deploy não acha o servidor real.
+require "dotenv"
+Dotenv.load(File.expand_path("../.env", __dir__))
+
 load Gem.bin_path("kamal", "kamal")

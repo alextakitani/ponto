@@ -7,7 +7,9 @@ Rails.application.configure do
   # tailnet — ver docs/deploy.md): o Host Authorization default só permite
   # localhost. Libera o IP da LAN e qualquer nome da tailnet (*.ts.net).
   # Lembrete: pra expor, suba com `bin/rails s -b 0.0.0.0`.
-  config.hosts << "10.0.0.10"
+  # IP da LAN via ENV (self-hosted): defina PONTO_DEPLOY_HOST no .env pra acessar
+  # o dev server pelo IP. Ausente, cai no placeholder (inócuo em dev local).
+  config.hosts << ENV.fetch("PONTO_DEPLOY_HOST", "10.0.0.10")
   config.hosts << /.+\.ts\.net/
 
   # Make code changes take effect immediately without server restart.

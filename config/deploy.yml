@@ -7,7 +7,9 @@ image: ponto
 # Deploy to these servers.
 servers:
   web:
-    - 10.0.0.10 # LXC 108 "ponto" no Proxmox (Ubuntu 26.04)
+    # IP do servidor via ENV (self-hosted): defina PONTO_DEPLOY_HOST no seu .env
+    # (gitignored). O default abaixo é só placeholder pra quem clona o repo público.
+    - <%= ENV.fetch("PONTO_DEPLOY_HOST", "10.0.0.10") %>
 
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
 # If used with Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
@@ -32,7 +34,7 @@ registry:
   # abre um túnel SSH que dá bind-conflict quando o builder É o alvo.
   # Requer "insecure-registries": ["10.0.0.10:5555"] no daemon.json de
   # QUEM builda (HTTP puro, ok na LAN do homelab).
-  server: 10.0.0.10:5555
+  server: <%= ENV.fetch("PONTO_DEPLOY_HOST", "10.0.0.10") %>:5555
 
   # O registry do homelab NÃO tem auth (LAN); o Kamal exige as chaves mesmo
   # assim — credencial dummy (o docker login passa trivialmente sem auth).
@@ -61,7 +63,8 @@ env:
     MAILER_FROM: Ponto <ponto@pontotracker.com>
 
     # Bootstrap do 1º admin (Q37): com o banco vazio, só este e-mail cria conta.
-    ADMIN_EMAIL: admin@example.com
+    # Via ENV (self-hosted): defina PONTO_ADMIN_EMAIL no seu .env (gitignored).
+    ADMIN_EMAIL: <%= ENV.fetch("PONTO_ADMIN_EMAIL", "admin@example.com") %>
 
     # Set number of processes dedicated to Solid Queue (default: 1)
     # JOB_CONCURRENCY: 3
@@ -102,9 +105,9 @@ builder:
   # o próprio LXC) só dispara — o build/push roda no buildkit do LXC.
   # ⚠️ O buildkit NÃO lê insecure-registries do daemon: o builder buildx é
   # PRÉ-CRIADO com .kamal/buildkitd.toml (http=true pro registry) usando o
-  # nome exato que o Kamal deriva da URL ("kamal-remote-ssh---root-192-168-
-  # 0-187") — o Kamal reusa builders existentes. Ver docs/deploy.md.
-  remote: ssh://root@10.0.0.10
+  # nome exato que o Kamal deriva da URL ("kamal-remote-ssh---root-<HOST>",
+  # com pontos virando hífens) — o Kamal reusa builders existentes. Ver docs/deploy.md.
+  remote: ssh://root@<%= ENV.fetch("PONTO_DEPLOY_HOST", "10.0.0.10") %>
   local: false
 
   # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
