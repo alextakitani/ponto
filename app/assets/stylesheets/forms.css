@@ -84,6 +84,12 @@ select {
  * Só submits ganham o acento implicitamente: <button> de toggle/ícone (Stimulus)
  * fica neutro de propósito. Links (<a>/link_to) só viram botão com class="btn".
  */
+/* `hidden` vence o `display: inline-flex` abaixo — sem isto, um <button hidden>
+   (ex.: o "Instalar app" em Preferências, revelado por JS) apareceria sempre. */
+.btn[hidden] {
+  display: none !important;
+}
+
 .btn,
 input[type="submit"],
 button[type="submit"] {

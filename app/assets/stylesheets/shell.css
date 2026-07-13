@@ -322,6 +322,16 @@ a.shell-nav__item:hover {
 
 /* Banner de instalação da PWA (layouts/_pwa_install). Barra tingida discreta;
    ações à direita, empilha no mobile. iOS hint = nota silenciosa inline. */
+
+/* O atributo `hidden` PRECISA vencer o `display: flex` das regras abaixo — senão
+   os elementos aparecem sempre (o controller nasce com [hidden] e revela em JS).
+   Mesmo motivo do guard em palette.css. `!important` porque a classe tem a mesma
+   especificidade e viria depois na cascata. */
+.pwa-install-banner[hidden],
+.pwa-install-ios[hidden] {
+  display: none !important;
+}
+
 .pwa-install-banner {
   display: flex;
   align-items: center;
