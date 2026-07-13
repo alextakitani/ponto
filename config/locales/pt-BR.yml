@@ -540,6 +540,7 @@ pt-BR:
         description: "Leve seus dados quando quiser. A exportação gera um JSON com clientes, projetos, tarefas, tags e lançamentos; a importação restaura esse arquivo numa conta vazia."
         export: "Exportar meus dados"
         import: "Importar dados"
+        import_clockify: "Importar do Clockify"
         import_hint: "A importação só roda numa conta vazia (sem clientes, projetos, tarefas, tags ou lançamentos)."
         import_unavailable: "A importação fica disponível apenas em uma conta vazia."
       install:

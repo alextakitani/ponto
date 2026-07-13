@@ -170,6 +170,7 @@
 
       <% if @user.empty_bubble? %>
         <%= link_to t(".data.import"), new_account_data_import_path, class: "btn btn--quiet" %>
+        <%= link_to t(".data.import_clockify"), new_clockify_import_path, class: "btn btn--quiet" %>
       <% end %>
     </div>
 

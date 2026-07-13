@@ -541,6 +541,7 @@ en:
         description: "Take your data whenever you want. Export produces a JSON with clients, projects, tasks, tags, and time entries; import restores that file into an empty account."
         export: "Export my data"
         import: "Import data"
+        import_clockify: "Import from Clockify"
         import_hint: "Import only runs on an empty account (no clients, projects, tasks, tags, or time entries)."
         import_unavailable: "Import is only available on an empty account."
       install:
