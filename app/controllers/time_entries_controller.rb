@@ -70,6 +70,12 @@ class TimeEntriesController < ApplicationController
   def update
     if save_entry_with_tags(@time_entry, time_entry_update_params)
       load_tracker_day_groups
+      # A barra do timer precisa re-renderizar quando a entry EDITADA é a que está
+      # rodando (mudou projeto/tag/started_at) — senão a lista atualiza mas a barra
+      # fica com o conteúdo velho (bug do print). Só nesse caso: editar uma entry
+      # PARADA não mexe na barra. Mesmo racional do destroy (@timer_bar_stale).
+      @timer_bar_stale = @time_entry.ended_at.nil?
+      @current_timer = @time_entry if @timer_bar_stale
       respond_to do |format|
         format.turbo_stream
         format.html do

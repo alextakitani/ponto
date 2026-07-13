@@ -2,6 +2,15 @@
   <%= render "home/tracker_entries", day_groups: @tracker_day_groups %>
 <% end %>
 
+<%# Só quando a entry editada era a RODANDO (mudou projeto/tag/started_at): a barra
+    reflete a mudança. update, não replace: preserva os atributos do frame do layout
+    (permanent/src/sync). Mesmo padrão do destroy. %>
+<% if @timer_bar_stale %>
+  <%= turbo_stream.update "timer_bar" do %>
+    <%= render "timers/bar", time_entry: @current_timer, form_time_entry: nil %>
+  <% end %>
+<% end %>
+
 <%= turbo_stream.replace "command_palette" do %>
   <%= render "layouts/command_palette" %>
 <% end %>

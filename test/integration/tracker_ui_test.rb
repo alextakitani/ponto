@@ -246,6 +246,31 @@ class TrackerUiTest < ActionDispatch::IntegrationTest
     assert_equal Mime[:turbo_stream], response.media_type
     assert_turbo_stream action: :replace, target: "tracker_entries"
     assert_select "[data-entry-id='#{entry.id}'] .tracker-entry__duration", text: /02:00:00/
+    # Entry PARADA: a barra do timer não é tocada (não há timer rodando).
+    assert_not_includes response.body, %(target="timer_bar")
+  end
+
+  # Regressão (bug do print 13/07): editar a entry que está RODANDO atualizava a
+  # lista mas NÃO a barra do timer — ela ficava com projeto/tempo velhos até um
+  # refresh manual. A resposta precisa reescrever o timer_bar com o estado novo.
+  test "edição inline da entry RODANDO atualiza a barra do timer" do
+    project = @user.projects.create!(name: "Novo projeto")
+    running = @user.time_entries.create!(description: "Rodando", started_at: 10.minutes.ago)
+
+    patch time_entry_path(running),
+      params: {
+        time_entry: {
+          description: "Rodando editada",
+          project_id: project.id
+        }
+      },
+      headers: turbo_frame_headers(running)
+
+    assert_response :success
+    assert_equal Mime[:turbo_stream], response.media_type
+    assert_match %r{turbo-stream action="update" target="timer_bar"}, response.body
+    # A barra reflete o projeto novo (o dot usa a cor do projeto).
+    assert_select %(turbo-stream[target="timer_bar"] .timer-bar--running), count: 1
   end
 
   test "edição inline que resolve overlap remove badge dos dois entries na resposta" do
