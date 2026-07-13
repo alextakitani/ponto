@@ -179,4 +179,18 @@
       <p class="form-hint"><%= t(".data.import_unavailable") %></p>
     <% end %>
   </section>
+
+  <section class="preferences-section" aria-labelledby="install-heading" data-controller="pwa-install">
+    <div class="preferences-section__header">
+      <h2 id="install-heading"><%= t(".install.title") %></h2>
+      <p class="muted"><%= t(".install.description") %></p>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn--quiet" data-pwa-install-target="button" data-action="pwa-install#install" hidden><%= t(".install.action") %></button>
+    </div>
+
+    <p class="form-hint pwa-install-ios" data-pwa-install-target="iosHint" hidden><%= t(".install.ios_hint_html") %></p>
+    <p class="form-hint" data-pwa-install-target="unavailable"><%= t(".install.unavailable") %></p>
+  </section>
 </div>

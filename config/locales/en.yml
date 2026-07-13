@@ -307,6 +307,14 @@ en:
   pwa:
     manifest:
       description: "Self-hosted time tracker in the spirit of Clockify/Toggl, but lean — each account in its own isolated bubble."
+    install:
+      aria: "Install the app"
+      title: "Install Ponto"
+      body: "Add it to your home screen to open it as a full-screen app."
+      action: "Install"
+      dismiss: "Not now"
+      dismiss_aria: "Dismiss the install prompt"
+      ios_hint_html: "To install on iPhone/iPad: tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>."
   shell:
     confirm:
       title: "Are you sure?"
@@ -535,6 +543,12 @@ en:
         import: "Import data"
         import_hint: "Import only runs on an empty account (no clients, projects, tasks, tags, or time entries)."
         import_unavailable: "Import is only available on an empty account."
+      install:
+        title: "Install app"
+        description: "Install Ponto as an app on your device to open it full-screen, straight from your home screen."
+        action: "Install app"
+        ios_hint_html: "On iPhone/iPad: tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>."
+        unavailable: "This device/browser doesn't offer installation yet, or the app is already installed."
   clients:
     archivals:
       created: "Client archived."

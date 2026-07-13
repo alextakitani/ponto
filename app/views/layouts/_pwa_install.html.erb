@@ -1,0 +1,23 @@
+<%# Banner de instalação da PWA — controlado por nós (não pela heurística do browser).
+    O controller esconde tudo por padrão e revela via beforeinstallprompt (Android) ou
+    mostra a dica no iOS. Flag em localStorage garante "uma vez só". %>
+<div data-controller="pwa-install">
+  <div class="pwa-install-banner" data-pwa-install-target="banner" hidden role="region" aria-label="<%= t("pwa.install.aria") %>">
+    <div class="pwa-install-banner__body">
+      <%= icon("download", size: 20) %>
+      <div>
+        <strong class="pwa-install-banner__title"><%= t("pwa.install.title") %></strong>
+        <span class="pwa-install-banner__text"><%= t("pwa.install.body") %></span>
+      </div>
+    </div>
+    <div class="pwa-install-banner__actions">
+      <button type="button" class="btn btn--sm" data-action="pwa-install#install"><%= t("pwa.install.action") %></button>
+      <button type="button" class="btn btn--quiet btn--sm" data-action="pwa-install#dismiss" aria-label="<%= t("pwa.install.dismiss_aria") %>"><%= t("pwa.install.dismiss") %></button>
+    </div>
+  </div>
+
+  <div class="pwa-install-ios" data-pwa-install-target="iosHint" hidden role="note">
+    <%= icon("download", size: 20) %>
+    <span><%= t("pwa.install.ios_hint_html") %></span>
+  </div>
+</div>

@@ -306,6 +306,14 @@ pt-BR:
   pwa:
     manifest:
       description: "Time tracker self-hosted, no espírito Clockify/Toggl mas enxuto — cada conta na própria bolha isolada."
+    install:
+      aria: "Instalar o app"
+      title: "Instale o Ponto"
+      body: "Adicione à tela inicial para abrir como app, em tela cheia."
+      action: "Instalar"
+      dismiss: "Agora não"
+      dismiss_aria: "Dispensar o convite de instalação"
+      ios_hint_html: "Para instalar no iPhone/iPad: toque em <strong>Compartilhar</strong> e depois em <strong>Adicionar à Tela de Início</strong>."
   shell:
     confirm:
       title: "Tem certeza?"
@@ -534,6 +542,12 @@ pt-BR:
         import: "Importar dados"
         import_hint: "A importação só roda numa conta vazia (sem clientes, projetos, tarefas, tags ou lançamentos)."
         import_unavailable: "A importação fica disponível apenas em uma conta vazia."
+      install:
+        title: "Instalar app"
+        description: "Instale o Ponto como app no seu dispositivo para abrir em tela cheia, direto da tela inicial."
+        action: "Instalar app"
+        ios_hint_html: "No iPhone/iPad: toque em <strong>Compartilhar</strong> e depois em <strong>Adicionar à Tela de Início</strong>."
+        unavailable: "Este dispositivo/navegador ainda não oferece instalação, ou o app já está instalado."
   clients:
     archivals:
       created: "Cliente arquivado."
